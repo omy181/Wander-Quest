@@ -74,3 +74,6 @@ Assets/Other/apikey.txt
 Assets/Other/apikey.txt.meta
 Assets/Resources/apikey.txt
 Assets/Resources/apikey.txt.meta
+.vscode/extensions.json
+.vscode/launch.json
+.vscode/settings.json
