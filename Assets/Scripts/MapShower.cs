@@ -35,15 +35,7 @@ public class MapShower : MonoBehaviour
 
     void Start()
     {
-        TextAsset apitext = Resources.Load<TextAsset>("apikey");
-
-        if (apitext == null )
-        {
-            Debug.LogError("API Key not found");
-            return;
-        }
-
-        apiKey = apitext.text;
+        apiKey = API.GetKey();
 
         //StartCoroutine(GetGoogleMap());
         rect = gameObject.GetComponent<RawImage>().rectTransform.rect;
