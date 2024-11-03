@@ -45,7 +45,7 @@ public class MapShower : MonoBehaviour
 
         apiKey = apitext.text;
 
-        StartCoroutine(GetGoogleMap());
+        //StartCoroutine(GetGoogleMap());
         rect = gameObject.GetComponent<RawImage>().rectTransform.rect;
         mapWidth = (int)Mathf.Round(rect.width);
         mapHeight = (int)Mathf.Round(rect.height);
@@ -59,7 +59,7 @@ public class MapShower : MonoBehaviour
             rect = gameObject.GetComponent<RawImage>().rectTransform.rect;
             mapWidth = (int)Mathf.Round(rect.width);
             mapHeight = (int)Mathf.Round(rect.height);
-            StartCoroutine(GetGoogleMap());
+            //StartCoroutine(GetGoogleMap());
             updateMap = false;
 
             lat = GPS.instance.LastLocation.latitude;
