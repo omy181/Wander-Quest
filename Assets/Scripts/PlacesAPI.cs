@@ -14,7 +14,7 @@ public class PlacesAPI : MonoBehaviour
 
         _resultsjson = _testJson;
 
-        FindObjectOfType<MapVisualiser>().ShowPins(_resultJsonToPlaces(_resultsjson));
+        //FindObjectOfType<MapVisualiser>().ShowPins(_resultJsonToPlaces(_resultsjson));
     }
 
     IEnumerator SearchPlaces(string jsonPayload)

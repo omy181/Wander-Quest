@@ -41,11 +41,11 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
         }
     }
 
-    public IEnumerator SetTileTexture(int zoom,int x,int y,int orientation,Renderer renderer)
+    public IEnumerator SetTileTexture(GoogleTiles tileData,int orientation,Renderer renderer)
     {
         if (_sessionResponse != null)
         {
-            string url = $"https://tile.googleapis.com/v1/2dtiles/{zoom}/{x}/{y}?session={_sessionResponse.session}&key={API.GetKey()}&orientation={orientation}";
+            string url = $"https://tile.googleapis.com/v1/2dtiles/{tileData.Zoom}/{tileData.X}/{tileData.Y}?session={_sessionResponse.session}&key={API.GetKey()}&orientation={orientation}";
 
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
             yield return request.SendWebRequest();
