@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 
 public class NavigationArrow : MonoBehaviour
@@ -9,7 +6,6 @@ public class NavigationArrow : MonoBehaviour
     [SerializeField] private GameObject _arrow;
     private float _targetLatitude;
     private float _targetLongitude;
-    public TextMeshProUGUI textMessage;
 
 
     private void Start() {
@@ -18,8 +14,6 @@ public class NavigationArrow : MonoBehaviour
     private void _rotateArrow(){
         float angle = Gyroscope.FindAngleToTarget(_targetLatitude, _targetLongitude);
         _arrow.transform.localRotation = Quaternion.Euler(0,0,angle);
-
-        textMessage.text = $" {angle}";
 
     }
 
