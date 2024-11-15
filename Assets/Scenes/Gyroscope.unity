@@ -172,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _arrow: {fileID: 416331473}
+  textMessage: {fileID: 495202231}
 --- !u!1 &495202229
 GameObject:
   m_ObjectHideFlags: 0
