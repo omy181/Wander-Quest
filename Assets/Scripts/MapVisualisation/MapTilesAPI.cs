@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 
 public class MapTilesAPI : Singleton<MapTilesAPI>
 {
     private SessionResponse _sessionResponse;
+
+    private Dictionary<GoogleTiles, Texture2D> _cachedTileTextures = new();
 
     void Start()
     {
@@ -43,7 +44,11 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
 
     public IEnumerator SetTileTexture(GoogleTiles tileData,int orientation,Renderer renderer)
     {
-        if (_sessionResponse != null)
+        if (_cachedTileTextures.ContainsKey(tileData))
+        {
+            renderer.material.mainTexture = _cachedTileTextures[tileData];
+        }
+        else if (_sessionResponse != null)
         {
             string url = $"https://tile.googleapis.com/v1/2dtiles/{tileData.Zoom}/{tileData.X}/{tileData.Y}?session={_sessionResponse.session}&key={API.GetKey()}&orientation={orientation}";
 
@@ -56,6 +61,7 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
             else
             {
                 Texture2D texture = DownloadHandlerTexture.GetContent(request);
+                _cachedTileTextures[tileData] = texture;
 
                 // Apply the texture to the target renderer if available
                 if (renderer != null)

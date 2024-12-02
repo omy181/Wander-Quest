@@ -404,7 +404,7 @@ MonoBehaviour:
     type: 3}
   _camera: {fileID: 552205534}
   zoomLevel: 1000
-  zoomMap: 3
+  zoomMap: 10
 --- !u!114 &1692866300
 MonoBehaviour:
   m_ObjectHideFlags: 0
