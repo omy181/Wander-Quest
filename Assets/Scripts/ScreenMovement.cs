@@ -5,26 +5,9 @@ using UnityEngine;
 
 public class ScreenMovement : MonoBehaviour
 {
-    [SerializeField] private MapShower _mapShower;
-    void Start()
-    {
-        
-    }
-
-
+    [SerializeField] private MapCamera _cam;
     void Update()
     {
-        if(Input.mouseScrollDelta.y > 0.1f)
-        {
-            _zoom(1);
-        } else if(Input.mouseScrollDelta.y < -0.1f)
-        {
-            _zoom(-1);
-        }
-    }
-
-    private void _zoom(int amount)
-    {
-        _mapShower.zoom = Mathf.Clamp(_mapShower.zoom+ amount * 0.1f, 0,14);
+        _cam.Move(new Vector2(-Input.GetAxis("Horizontal"), -Input.GetAxis("Vertical")));       
     }
 }

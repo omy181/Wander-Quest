@@ -203,6 +203,7 @@ GameObject:
   - component: {fileID: 552205530}
   - component: {fileID: 552205533}
   - component: {fileID: 552205534}
+  - component: {fileID: 552205535}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -251,7 +252,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 90
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -277,13 +278,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 552205529}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 10.42, z: -7.26}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0.7071068, w: 0}
+  m_LocalPosition: {x: 0, y: 9.56, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 180}
 --- !u!114 &552205533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -340,6 +341,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dba9c19f9788aad4995ac4ff166282ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CamSpeed: 10
+--- !u!114 &552205535
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 552205529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0945e6a69fe9c4c45b7657081e6c63a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cam: {fileID: 552205534}
 --- !u!1 &1692866296
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,13 +413,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96c5df2faac31a84995ade3793592343, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pinObject: {fileID: 6160961752900775820, guid: dc96139781021c04199c961d80d0d8c6,
-    type: 3}
   _planePrefab: {fileID: 5580701641365956330, guid: 590da9f0a6bd1584a8d28a64c221252d,
     type: 3}
   _camera: {fileID: 552205534}
-  zoomLevel: 1000
-  zoomMap: 10
 --- !u!114 &1692866300
 MonoBehaviour:
   m_ObjectHideFlags: 0

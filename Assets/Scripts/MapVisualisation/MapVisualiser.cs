@@ -9,7 +9,7 @@ public class MapVisualiser : MonoBehaviour
     [SerializeField] private MapCamera _camera;
 
     [Header("Map Controls")]
-    public static int zoomMap = 10;
+    public static int zoomMap = 19;
 
 
     private Vector2Int _currentTileCords;

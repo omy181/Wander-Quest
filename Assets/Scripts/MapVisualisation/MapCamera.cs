@@ -5,4 +5,12 @@ using UnityEngine;
 public class MapCamera : MonoBehaviour
 {
     public Vector2 CamPosition2D=> new Vector2(transform.position.x,transform.position.z);
+
+    public float CamSpeed;
+
+
+    public void Move(Vector2 addition)
+    {
+        transform.position += new Vector3(addition.x,0,addition.y) * Time.deltaTime * CamSpeed;
+    }
 }
