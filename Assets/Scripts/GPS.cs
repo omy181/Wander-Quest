@@ -1,25 +1,51 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Android;
-using TMPro;
+
+public struct GPSLocation
+{
+    public double latitude;
+    public double longitude;
+
+    public GPSLocation(double latitude, double longitude)
+    {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+}
 
 public class GPS : Singleton<GPS>
 {
-    public LocationInfo LastLocation;
+    private LocationInfo _lastLocation;
 
-    public TMP_Text gpsOut;
     public bool isUpdating;
+
+    public GPSLocation GetLastGPSLocation()
+    {
+        if (ApplicationSettings.IsUnityEditor)
+        {
+            return new GPSLocation(38.05508810860761f, 27.023444230965133f);
+        }
+        else
+        {
+            return new GPSLocation(_lastLocation.latitude,_lastLocation.longitude);
+        }
+    }
+
     private void Update()
     {
-        if (!isUpdating)
+
+        if (!isUpdating && !ApplicationSettings.IsUnityEditor)
         {
             StartCoroutine(GetLocation());
             isUpdating = !isUpdating;
         }
     }
 
+
     IEnumerator GetLocation()
     {
+
         if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
         {
             Permission.RequestUserPermission(Permission.FineLocation);
@@ -43,7 +69,6 @@ public class GPS : Singleton<GPS>
         // Service didn't initialize in 20 seconds
         if (maxWait < 1)
         {
-            gpsOut.text = "Timed out";
             print("Timed out");
             yield break;
         }
@@ -51,14 +76,13 @@ public class GPS : Singleton<GPS>
         // Connection has failed
         if (Input.location.status == LocationServiceStatus.Failed)
         {
-            gpsOut.text = "Unable to determine device location";
             print("Unable to determine device location");
             yield break;
         }
         else
         {
-            LastLocation = Input.location.lastData;
-            gpsOut.text = "Location: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude + " " + Input.location.lastData.altitude + 100f + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp;
+            _lastLocation = Input.location.lastData;
+            //gpsOut.text = "Location: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude + " " + Input.location.lastData.altitude + 100f + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp;
             // Access granted and location value could be retrieved
             print("Location: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude + " " + Input.location.lastData.altitude + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp);
         }

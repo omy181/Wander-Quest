@@ -48,6 +48,10 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
         {
             renderer.material.mainTexture = _cachedTileTextures[tileData];
         }
+        else if (!MapUtilities.DoesTileTexturePossible(tileData))
+        {
+            renderer.material.mainTexture = null;
+        }
         else if (_sessionResponse != null)
         {
             string url = $"https://tile.googleapis.com/v1/2dtiles/{tileData.Zoom}/{tileData.X}/{tileData.Y}?session={_sessionResponse.session}&key={API.GetKey()}&orientation={orientation}";

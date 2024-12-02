@@ -8,28 +8,45 @@ public class MapVisualiser : MonoBehaviour
     [SerializeField] private GameObject _planePrefab;
     [SerializeField] private MapCamera _camera;
 
-    [Header("Map Controls")]
-    public static int zoomMap = 19;
-
-
     private Vector2Int _currentTileCords;
+    private Vector2Int _lastTileCords;
 
-    public void SetPosition(float lat,float lon,int zoom)
+    private int _zoomLevel = 19;
+    public int CurrentZoomLevel => _zoomLevel;
+
+    public Vector3 GPSCordinateToUnityCordinate(GPSLocation location)
     {
-        var worldCords = MapUtilities.LatLonToWorld(lat, lon);
-        var pixelCords = MapUtilities.WorldToPixel(worldCords, zoom);
+        var worldCords = MapUtilities.LatLonToWorld(location);
+        var pixelCords = MapUtilities.WorldToPixel(worldCords, CurrentZoomLevel);
+        var preciseTileCord = MapUtilities.PixelToTile(pixelCords) + new Vector2(pixelCords.x % (float)MapUtilities.GoogleMapsTileSize, pixelCords.y % (float)MapUtilities.GoogleMapsTileSize);
+        var offset = preciseTileCord;
+        offset /= (Mathf.Pow(2, CurrentZoomLevel)* MapUtilities.GoogleMapsTileSize);
+        
+        return new Vector3(offset.y,0,offset.x);
+    }
+
+    public void SetZoom(int zoom)
+    {
+        _zoomLevel = zoom;
+    }
+
+    public void SetPosition(GPSLocation gpsLocation)
+    {
+        var worldCords = MapUtilities.LatLonToWorld(gpsLocation);
+        var pixelCords = MapUtilities.WorldToPixel(worldCords, CurrentZoomLevel);
         _currentTileCords = MapUtilities.PixelToTile(pixelCords);
+        _lastTileCords = _currentTileCords;
     }
 
     private void Start()
     {
         _initializePlanes();
-        SetPosition(38.05508810860761f, 27.023444230965133f, zoomMap);
+        SetPosition(GPS.instance.GetLastGPSLocation());
     }
 
     private void Update()
     {
-        _setPlanePoitions(zoomMap);
+        _setPlanePoitions();
     }
 
     private void _initializePlanes()
@@ -46,7 +63,7 @@ public class MapVisualiser : MonoBehaviour
 
     }
 
-    private void _setPlanePoitions(int zoom)
+    private void _setPlanePoitions()
     {
         if (_unityPlanes.Count == 0) return;
 
@@ -59,7 +76,7 @@ public class MapVisualiser : MonoBehaviour
             {
                 var plane = _getUnityPlaneByIndex(new Vector2Int(-1, i));
                 plane.transform.position += new Vector3(3 * MapUtilities.UnityTileSize, 0, 0);
-                _renderCurrentArea(plane, new GoogleTiles(_currentTileCords.x -1, _currentTileCords.y + i, zoom));
+                _renderCurrentArea(plane, new GoogleTiles(_currentTileCords.x -1, _currentTileCords.y + i, CurrentZoomLevel));
             }
             _reOrderUnityPlanes();
         }
@@ -71,7 +88,7 @@ public class MapVisualiser : MonoBehaviour
             {
                 var plane = _getUnityPlaneByIndex(new Vector2Int(1, i));
                 plane.transform.position -= new Vector3(3 * MapUtilities.UnityTileSize, 0, 0);
-                _renderCurrentArea(plane, new GoogleTiles(_currentTileCords.x +1, _currentTileCords.y + i, zoom));
+                _renderCurrentArea(plane, new GoogleTiles(_currentTileCords.x +1, _currentTileCords.y + i, CurrentZoomLevel));
             }
             _reOrderUnityPlanes();
         }
@@ -83,7 +100,7 @@ public class MapVisualiser : MonoBehaviour
             {
                 var plane = _getUnityPlaneByIndex(new Vector2Int(i, -1));
                 plane.transform.position += new Vector3(0, 0, 3 * MapUtilities.UnityTileSize);
-                _renderCurrentArea(plane, new GoogleTiles(_currentTileCords.x - i, _currentTileCords.y + 1, zoom));
+                _renderCurrentArea(plane, new GoogleTiles(_currentTileCords.x - i, _currentTileCords.y + 1, CurrentZoomLevel));
             }
             _reOrderUnityPlanes();
         }
@@ -95,10 +112,20 @@ public class MapVisualiser : MonoBehaviour
             {
                 var plane = _getUnityPlaneByIndex(new Vector2Int(i, 1));
                 plane.transform.position -= new Vector3(0, 0, 3 * MapUtilities.UnityTileSize);
-                _renderCurrentArea(plane, new GoogleTiles(_currentTileCords.x - i, _currentTileCords.y - 1, zoom));
+                _renderCurrentArea(plane, new GoogleTiles(_currentTileCords.x - i, _currentTileCords.y - 1, CurrentZoomLevel));
             }
             _reOrderUnityPlanes();
         }
+    }
+
+    public void UpdateAllPlaneTextures()
+    {
+        for(int j = -1;j< 2;j++)
+            for (int i = -1; i < 2; i++)
+            {
+                var plane = _getUnityPlaneByIndex(new Vector2Int(i, j));
+                _renderCurrentArea(plane, new GoogleTiles(_currentTileCords.x - i, _currentTileCords.y + j, CurrentZoomLevel));
+            }
     }
 
     private List<GameObject> _unityPlanes = new();

@@ -20,12 +20,18 @@ public static class MapUtilities
     public static int GoogleMapsTileSize = 256;
     public static int UnityTileSize = 10;
 
-    public static Vector2 LatLonToWorld(float latitude, float longitude)
+    public static bool DoesTileTexturePossible(GoogleTiles googleTiles)
+    {
+        float scale = Mathf.Pow(2, googleTiles.Zoom);
+        return (googleTiles.X > 0 && googleTiles.X < scale && googleTiles.Y > 0 && googleTiles.Y < scale);
+    }
+
+    public static Vector2 LatLonToWorld(GPSLocation gpsLocation)
     {
 
-        float worldX = (longitude + 180) / 360 * GoogleMapsTileSize;
+        float worldX = ((float)gpsLocation.longitude + 180) / 360 * GoogleMapsTileSize;
 
-        float sinLatitude = Mathf.Sin(latitude * Mathf.Deg2Rad);
+        float sinLatitude = Mathf.Sin((float)gpsLocation.latitude * Mathf.Deg2Rad);
         float worldY = (0.5f - Mathf.Log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Mathf.PI)) * GoogleMapsTileSize;
 
         return new Vector2(worldX, worldY);
@@ -43,10 +49,10 @@ public static class MapUtilities
     public static Vector2 PixelToWorld(Vector2Int pixel, int zoom)
     {
         float scale = Mathf.Pow(2, zoom) * GoogleMapsTileSize;
-        float worldx = (pixel.x * GoogleMapsTileSize) / scale;
-        float worldy = (pixel.y * GoogleMapsTileSize) / scale;
+        float worldx = pixel.x / scale;
+        float worldy = pixel.y / scale;
 
-        return new Vector2(worldx, worldy);
+        return new Vector2(worldx * GoogleMapsTileSize, worldy * GoogleMapsTileSize);
     }
 
     public static Vector2Int PixelToTile(Vector2Int pixel)
