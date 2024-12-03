@@ -18,6 +18,7 @@ public class NotificationManager : MonoBehaviour
 
     private void OnApplicationFocus(bool focusStatus) {
         if(focusStatus == true){
+            AndroidNotificationCenter.CancelAllNotifications();
             androidNotification.SendNotification("New Discovery", "You discovered a new location!");
         }
     }

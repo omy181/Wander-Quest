@@ -27,10 +27,11 @@ public class AndroidNotification : MonoBehaviour
     public void SendNotification(string title, string text){
         var notification = new Unity.Notifications.Android.AndroidNotification{
             Text = text,
-            Title = title
-            //SmallIcon = "icon_0"
+            Title = title,
+            SmallIcon = "icon_0"
         };
         
+
         AndroidNotificationCenter.SendNotification(notification, "default_channel");
     }
    
