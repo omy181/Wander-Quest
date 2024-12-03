@@ -9,7 +9,7 @@ public static class Gyroscope
             var gyro = Input.gyro;
             gyro.enabled = true;
 
-            float bearing = _calculateBearing(GPS.instance.LastLocation.latitude, GPS.instance.LastLocation.longitude, targetLatitude,targetLongitude);
+            float bearing = _calculateBearing((float)GPS.instance.GetLastGPSLocation().latitude, (float)GPS.instance.GetLastGPSLocation().longitude, targetLatitude,targetLongitude);
             float heading = _getGyroHeading();
 
             float angleDifference = Mathf.DeltaAngle(heading, bearing);

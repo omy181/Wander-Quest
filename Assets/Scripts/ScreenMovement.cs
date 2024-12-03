@@ -8,6 +8,6 @@ public class ScreenMovement : MonoBehaviour
     [SerializeField] private MapCamera _cam;
     void Update()
     {
-        _cam.Move(new Vector2(-Input.GetAxis("Horizontal"), -Input.GetAxis("Vertical")));       
+        _cam.Move(new Vector2(-Input.GetAxis("Horizontal"), -Input.GetAxis("Vertical")));
     }
 }
