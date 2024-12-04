@@ -12,6 +12,11 @@ public struct GPSLocation
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    public override string ToString()
+    {
+        return latitude + "," + longitude;
+    }
 }
 
 public class GPS : Singleton<GPS>
