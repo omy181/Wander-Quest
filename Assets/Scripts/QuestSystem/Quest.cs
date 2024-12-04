@@ -6,6 +6,8 @@ public class Quest
     public string Title { get; private set; }
     public string MapsQuerry { get; private set; }
     public QuestType QuestType { get; private set; }
+
+    public string ID => MapsQuerry;
     public int Progress => _places.Count; // Total traveled migros count, not percentage
     private List<QuestPlace> _places;
 
