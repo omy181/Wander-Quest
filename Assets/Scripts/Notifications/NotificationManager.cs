@@ -15,9 +15,6 @@ public class NotificationManager : Singleton<NotificationManager>
     {
         androidNotification.RequestAuthorization();
         androidNotification.RegisterNotificationChannel();
-        SendDiscoveryNotification("Migros");
-        SendMissedYouNotification();
-        SendFriendRequestNotification("Seden");
     }
 
     public static void SendDiscoveryNotification(string place){
