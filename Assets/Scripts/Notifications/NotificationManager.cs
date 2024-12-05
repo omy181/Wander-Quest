@@ -4,22 +4,33 @@ using UnityEngine;
 using UnityEngine.Android;
 using Unity.Notifications.Android;
 
-
-public class NotificationManager : MonoBehaviour
+public class NotificationManager : Singleton<NotificationManager>
 {
     [SerializeField] AndroidNotification androidNotification;
 
-    // Start is called before the first frame update
+    private const string discoveryIcon = "icon_0"; 
+
     void Start()
     {
         androidNotification.RequestAuthorization();
         androidNotification.RegisterNotificationChannel();
     }
 
-    private void OnApplicationFocus(bool focusStatus) {
-        if(focusStatus == true){
-            AndroidNotificationCenter.CancelAllNotifications();
-            androidNotification.SendNotification("New Discovery", "You discovered a new location!");
-        }
+    public static void SendDiscoveryNotification(string place){
+        instance.androidNotification.SendNotification("New Discovery", $"You discovered a new {place}!", discoveryIcon);
     }
+
+    public static void SendMissedYouNotification(){
+        instance.androidNotification.SendNotification("Come Back", "We missed you!", discoveryIcon);
+    }
+
+    public static void SendFriendRequestNotification(string friendName){
+        instance.androidNotification.SendNotification("New Friend", $"{friendName} wants to be friend with you!", discoveryIcon);
+    }
+
+    
+
+    
+
 }
+

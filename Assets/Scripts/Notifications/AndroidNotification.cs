@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Notifications.Android;
@@ -24,14 +25,15 @@ public class AndroidNotification : MonoBehaviour
         AndroidNotificationCenter.RegisterNotificationChannel(channel);
     }
 
-    public void SendNotification(string title, string text){
+    public void SendNotification(string title, string text, string icon){
         var notification = new Unity.Notifications.Android.AndroidNotification{
             Text = text,
             Title = title,
-            SmallIcon = "icon_0"
+            SmallIcon = icon,  
+            RepeatInterval = null,
+            FireTime = DateTime.Now
         };
         
-
         AndroidNotificationCenter.SendNotification(notification, "default_channel");
     }
    
