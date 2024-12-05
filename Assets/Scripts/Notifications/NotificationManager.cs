@@ -9,11 +9,15 @@ public class NotificationManager : Singleton<NotificationManager>
     [SerializeField] AndroidNotification androidNotification;
 
     private const string discoveryIcon = "icon_0"; 
+    private const string friendIcon = "icon_1";
 
     void Start()
     {
         androidNotification.RequestAuthorization();
         androidNotification.RegisterNotificationChannel();
+        SendDiscoveryNotification("Migros");
+        SendMissedYouNotification();
+        SendFriendRequestNotification("Seden");
     }
 
     public static void SendDiscoveryNotification(string place){
@@ -25,12 +29,8 @@ public class NotificationManager : Singleton<NotificationManager>
     }
 
     public static void SendFriendRequestNotification(string friendName){
-        instance.androidNotification.SendNotification("New Friend", $"{friendName} wants to be friend with you!", discoveryIcon);
-    }
-
-    
-
-    
+        instance.androidNotification.SendNotification("New Friend", $"{friendName} wants to be friend with you!", friendIcon);
+    }  
 
 }
 
