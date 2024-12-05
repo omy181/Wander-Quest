@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 public static class MapUtilities
 {
-    public static Vector3 ConvertGPSToUnityCord(double latitude, double longitude, double mapLatitude, double mapLongitude, double mapWidth, double mapHeight, int zoomLevel)
+    public static Vector3 ConvertGPSToUnityCord(GPSLocation location,GPSLocation mapLocation, double mapWidth, double mapHeight, int zoomLevel)
     {
+        double latitude = location.latitude; double longitude = location.longitude; double mapLatitude = mapLocation.latitude; double mapLongitude = mapLocation.longitude;
+
         double dx = (longitude - mapLongitude) * Mathf.Deg2Rad * 6371000 * Mathf.Cos((float)latitude * Mathf.Deg2Rad);
         double dy = (latitude - mapLatitude) * Mathf.Deg2Rad * 6371000;
 
@@ -11,8 +14,7 @@ public static class MapUtilities
 
         x /= zoomLevel;
         y /= zoomLevel;
-
-        return new Vector3(x, 0, y);
+        return new Vector3(Mathf.Ceil(x*100)/100f, 0, Mathf.Ceil(y*100)/100f);
     }
 
     // for map visualisation
@@ -64,4 +66,16 @@ public static class MapUtilities
     {
         return new Vector2Int(tile.x * GoogleMapsTileSize, tile.y * GoogleMapsTileSize);
     }
+
+    public static GPSLocation WorldToLatLon(Vector2 worldCoords)
+    {
+        float longitude = (worldCoords.x / GoogleMapsTileSize) * 360 - 180;
+
+        double n = Math.PI - 2.0 * Math.PI * (worldCoords.y / GoogleMapsTileSize);
+        float latitude = (float)(Math.Atan(Math.Sinh(n)) * Mathf.Rad2Deg);
+
+        return new GPSLocation(latitude, longitude);
+    }
+
+
 }

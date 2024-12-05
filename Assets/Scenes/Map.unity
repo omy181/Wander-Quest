@@ -568,6 +568,7 @@ MonoBehaviour:
   _planePrefab: {fileID: 5580701641365956330, guid: 590da9f0a6bd1584a8d28a64c221252d,
     type: 3}
   _camera: {fileID: 552205534}
+  TestZoom: 1
 --- !u!114 &1692866300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,7 +594,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mapVisualiser: {fileID: 1692866299}
-  mapMode: 0
+  mapMode: 1
 --- !u!114 &1692866302
 MonoBehaviour:
   m_ObjectHideFlags: 0
