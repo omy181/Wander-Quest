@@ -43,12 +43,13 @@ public class QuestPlace
 {
     public GPSLocation Location;
     public string Name;
-    public string ID => Location.ToString()+","+Name;
+    public string ID;
 
-    public QuestPlace(GPSLocation location, string name)
+    public QuestPlace(GPSLocation location, string name,string id)
     {
         Location = location;
         Name = name;
+        ID = id;
     }
 }
 
