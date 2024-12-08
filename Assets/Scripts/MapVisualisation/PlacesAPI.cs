@@ -7,12 +7,11 @@ using UnityEngine.Networking;
 
 public class PlacesAPI : MonoBehaviour
 {
+    [SerializeField] private MapPinVisualiser _mapPinVisualiser;
     private string _resultsjson;
     void Start()
     {
-        StartCoroutine(SearchPlaces(_getJsonPayload("migros", GPS.instance.GetLastGPSLocation(), 500f,1)));
-
-        //FindObjectOfType<MapPinVisualiser>().ShowPins(_resultJsonToPlaces(_resultsjson));
+        //StartCoroutine(SearchPlaces(_getJsonPayload("migros", GPS.instance.GetLastGPSLocation(), 500f,5)));
     }
 
     IEnumerator SearchPlaces(string jsonPayload)
@@ -47,8 +46,9 @@ public class PlacesAPI : MonoBehaviour
             //Debug.Log(request.downloadHandler.text);
             _resultsjson = request.downloadHandler.text;
 
-
             _resultJsonToPlaces(_resultsjson).places.ForEach((p)=>print(p.id+" - "+p.displayName.text +" - "+ p.location.latitude +","+p.location.longitude));
+
+            _mapPinVisualiser.ShowPins(_resultJsonToPlaces(_resultsjson)); // SHOW ON MAP
         }
     }
 

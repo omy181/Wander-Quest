@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ public class MapVisualiser : MonoBehaviour
         return _lastTileUnityCord + new Vector3(-offset.x+4,0,offset.y-4);
     }
 
-
+    public Action OnMapUpdated;
 
     public void SetZoom(int zoom)
     {
@@ -46,6 +47,8 @@ public class MapVisualiser : MonoBehaviour
         _currentTileCords = MapUtilities.PixelToTile(pixelCords);
         _lastTileCords = _currentTileCords;
         _lastTileUnityCord = _getUnityPlaneByIndex(Vector2Int.zero).transform.position;
+
+        OnMapUpdated?.Invoke();
     }
 
     private void Start()

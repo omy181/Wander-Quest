@@ -433,6 +433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a3aa30a5f07b094d9aae3b2f774f0c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _mapPinVisualiser: {fileID: 1692866302}
 --- !u!4 &1692866298
 Transform:
   m_ObjectHideFlags: 0
@@ -488,7 +489,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mapVisualiser: {fileID: 1692866299}
-  mapMode: 1
+  mapMode: 0
 --- !u!114 &1692866302
 MonoBehaviour:
   m_ObjectHideFlags: 0
