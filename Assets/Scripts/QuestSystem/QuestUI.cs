@@ -29,10 +29,51 @@ public class QuestUI : MonoBehaviour
         //});
     }
 
+    private (List<Quest> MainQuests, List<Quest> SideQuests, List<Quest> DailyQuests) QuestTypeList(){
+        List<Quest> MainQuests = new List<Quest>();
+        List<Quest> SideQuests = new List<Quest>();
+        List<Quest> DailyQuests = new List<Quest>();
+
+        QuestManager.instance.GetActiveQuests().ForEach(quest => {
+            if(quest.QuestType == QuestType.MainQuest){
+                MainQuests.Add(quest);
+            }
+            else if(quest.QuestType == QuestType.SideQuest){
+                SideQuests.Add(quest);
+            }
+            else if(quest.QuestType == QuestType.DailyQuest){
+                DailyQuests.Add(quest);
+            }  
+        });
+        return (MainQuests, SideQuests, DailyQuests);
+    }
+
+    public List<Quest> GetQuestTypeList(QuestType questType){
+        List<Quest> questsList = new List<Quest>();
+        QuestManager.instance.GetActiveQuests().ForEach(quest => {
+            if(quest.QuestType == questType){
+                questsList.Add(quest);
+            }
+        });
+        return questsList;
+    }
+
+    public void CreateQuestToType(List<Quest> quests){
+        quests.ForEach(quest => {
+            GameObject questPrefab = Instantiate(_questPrefab, transform);
+            QuestPrefab questPrefabComponent = questPrefab.GetComponent<QuestPrefab>();
+            questPrefabComponent.SetQuestData(quest.Title ,  $"{quest.Progress}/{quest.GetPlaces().Count}");
+        });
+    }
+ 
+
 
     void Start()
     {
         CreateQuestPrefab();
+        CreateQuestToType(QuestTypeList().MainQuests);
+        CreateQuestToType(GetQuestTypeList(QuestType.MainQuest));
+        GetQuestTypeList(QuestType.SideQuest);
     }
 
 
