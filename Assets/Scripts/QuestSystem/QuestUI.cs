@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -6,6 +7,7 @@ using UnityEngine;
 public class QuestUI : MonoBehaviour
 {
     [SerializeField] private GameObject _questPrefab;
+    public bool a = false;
 
     private void InfoQuest(){
         QuestManager.instance.GetActiveQuests().ForEach(quest => {
@@ -19,34 +21,11 @@ public class QuestUI : MonoBehaviour
     }
 
     private void CreateQuestPrefab(){
-        //QuestManager.instance.GetActiveQuests().ForEach(quest => {
             GameObject questPrefab = Instantiate(_questPrefab, transform);
-            //questPrefab.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Title";//quest.Title;
-            // questPrefab.GetComponentInChildren<TMPro.TextMeshProUGUI>().text += "50/100";//quest.Progress;
             QuestPrefab questPrefabComponent = questPrefab.GetComponent<QuestPrefab>();
             questPrefabComponent.SetQuestData("Title",  "50/100");
-            //questPrefabComponent.SetQuestData(quest.Title ,  $"{quest.Progress}/{quest.GetPlaces().Count}");
-        //});
     }
 
-    private (List<Quest> MainQuests, List<Quest> SideQuests, List<Quest> DailyQuests) QuestTypeList(){
-        List<Quest> MainQuests = new List<Quest>();
-        List<Quest> SideQuests = new List<Quest>();
-        List<Quest> DailyQuests = new List<Quest>();
-
-        QuestManager.instance.GetActiveQuests().ForEach(quest => {
-            if(quest.QuestType == QuestType.MainQuest){
-                MainQuests.Add(quest);
-            }
-            else if(quest.QuestType == QuestType.SideQuest){
-                SideQuests.Add(quest);
-            }
-            else if(quest.QuestType == QuestType.DailyQuest){
-                DailyQuests.Add(quest);
-            }  
-        });
-        return (MainQuests, SideQuests, DailyQuests);
-    }
 
     public List<Quest> GetQuestTypeList(QuestType questType){
         List<Quest> questsList = new List<Quest>();
@@ -65,16 +44,24 @@ public class QuestUI : MonoBehaviour
             questPrefabComponent.SetQuestData(quest.Title ,  $"{quest.Progress}/{quest.GetPlaces().Count}");
         });
     }
- 
+    
+    public void DestroyQuests(){
+        foreach (Transform child in transform) {
+            Destroy(child.gameObject);
+        }
+    }
 
 
     void Start()
     {
         CreateQuestPrefab();
-        CreateQuestToType(QuestTypeList().MainQuests);
-        CreateQuestToType(GetQuestTypeList(QuestType.MainQuest));
-        GetQuestTypeList(QuestType.SideQuest);
     }
 
-
+    void Update()
+    {
+        if(a){
+            DestroyQuests(); // sahnede quest prefab kalıbını nasıl oluşturmalıyım (çünkü hepsi siliniyor)
+        }
+    }
+    
 }

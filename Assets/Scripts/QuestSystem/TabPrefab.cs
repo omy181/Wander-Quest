@@ -12,6 +12,9 @@ public class TabPrefab : MonoBehaviour
     // set Active false to other quests -> destroy all quests -> create new quests
 
     public void OpenQuestList(){
+        _questUI.GetComponent<QuestUI>().DestroyQuests();
         _questUI.GetComponent<QuestUI>().CreateQuestToType(_questUI.GetComponent<QuestUI>().GetQuestTypeList(_questType));
     }
+
+    
 }
