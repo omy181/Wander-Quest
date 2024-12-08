@@ -2,20 +2,6 @@ using System;
 using UnityEngine;
 public static class MapUtilities
 {
-    public static Vector3 ConvertGPSToUnityCord(GPSLocation location,GPSLocation mapLocation, double mapWidth, double mapHeight, int zoomLevel)
-    {
-        double latitude = location.latitude; double longitude = location.longitude; double mapLatitude = mapLocation.latitude; double mapLongitude = mapLocation.longitude;
-
-        double dx = (longitude - mapLongitude) * Mathf.Deg2Rad * 6371000 * Mathf.Cos((float)latitude * Mathf.Deg2Rad);
-        double dy = (latitude - mapLatitude) * Mathf.Deg2Rad * 6371000;
-
-        float x = (float)(((dx / mapWidth) + 0.5) * mapWidth);
-        float y = (float)(((dy / mapHeight) + 0.5) * mapHeight);
-
-        x /= zoomLevel;
-        y /= zoomLevel;
-        return new Vector3(Mathf.Ceil(x*100)/100f, 0, Mathf.Ceil(y*100)/100f);
-    }
 
     // for map visualisation
 

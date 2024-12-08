@@ -12,7 +12,7 @@ public class MapPinVisualiser : MonoBehaviour
     {
         foreach (Place p in places.places)
         {
-            //var pin = Instantiate(_pinObject, MapUtilities.ConvertGPSToUnityCord(p.location.latitude, p.location.longitude, 0, 0, 1, 1, _mapVisualiser.CurrentZoomLevel), Quaternion.identity);
+            //var pin = Instantiate(_pinObject, _mapVisualiser.GPSCordinateToUnityCordinate(p.location), Quaternion.identity);
             //pin.GetComponent<PinObject>().Initialize(p);
         }
     }
