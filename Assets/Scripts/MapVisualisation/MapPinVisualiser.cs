@@ -24,7 +24,7 @@ public class MapPinVisualiser : MonoBehaviour
 
     public void MoveUserPin()
     {
-        _userPin.transform.position = _mapVisualiser.GPSCordinateToUnityCordinate(new GPSLocation(37.838086981788486, 27.856181219908233));
+        _userPin.transform.position = _mapVisualiser.GPSCordinateToUnityCordinate(GPS.instance.GetLastGPSLocation());
 
     }
 }

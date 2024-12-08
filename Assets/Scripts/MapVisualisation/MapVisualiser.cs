@@ -23,12 +23,12 @@ public class MapVisualiser : MonoBehaviour
         var pixelCords = MapUtilities.WorldToPixel(worldCords, CurrentZoomLevel);
         var midPixel = MapUtilities.TileToPixel(_lastTileCords);
 
-        var pixelMapSize = Vector2.one * MapUtilities.GoogleMapsTileSize;
-        var unityMapSize = Vector2.one * MapUtilities.UnityTileSize;
+        var pixelMapSize = MapUtilities.GoogleMapsTileSize;
+        var unityMapSize = MapUtilities.UnityTileSize;
 
         var offset = (pixelCords-midPixel) * unityMapSize / pixelMapSize;
 
-        return _lastTileUnityCord + new Vector3(offset.x,0,offset.y);
+        return _lastTileUnityCord + new Vector3(-offset.x+4,0,offset.y-4);
     }
 
 
