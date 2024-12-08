@@ -26,9 +26,9 @@ public class MapPinVisualiser : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Update()
     {
-        _mapVisualiser.OnMapUpdated += MoveUserPin;
+        MoveUserPin();
     }
 
     public void MoveUserPin()
