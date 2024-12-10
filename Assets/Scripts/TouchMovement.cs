@@ -2,28 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class TouchMovement : MonoBehaviour
 {
 
-    //private float touchSpeed = 1f;
+     private Vector2 startTouchPosition;
+    private Vector2 currentTouchPosition;
+    private bool isTouching = false;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public float movementSpeed = 0.9f;
+    public float sensitivity = 0.001f;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-        if(Input.touchCount > 0){
+    void Update(){
+        if (Input.touchCount > 0){
             Touch touch = Input.GetTouch(0);
-            if(touch.phase == TouchPhase.Moved){
-                //Vector2 touchDeltaPosition = touch.deltaPosition;
-                //transform.Translate(-touchDeltaPosition.x * touchSpeed, -touchDeltaPosition.y * touchSpeed, 0);
-            }
+            if(touch.phase == TouchPhase.Began) startTouchPosition = touch.position;
+            if(touch.phase == TouchPhase.Moved) {
+                currentTouchPosition = touch.position;
+                Vector2 deltaPosition = (currentTouchPosition - startTouchPosition) * sensitivity;
+                transform.Translate(new Vector3(deltaPosition.x, 0, deltaPosition.y) * movementSpeed, Space.World);
+                startTouchPosition = currentTouchPosition;
+                Debug.Log($"Delta Position: {deltaPosition}");
+
+             }
         }
     }
 }
