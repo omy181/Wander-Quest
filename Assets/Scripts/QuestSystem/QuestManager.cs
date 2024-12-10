@@ -15,10 +15,17 @@ public class QuestManager : Singleton<QuestManager>
     public Quest CreateNewQuest(string title,QuestType questType,string mapsQuerry)
     {
         Quest quest = new(title, questType, mapsQuerry,new());
+        if (IsQuestAvailable(quest)) return quest;
+        
         _activeQuests.Add(quest);
 
         ///TODO: add this quest to the database
         return quest;
+    }
+
+    public bool IsQuestAvailable(Quest quest)
+    {
+        return _activeQuests.Any(q => q.ID == quest.ID);
     }
 
     public List<Quest> GetActiveQuests()
