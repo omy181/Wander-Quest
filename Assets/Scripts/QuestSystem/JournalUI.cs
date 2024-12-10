@@ -6,27 +6,34 @@ using UnityEngine;
 public class JournalUI : MonoBehaviour
 {
     [SerializeField] private GameObject _questPrefab;
+    [SerializeField] private GameObject _placePrefab;
     [SerializeField] private Window _journalWindow;
     [SerializeField] private Transform _content;
-    public List<Quest> GetQuestTypeList(QuestType questType){
-        List<Quest> questsList = new List<Quest>();
+
+    public void ShowQuestsOfType(QuestType questType)
+    {
+        _clearContents();
+
         QuestManager.instance.GetActiveQuests().ForEach(quest => {
-            if(quest.QuestType == questType){
-                questsList.Add(quest);
+            if(quest.QuestType == questType)
+            {
+                var questPrefab = Instantiate(_questPrefab, _content).GetComponent<QuestPrefab>();
+                questPrefab.SetQuestData(quest,()=> ListPlaces(quest));
             }
+            
         });
-        return questsList;
     }
 
-    public void CreateQuestPrefabs(List<Quest> quests){
-        quests.ForEach(quest => {
-            GameObject questPrefab = Instantiate(_questPrefab, _content);
-            QuestPrefab questPrefabComponent = questPrefab.GetComponent<QuestPrefab>();
-            questPrefabComponent.SetQuestData(quest.Title ,  $"{quest.Progress}");
+    public void ListPlaces(Quest quest)
+    {
+        _clearContents();
+        quest.GetPlaces().ForEach(place => {
+            var placePrefab = Instantiate(_placePrefab, _content).GetComponent<PlaceSlotUI>();
+            placePrefab.SetPlaceData(place,null);
         });
     }
-    
-    public void DestroyQuests(){
+
+    private void _clearContents(){
         foreach (Transform child in _content) {
             Destroy(child.gameObject);
         }
@@ -34,18 +41,19 @@ public class JournalUI : MonoBehaviour
 
 
     private void _addPlaceholderQuests(){
-        Quest q1 = QuestManager.instance.CreateNewQuest("q1", QuestType.MainQuest, "aa");
-        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros","12"));
-        QuestManager.instance.CreateNewQuest("q2", QuestType.MainQuest, "cc");
-        QuestManager.instance.CreateNewQuest("q3", QuestType.DailyQuest, "bb");
-        QuestManager.instance.CreateNewQuest("q4", QuestType.DailyQuest, "dd");  
-        QuestManager.instance.CreateNewQuest("q5", QuestType.SideQuest, "ee");
+        Quest q1 = QuestManager.instance.CreateNewQuest("Migros", QuestType.MainQuest, "aa");
+        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros M","12"));
+        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "The Migros", "11"));
+        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Denizli Migros", "14"));
+        QuestManager.instance.CreateNewQuest("Metro Market", QuestType.MainQuest, "cc");
+        QuestManager.instance.CreateNewQuest("Bim", QuestType.DailyQuest, "bb");
+        QuestManager.instance.CreateNewQuest("a-101", QuestType.DailyQuest, "dd");  
+        QuestManager.instance.CreateNewQuest("Sok", QuestType.SideQuest, "ee");
     }
 
     private void _refreshQuests()
     {
-        DestroyQuests();
-        CreateQuestPrefabs(GetQuestTypeList(QuestType.MainQuest));
+        ShowQuestsOfType(QuestType.MainQuest);
     }
 
     void Awake()

@@ -1,13 +1,19 @@
 using Holylib.Utilities;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class QuestSelector : MonoBehaviour
 {
     [SerializeField] private GameObject _questList;
     [SerializeField] private Transform _questContent;
     [SerializeField] private GameObject _questPrefab;
+    [SerializeField] private TMP_Text _activeQuestText;
+    [SerializeField] private TMP_Text _activeQuestProgressText;
+
+    private Quest _activeQuest;
 
     private void Update()
     {
@@ -38,7 +44,16 @@ public class QuestSelector : MonoBehaviour
         }
 
         QuestManager.instance.GetActiveQuests().ForEach(quest => {
-            Instantiate(_questPrefab, _questContent).GetComponent<QuestPrefab>().SetQuestData(quest.Title,quest.Progress.ToString());
-            });
+            var questPrefab = Instantiate(_questPrefab, _questContent).GetComponent<QuestPrefab>();
+            questPrefab.SetQuestData(quest,()=> _selectQuest(quest));
+        });
+    }
+
+    private void _selectQuest(Quest quest)
+    {
+        _activeQuestText.text = quest.Title;
+        _activeQuestProgressText.text = quest.Progress.ToString();
+        _activeQuest = quest;
+        ShowQuestSelector(false);
     }
 }

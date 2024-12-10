@@ -9,8 +9,7 @@ public class QuestTabPrefab : MonoBehaviour
   
 
     public void OpenQuestList(){
-        _questUI.DestroyQuests();
-        _questUI.CreateQuestPrefabs(_questUI.GetQuestTypeList(_questType));
+        _questUI.ShowQuestsOfType(_questType);
     }
 
     
