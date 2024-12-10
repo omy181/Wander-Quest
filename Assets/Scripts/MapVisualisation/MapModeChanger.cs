@@ -24,7 +24,7 @@ public class MapModeChanger : MonoBehaviour
         switch (mode)
         {
             case MapMode.CloseUp:
-                zoom = 17;
+                zoom = 16;
                 break;
             case MapMode.Country:
                 zoom = 4;

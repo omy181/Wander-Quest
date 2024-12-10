@@ -59,7 +59,7 @@ public class MapVisualiser : MonoBehaviour
 
     private void Update()
     {
-        //_setPlanePoitions();
+        _setPlanePoitions();
     }
 
     private void _initializePlanes()

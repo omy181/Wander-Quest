@@ -29,7 +29,7 @@ public class GPS : Singleton<GPS>
     {
         if (ApplicationSettings.IsUnityEditor)
         {
-            return new GPSLocation(38.37793750300525, 26.89107114401293); // guzelbahce
+            return new GPSLocation(38.37694276669464, 26.88509838113758); // guzelbahce
         }
         else
         {

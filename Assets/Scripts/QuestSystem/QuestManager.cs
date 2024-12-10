@@ -40,4 +40,9 @@ public class QuestManager : Singleton<QuestManager>
             ///TODO: update this quest on the database as well
         }
     }
+
+    public QuestPlace PlaceToQuestPlace(Place place)
+    {
+        return new QuestPlace(new GPSLocation(place.location.latitude, place.location.longitude), place.displayName.text, place.id, AdressUtilities.ConvertHtmlToAddress(place.adrFormatAddress));
+    }
 }

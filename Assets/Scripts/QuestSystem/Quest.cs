@@ -42,14 +42,16 @@ public class Quest
 public class QuestPlace
 {
     public GPSLocation Location;
+    public Address Address;
     public string Name;
     public string ID;
 
-    public QuestPlace(GPSLocation location, string name,string id)
+    public QuestPlace(GPSLocation location, string name,string id, Address address)
     {
         Location = location;
         Name = name;
         ID = id;
+        Address = address;
     }
 }
 

@@ -13,7 +13,7 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
 
     void Start()
     {
-       // StartCoroutine(StartMapTileSession(_getJsonPayload()));
+        StartCoroutine(StartMapTileSession(_getJsonPayload()));
     }
 
     IEnumerator StartMapTileSession(string jsonPayload)

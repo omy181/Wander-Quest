@@ -42,9 +42,9 @@ public class JournalUI : MonoBehaviour
 
     private void _addPlaceholderQuests(){
         Quest q1 = QuestManager.instance.CreateNewQuest("Migros", QuestType.MainQuest, "aa");
-        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros M","12"));
-        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "The Migros", "11"));
-        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Denizli Migros", "14"));
+        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros M","12",new Address()));
+        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "The Migros", "11", new Address()));
+        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Denizli Migros", "14", new Address()));
         QuestManager.instance.CreateNewQuest("Metro Market", QuestType.MainQuest, "cc");
         QuestManager.instance.CreateNewQuest("Bim", QuestType.DailyQuest, "bb");
         QuestManager.instance.CreateNewQuest("a-101", QuestType.DailyQuest, "dd");  
