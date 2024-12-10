@@ -11,7 +11,7 @@ public class PlacesAPI : MonoBehaviour
     private string _resultsjson;
     void Start()
     {
-        StartCoroutine(SearchPlaces(_getJsonPayload("migros", GPS.instance.GetLastGPSLocation(), 500f,5)));
+        //StartCoroutine(SearchPlaces(_getJsonPayload("migros", GPS.instance.GetLastGPSLocation(), 500f,5)));
     }
 
     IEnumerator SearchPlaces(string jsonPayload)
