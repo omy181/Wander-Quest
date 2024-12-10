@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 public class MapPinVisualiser : MonoBehaviour
@@ -8,12 +10,19 @@ public class MapPinVisualiser : MonoBehaviour
     [SerializeField] private MapVisualiser _mapVisualiser;
     [SerializeField] private GameObject _userPin;
 
+    private List<PinObject> _pins = new();
+
     public void ShowPins(Places places)
     {
         foreach (Place p in places.places)
         {
-            var pin = Instantiate(_pinObject, MapUtilities.ConvertGPSToUnityCord(p.location.latitude, p.location.longitude, 0, 0, 1, 1, _mapVisualiser.CurrentZoomLevel), Quaternion.identity);
-            pin.GetComponent<PinObject>().Initialize(p);
+            if (_pins.Any(po => po._place.id == p.id)) continue;
+
+            var pin = Instantiate(_pinObject, _mapVisualiser.GPSCordinateToUnityCordinate(new GPSLocation(p.location.latitude, p.location.longitude)), Quaternion.identity);
+            var pinobject = pin.GetComponent<PinObject>();
+            pinobject.Initialize(p, _mapVisualiser);
+
+            _pins.Add(pinobject);
         }
     }
 
@@ -25,6 +34,5 @@ public class MapPinVisualiser : MonoBehaviour
     public void MoveUserPin()
     {
         _userPin.transform.position = _mapVisualiser.GPSCordinateToUnityCordinate(GPS.instance.GetLastGPSLocation());
-
     }
 }

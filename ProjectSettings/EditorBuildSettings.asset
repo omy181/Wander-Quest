@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Notifications.unity
+    guid: de3ce69e64b0feb468b4670008b7d8d1
+  - enabled: 1
     path: Assets/Scenes/Gyroscope.unity
     guid: ffdac638f66d501438463507019b2a24
   - enabled: 1

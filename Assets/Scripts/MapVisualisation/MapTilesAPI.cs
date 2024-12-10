@@ -13,7 +13,7 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
 
     void Start()
     {
-        StartCoroutine(StartMapTileSession(_getJsonPayload()));
+       // StartCoroutine(StartMapTileSession(_getJsonPayload()));
     }
 
     IEnumerator StartMapTileSession(string jsonPayload)
@@ -86,12 +86,71 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
 
     private string _getJsonPayload()
     {
-        return @"
-        {
-            ""mapType"": ""roadmap"",
-            ""language"": ""en-US"",
-            ""region"": ""US""
-        }";
+        return @"       
+             {
+  ""mapType"": ""roadmap"",
+  ""language"": ""en-US"",
+  ""region"": ""US"",
+  ""styles"": [
+    {
+      ""featureType"": ""administrative.country"",
+      ""elementType"": ""labels"",
+      ""stylers"": [
+        { ""visibility"": ""off"" }
+      ]
+    },
+    {
+      ""featureType"": ""administrative.locality"",
+      ""elementType"": ""labels"",
+      ""stylers"": [
+        { ""visibility"": ""off"" }
+      ]
+    },
+    {
+      ""featureType"": ""administrative"",
+      ""elementType"": ""labels"",
+      ""stylers"": [
+        { ""visibility"": ""off"" }
+      ]
+    },
+    {
+      ""featureType"": ""poi"",
+      ""elementType"": ""labels"",
+      ""stylers"": [
+        { ""visibility"": ""off"" }
+      ]
+    },
+    {
+      ""featureType"": ""road"",
+      ""elementType"": ""labels"",
+      ""stylers"": [
+        { ""visibility"": ""off"" }
+      ]
+    },
+    {
+      ""featureType"": ""transit"",
+      ""elementType"": ""labels"",
+      ""stylers"": [
+        { ""visibility"": ""off"" }
+      ]
+    },
+    {
+      ""featureType"": ""water"",
+      ""elementType"": ""labels"",
+      ""stylers"": [
+        { ""visibility"": ""off"" },
+        { ""color"": ""#185abc"" }
+      ]
+    },
+    {
+      ""featureType"": ""landscape"",
+      ""elementType"": ""labels"",
+      ""stylers"": [
+        { ""visibility"": ""on"" }
+      ]
+    }
+  ]
+}";
     }
 
 

@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
 
 public class MapVisualiser : MonoBehaviour
 {
@@ -10,6 +12,8 @@ public class MapVisualiser : MonoBehaviour
 
     private Vector2Int _currentTileCords;
     private Vector2Int _lastTileCords;
+    private Vector3 _lastTileUnityCord;
+    private GPSLocation _lastTileLocation;
 
     private int _zoomLevel = 19;
     public int CurrentZoomLevel => _zoomLevel;
@@ -18,12 +22,17 @@ public class MapVisualiser : MonoBehaviour
     {
         var worldCords = MapUtilities.LatLonToWorld(location);
         var pixelCords = MapUtilities.WorldToPixel(worldCords, CurrentZoomLevel);
-        var preciseTileCord = MapUtilities.PixelToTile(pixelCords) + new Vector2(pixelCords.x % (float)MapUtilities.GoogleMapsTileSize, pixelCords.y % (float)MapUtilities.GoogleMapsTileSize);
-        var offset = preciseTileCord;
-        offset /= (Mathf.Pow(2, CurrentZoomLevel)* MapUtilities.GoogleMapsTileSize);
-        
-        return new Vector3(offset.y,0,offset.x);
+        var midPixel = MapUtilities.TileToPixel(_lastTileCords);
+
+        var pixelMapSize = MapUtilities.GoogleMapsTileSize;
+        var unityMapSize = MapUtilities.UnityTileSize;
+
+        var offset = (pixelCords-midPixel) * unityMapSize / pixelMapSize;
+
+        return _lastTileUnityCord + new Vector3(-offset.x+4,0,offset.y-4);
     }
+
+    public Action OnMapUpdated;
 
     public void SetZoom(int zoom)
     {
@@ -32,10 +41,14 @@ public class MapVisualiser : MonoBehaviour
 
     public void SetPosition(GPSLocation gpsLocation)
     {
+        _lastTileLocation = gpsLocation;
         var worldCords = MapUtilities.LatLonToWorld(gpsLocation);
         var pixelCords = MapUtilities.WorldToPixel(worldCords, CurrentZoomLevel);
         _currentTileCords = MapUtilities.PixelToTile(pixelCords);
         _lastTileCords = _currentTileCords;
+        _lastTileUnityCord = _getUnityPlaneByIndex(Vector2Int.zero).transform.position;
+
+        OnMapUpdated?.Invoke();
     }
 
     private void Start()
@@ -46,7 +59,7 @@ public class MapVisualiser : MonoBehaviour
 
     private void Update()
     {
-        _setPlanePoitions();
+        //_setPlanePoitions();
     }
 
     private void _initializePlanes()
