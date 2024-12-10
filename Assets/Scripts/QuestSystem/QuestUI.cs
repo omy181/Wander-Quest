@@ -34,7 +34,7 @@ public class QuestUI : MonoBehaviour
 
     private void _showPlaceholderQuests(){
         Quest q1 = QuestManager.instance.CreateNewQuest("q1", QuestType.MainQuest, "aa");
-        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros"));
+        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros","12"));
         QuestManager.instance.CreateNewQuest("q2", QuestType.MainQuest, "cc");
         QuestManager.instance.CreateNewQuest("q3", QuestType.DailyQuest, "bb");
         QuestManager.instance.CreateNewQuest("q4", QuestType.DailyQuest, "dd");  
