@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class QuestPrefab : MonoBehaviour
 {
-    public TextMeshProUGUI titleText;
-    public TextMeshProUGUI progressText;
+    [SerializeField] private TextMeshProUGUI _titleText;
+    [SerializeField] private TextMeshProUGUI _progressText;
 
     public void SetQuestData(string title, string progress)
     {
-        titleText.text = title;
-        progressText.text = progress;
+        _titleText.text = title;
+        _progressText.text = progress;
     }
 }

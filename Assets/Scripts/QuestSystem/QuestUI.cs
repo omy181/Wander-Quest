@@ -1,31 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class QuestUI : MonoBehaviour
 {
     [SerializeField] private GameObject _questPrefab;
-    public bool a = false;
-
-    private void InfoQuest(){
-        QuestManager.instance.GetActiveQuests().ForEach(quest => {
-            Debug.Log(quest.Title);
-            Debug.Log(quest.Progress);
-            Debug.Log(quest.QuestType);
-            quest.GetPlaces().ForEach(place => {
-                Debug.Log(place.Name);
-            });
-        });
-    }
-
-    private void CreateQuestPrefab(){
-            GameObject questPrefab = Instantiate(_questPrefab, transform);
-            QuestPrefab questPrefabComponent = questPrefab.GetComponent<QuestPrefab>();
-            questPrefabComponent.SetQuestData("Title",  "50/100");
-    }
-
 
     public List<Quest> GetQuestTypeList(QuestType questType){
         List<Quest> questsList = new List<Quest>();
@@ -41,7 +21,7 @@ public class QuestUI : MonoBehaviour
         quests.ForEach(quest => {
             GameObject questPrefab = Instantiate(_questPrefab, transform);
             QuestPrefab questPrefabComponent = questPrefab.GetComponent<QuestPrefab>();
-            questPrefabComponent.SetQuestData(quest.Title ,  $"{quest.Progress}/{quest.GetPlaces().Count}");
+            questPrefabComponent.SetQuestData(quest.Title ,  $"{quest.Progress}");
         });
     }
     
@@ -52,16 +32,24 @@ public class QuestUI : MonoBehaviour
     }
 
 
-    void Start()
-    {
-        CreateQuestPrefab();
+    private void _showPlaceholderQuests(){
+        Quest q1 = QuestManager.instance.CreateNewQuest("q1", QuestType.MainQuest, "aa");
+        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros"));
+        QuestManager.instance.CreateNewQuest("q2", QuestType.MainQuest, "cc");
+        QuestManager.instance.CreateNewQuest("q3", QuestType.DailyQuest, "bb");
+        QuestManager.instance.CreateNewQuest("q4", QuestType.DailyQuest, "dd");  
+        QuestManager.instance.CreateNewQuest("q5", QuestType.SideQuest, "ee");
     }
 
-    void Update()
+    void Start()
     {
-        if(a){
-            DestroyQuests(); // sahnede quest prefab kalıbını nasıl oluşturmalıyım (çünkü hepsi siliniyor)
-        }
+       
+        _showPlaceholderQuests();
+
+        DestroyQuests();
+        CreateQuestToType(GetQuestTypeList(QuestType.MainQuest));
+
     }
+
     
 }

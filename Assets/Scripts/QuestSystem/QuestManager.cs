@@ -12,12 +12,13 @@ public class QuestManager : Singleton<QuestManager>
         ///TODO: on the start of the game this function will pull all active quests from database into the _activeQuests list
     }
 
-    public void CreateNewQuest(string title,QuestType questType,string mapsQuerry)
+    public Quest CreateNewQuest(string title,QuestType questType,string mapsQuerry)
     {
         Quest quest = new(title, questType, mapsQuerry,new());
         _activeQuests.Add(quest);
 
         ///TODO: add this quest to the database
+        return quest;
     }
 
     public List<Quest> GetActiveQuests()
