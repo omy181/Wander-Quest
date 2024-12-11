@@ -208,6 +208,7 @@ MonoBehaviour:
   _titleText: {fileID: 7462417658244967580}
   _adressText: {fileID: 9102023851995699474}
   _placeButton: {fileID: 6531292169625990241}
+  _background: {fileID: 7590945256697281322}
 --- !u!1 &5499378406632145177
 GameObject:
   m_ObjectHideFlags: 0

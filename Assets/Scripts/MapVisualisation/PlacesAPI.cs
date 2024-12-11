@@ -5,16 +5,13 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlacesAPI : MonoBehaviour
+public class PlacesAPI : Singleton<PlacesAPI>
 {
     [SerializeField] private MapPinVisualiser _mapPinVisualiser;
     private string _resultsjson;
     void Start()
     {
-        //StartCoroutine(SearchPlaces(_getJsonPayload("Migros", GPS.instance.GetLastGPSLocation(), 500f,5)));
-
-
-
+        /*
         //     FOR TESTING
 
         _resultsjson = testJsonPlaces;
@@ -28,10 +25,24 @@ public class PlacesAPI : MonoBehaviour
             QuestManager.instance.AddPlaceToQuest(quest, qPlace);
         });
 
-        _mapPinVisualiser?.ShowPins(_resultJsonToPlaces(_resultsjson)); // SHOW ON MAP
+        _mapPinVisualiser?.ShowPins(_resultJsonToPlaces(_resultsjson)); // SHOW ON MAP*/
+
     }
 
-    IEnumerator SearchPlaces(string jsonPayload)
+    public IEnumerator StartSearchPlaces(string querry,Action<List<QuestPlace>> onPlacesFound)
+    {
+        yield return StartCoroutine(_searchPlaces(_getJsonPayload(querry, GPS.instance.GetLastGPSLocation(), 500f, 5)));
+
+        List<QuestPlace> list = new();
+        _resultJsonToPlaces(_resultsjson).places.ForEach(place =>
+        {
+            list.Add(PlaceToQuestPlace(place));
+        });
+
+        onPlacesFound(list);
+    }
+
+    private IEnumerator _searchPlaces(string jsonPayload)
     {
         // Define the API endpoint
         string url = "https://places.googleapis.com/v1/places:searchText";
@@ -63,11 +74,8 @@ public class PlacesAPI : MonoBehaviour
             //Debug.Log(request.downloadHandler.text);
             _resultsjson = request.downloadHandler.text;
 
+            //_resultJsonToPlaces(_resultsjson).places.ForEach((p)=>print(p.id+" - "+p.displayName.text +" - "+ p.location.latitude +","+p.location.longitude + " - "+ AdressUtilities.ConvertHtmlToAddress(p.adrFormatAddress).Locality ));
 
-
-            _resultJsonToPlaces(_resultsjson).places.ForEach((p)=>print(p.id+" - "+p.displayName.text +" - "+ p.location.latitude +","+p.location.longitude + " - "+ AdressUtilities.ConvertHtmlToAddress(p.adrFormatAddress).Locality ));
-
-            _mapPinVisualiser.ShowPins(_resultJsonToPlaces(_resultsjson)); // SHOW ON MAP
         }
     }
 
@@ -105,6 +113,27 @@ public class PlacesAPI : MonoBehaviour
     }
 
     private string testJsonPlaces => "{\"places\":[{\"id\":\"ChIJZaj4i_3BuxQRdaO3UjiY_dM\",\"location\":{\"latitude\":38.376557,\"longitude\":26.883778},\"adrFormatAddress\":\"\\u003cspan class=\\\"street-address\\\"\\u003eYalı, 264. Sk. No: 1\\u003c/span\\u003e, \\u003cspan class=\\\"postal-code\\\"\\u003e35310\\u003c/span\\u003e \\u003cspan class=\\\"locality\\\"\\u003eGüzelbahçe\\u003c/span\\u003e/\\u003cspan class=\\\"region\\\"\\u003eİzmir\\u003c/span\\u003e, \\u003cspan class=\\\"country-name\\\"\\u003eTürkiye\\u003c/span\\u003e\",\"displayName\":{\"text\":\"MM Migros\",\"languageCode\":\"tr\"}},{\"id\":\"ChIJa6HuMifDuxQRh8WGe-E3ZYY\",\"location\":{\"latitude\":38.37826,\"longitude\":26.894579000000004},\"adrFormatAddress\":\"\\u003cspan class=\\\"street-address\\\"\\u003eYalı, Mithatpaşa Cd. No: 345/A\\u003c/span\\u003e, \\u003cspan class=\\\"postal-code\\\"\\u003e35310\\u003c/span\\u003e \\u003cspan class=\\\"locality\\\"\\u003eGüzelbahçe\\u003c/span\\u003e/\\u003cspan class=\\\"region\\\"\\u003eİzmir\\u003c/span\\u003e, \\u003cspan class=\\\"country-name\\\"\\u003eTürkiye\\u003c/span\\u003e\",\"displayName\":{\"text\":\"Migros Jet\",\"languageCode\":\"en\"}},{\"id\":\"ChIJ-Rx9czHruxQR8oqWcoERR0c\",\"location\":{\"latitude\":38.3618483,\"longitude\":26.8830262},\"adrFormatAddress\":\"\\u003cspan class=\\\"street-address\\\"\\u003eKahramandere, Şht. Kemal Cd. No:118\\u003c/span\\u003e, \\u003cspan class=\\\"postal-code\\\"\\u003e35310\\u003c/span\\u003e \\u003cspan class=\\\"locality\\\"\\u003eGüzelbahçe\\u003c/span\\u003e/\\u003cspan class=\\\"region\\\"\\u003eİzmir\\u003c/span\\u003e, \\u003cspan class=\\\"country-name\\\"\\u003eTürkiye\\u003c/span\\u003e\",\"displayName\":{\"text\":\"M Migros\",\"languageCode\":\"en\"}},{\"id\":\"ChIJ-ycUbNfruxQRkro76hIr_cs\",\"location\":{\"latitude\":38.361399999999996,\"longitude\":26.889599999999998},\"adrFormatAddress\":\"\\u003cspan class=\\\"street-address\\\"\\u003eÇelebi, İstikbal Cd. No:164\\u003c/span\\u003e, \\u003cspan class=\\\"postal-code\\\"\\u003e35310\\u003c/span\\u003e \\u003cspan class=\\\"locality\\\"\\u003eGüzelbahçe\\u003c/span\\u003e/\\u003cspan class=\\\"region\\\"\\u003eİzmir\\u003c/span\\u003e, \\u003cspan class=\\\"country-name\\\"\\u003eTürkiye\\u003c/span\\u003e\",\"displayName\":{\"text\":\"M Migros\",\"languageCode\":\"tr\"}},{\"id\":\"ChIJ3UC-_B7quxQRhgGI9cSkMto\",\"location\":{\"latitude\":38.3585031,\"longitude\":26.888542599999997},\"adrFormatAddress\":\"\\u003cspan class=\\\"street-address\\\"\\u003eAtatürk, 555. Sk. No: 9\\u003c/span\\u003e, \\u003cspan class=\\\"postal-code\\\"\\u003e35310\\u003c/span\\u003e \\u003cspan class=\\\"locality\\\"\\u003eGüzelbahçe\\u003c/span\\u003e/\\u003cspan class=\\\"region\\\"\\u003eİzmir\\u003c/span\\u003e, \\u003cspan class=\\\"country-name\\\"\\u003eTürkiye\\u003c/span\\u003e\",\"displayName\":{\"text\":\"Migros Jet\",\"languageCode\":\"tr\"}}]}";
+
+
+    public QuestPlace PlaceToQuestPlace(Place place)
+    {
+        return new QuestPlace(place.location, place.displayName.text, place.id, AdressUtilities.ConvertHtmlToAddress(place.adrFormatAddress),place.isTraveled);
+    }
+
+    public Place QuestPlaceToPlace(QuestPlace qPlace)
+    {
+        var place = new Place();
+
+        place.id = qPlace.ID;
+        place.displayName = new DisplayName();
+        place.displayName.text = qPlace.Name;
+        place.location = qPlace.Location;
+        place.adrFormatAddress = AdressUtilities.ConvertAddressToHtml(qPlace.Address);
+        place.isTraveled = qPlace.IsTraveled;
+
+        return place;
+    }
+
 }
 
 
@@ -117,17 +146,11 @@ public class Places
 [Serializable]
 public class Place
 {
-    public Location location;
+    public GPSLocation location;
     public DisplayName displayName;
     public string id;
     public string adrFormatAddress;
-}
-
-[Serializable]
-public class Location
-{
-    public float latitude;
-    public float longitude;
+    public bool isTraveled;
 }
 
 [Serializable]

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using UnityEngine;
 
 public class MapPinVisualiser : MonoBehaviour
@@ -12,15 +11,20 @@ public class MapPinVisualiser : MonoBehaviour
 
     private List<PinObject> _pins = new();
 
-    public void ShowPins(Places places)
+    public void ShowQuestPins(Quest quest)
     {
-        foreach (Place p in places.places)
-        {
-            if (_pins.Any(po => po._place.id == p.id)) continue;
+        ShowPins(quest.GetPlaces());
+    }
 
-            var pin = Instantiate(_pinObject, _mapVisualiser.GPSCordinateToUnityCordinate(new GPSLocation(p.location.latitude, p.location.longitude)), Quaternion.identity);
+    public void ShowPins(List<QuestPlace> places)
+    {
+        foreach (var place in places)
+        {
+            if (_pins.Any(placeObj => placeObj._place.ID == place.ID)) continue;
+
+            var pin = Instantiate(_pinObject, _mapVisualiser.GPSCordinateToUnityCordinate(place.Location), Quaternion.identity);
             var pinobject = pin.GetComponent<PinObject>();
-            pinobject.Initialize(p, _mapVisualiser);
+            pinobject.Initialize(place, _mapVisualiser);
 
             _pins.Add(pinobject);
         }
@@ -28,10 +32,10 @@ public class MapPinVisualiser : MonoBehaviour
 
     private void Update()
     {
-        MoveUserPin();
+        _moveUserPin();
     }
 
-    public void MoveUserPin()
+    private void _moveUserPin()
     {
         _userPin.transform.position = _mapVisualiser.GPSCordinateToUnityCordinate(GPS.instance.GetLastGPSLocation());
     }

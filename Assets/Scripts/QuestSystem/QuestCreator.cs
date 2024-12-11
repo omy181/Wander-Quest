@@ -21,14 +21,11 @@ public class QuestCreator : MonoBehaviour
 
         if (questQuerry.Equals(string.Empty) || questQuerry.Length <= 2)
         {
-            print("Quest name should be longer!");
+            print("Quest querry should be longer!");
             return false;
         }
 
-        // find the name of the quest
-        string questName = questQuerry;
-
-        QuestManager.instance.CreateNewQuest(questName, QuestType.MainQuest, questQuerry);
+        QuestManager.instance.CreateNewQuest(QuestType.MainQuest, questQuerry);
         return true;
     }
 

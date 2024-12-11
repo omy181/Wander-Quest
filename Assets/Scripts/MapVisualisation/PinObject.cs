@@ -6,10 +6,10 @@ public class PinObject : MonoBehaviour
 {
     [SerializeField] private TMPro.TMP_Text _name;
     private MapVisualiser _mapVisualiser;
-    public Place _place { get; private set; }
-    public void Initialize(Place place,MapVisualiser mapVisualiser)
+    public QuestPlace _place { get; private set; }
+    public void Initialize(QuestPlace place,MapVisualiser mapVisualiser)
     {
-        _name.text = place.displayName.text;
+        _name.text = place.Name;
         transform.name = _name.text;
         _place = place;
         _mapVisualiser = mapVisualiser;
@@ -18,6 +18,6 @@ public class PinObject : MonoBehaviour
 
     private void _updatePosition()
     {        
-        transform.position = _mapVisualiser.GPSCordinateToUnityCordinate(new GPSLocation(_place.location.latitude, _place.location.longitude)); ;
+        transform.position = _mapVisualiser.GPSCordinateToUnityCordinate(_place.Location); ;
     }
 }

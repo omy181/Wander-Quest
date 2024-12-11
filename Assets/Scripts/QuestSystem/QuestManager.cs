@@ -12,9 +12,9 @@ public class QuestManager : Singleton<QuestManager>
         ///TODO: on the start of the game this function will pull all active quests from database into the _activeQuests list
     }
 
-    public Quest CreateNewQuest(string title,QuestType questType,string mapsQuerry)
+    public Quest CreateNewQuest(QuestType questType,string mapsQuerry)
     {
-        Quest quest = new(title, questType, mapsQuerry,new());
+        Quest quest = new(questType, mapsQuerry,new());
         if (IsQuestAvailable(quest)) return quest;
         
         _activeQuests.Add(quest);
@@ -41,8 +41,4 @@ public class QuestManager : Singleton<QuestManager>
         }
     }
 
-    public QuestPlace PlaceToQuestPlace(Place place)
-    {
-        return new QuestPlace(new GPSLocation(place.location.latitude, place.location.longitude), place.displayName.text, place.id, AdressUtilities.ConvertHtmlToAddress(place.adrFormatAddress));
-    }
 }

@@ -38,19 +38,6 @@ public class JournalUI : MonoBehaviour
             Destroy(child.gameObject);
         }
     }
-
-
-    private void _addPlaceholderQuests(){
-        Quest q1 = QuestManager.instance.CreateNewQuest("Migros", QuestType.MainQuest, "aa");
-        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros M","12",new Address()));
-        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "The Migros", "11", new Address()));
-        QuestManager.instance.AddPlaceToQuest(q1, new QuestPlace(GPS.instance.GetLastGPSLocation(), "Denizli Migros", "14", new Address()));
-        QuestManager.instance.CreateNewQuest("Metro Market", QuestType.MainQuest, "cc");
-        QuestManager.instance.CreateNewQuest("Bim", QuestType.DailyQuest, "bb");
-        QuestManager.instance.CreateNewQuest("a-101", QuestType.DailyQuest, "dd");  
-        QuestManager.instance.CreateNewQuest("Sok", QuestType.SideQuest, "ee");
-    }
-
     private void _refreshQuests()
     {
         ShowQuestsOfType(QuestType.MainQuest);
@@ -58,8 +45,12 @@ public class JournalUI : MonoBehaviour
 
     void Awake()
     {     
-        _addPlaceholderQuests();
         _journalWindow.OnWindowActivated += _refreshQuests;
+
+        var q = QuestManager.instance.CreateNewQuest(QuestType.MainQuest,"migros");
+        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(),"Migros MM","f",new Address(),true));
+        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros M", "3", new Address(), false));
+        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros ", "4", new Address(), true));
     }
 
     

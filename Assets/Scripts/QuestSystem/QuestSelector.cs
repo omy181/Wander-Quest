@@ -52,7 +52,7 @@ public class QuestSelector : MonoBehaviour
     private void _selectQuest(Quest quest)
     {
         _activeQuestText.text = quest.Title;
-        _activeQuestProgressText.text = quest.Progress.ToString();
+        _activeQuestProgressText.text = quest.TotalTraveledCount.ToString();
         _activeQuest = quest;
         ShowQuestSelector(false);
     }

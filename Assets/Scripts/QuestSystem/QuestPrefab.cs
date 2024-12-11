@@ -15,7 +15,7 @@ public class QuestPrefab : MonoBehaviour
     public void SetQuestData(Quest quest,Action onClick)
     {
         _titleText.text = quest.Title;
-        _progressText.text = quest.Progress.ToString();
+        _progressText.text = $"Traveled {quest.TotalTraveledCount}\n Found {quest.TotalPlaceCount}" ;
 
         _questButton.onClick.AddListener(()=>onClick());
 
