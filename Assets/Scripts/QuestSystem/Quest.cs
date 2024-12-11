@@ -22,9 +22,12 @@ public class Quest
 
     private void _createTitle()
     {
-        string firstWord = MapsQuerry.Split(' ')[0];
-        firstWord = char.ToUpper(firstWord[0]) + firstWord.Substring(1).ToLower();
-        Title = firstWord + " List";
+        string[] words = MapsQuerry.Split(' ');
+        for (int i = 0; i < words.Length; i++)
+        {
+            words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1).ToLower();
+        }
+        Title = string.Join(" ", words) + " List";
     }
 
     public bool AddPlace(QuestPlace place)

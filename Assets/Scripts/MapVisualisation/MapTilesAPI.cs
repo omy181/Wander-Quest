@@ -11,12 +11,14 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
 
     private Dictionary<GoogleTiles, Texture2D> _cachedTileTextures = new();
 
-    void Start()
+
+    public IEnumerator StartMapTiles(Action OnStarted)
     {
-        StartCoroutine(StartMapTileSession(_getJsonPayload()));
+        yield return StartCoroutine(_startMapTileSession(_getJsonPayload()));
+        OnStarted();
     }
 
-    IEnumerator StartMapTileSession(string jsonPayload)
+    private IEnumerator _startMapTileSession(string jsonPayload)
     {
         string url = $"https://tile.googleapis.com/v1/createSession?key={API.GetKey()}";
 

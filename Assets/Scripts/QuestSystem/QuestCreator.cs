@@ -25,7 +25,23 @@ public class QuestCreator : MonoBehaviour
             return false;
         }
 
-        QuestManager.instance.CreateNewQuest(QuestType.MainQuest, questQuerry);
+        //QuestManager.instance.CreateNewQuest(QuestType.MainQuest, questQuerry);
+
+
+
+        // FOR TESTING  Search and create the quest
+
+        StartCoroutine(PlacesAPI.instance.StartSearchPlaces(questQuerry, (List<QuestPlace> places) =>
+        {
+            FindObjectOfType<MapPinVisualiser>().ShowPins(places);
+            var quest = QuestManager.instance.CreateNewQuest(QuestType.MainQuest, questQuerry);
+
+            places.ForEach(p => {
+                QuestManager.instance.AddPlaceToQuest(quest,p);
+            });
+            
+        })); 
+
         return true;
     }
 
