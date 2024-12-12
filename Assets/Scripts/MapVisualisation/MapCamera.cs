@@ -13,4 +13,9 @@ public class MapCamera : MonoBehaviour
     {
         transform.position += new Vector3(addition.x,0,addition.y) * Time.deltaTime * CamSpeed;
     }
+
+    public void Teleport(Vector3 pos)
+    {
+        transform.position = new Vector3(pos.x, transform.position.y, pos.z);
+    }
 }

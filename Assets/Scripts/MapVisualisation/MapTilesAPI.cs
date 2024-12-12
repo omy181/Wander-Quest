@@ -10,7 +10,8 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
     private SessionResponse _sessionResponse;
 
     private Dictionary<GoogleTiles, Texture2D> _cachedTileTextures = new();
-
+    private Dictionary<Renderer, int> _rendererUpToDateness = new();
+    private int _rendererCounter = 0;
 
     public IEnumerator StartMapTiles(Action OnStarted)
     {
@@ -44,8 +45,12 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
         }
     }
 
+
+
     public IEnumerator SetTileTexture(GoogleTiles tileData,int orientation,Renderer renderer)
     {
+        if (!_rendererUpToDateness.ContainsKey(renderer)) _rendererUpToDateness[renderer] = -1;
+
         if (_cachedTileTextures.ContainsKey(tileData))
         {
             renderer.material.mainTexture = _cachedTileTextures[tileData];
@@ -72,7 +77,7 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
                 _cachedTileTextures[tileData] = texture;
 
                 // Apply the texture to the target renderer if available
-                if (renderer != null)
+                if (renderer != null && _rendererUpToDateness[renderer] <= _rendererCounter)
                 {
                     renderer.material.mainTexture = texture;
                 }
@@ -80,6 +85,8 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
                 {
                     Debug.LogWarning("Target Renderer is not assigned.");
                 }
+
+                _rendererCounter++;
             }
         }
         else

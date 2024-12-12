@@ -27,7 +27,7 @@ public class MapVisualiser : MonoBehaviour
 
         var offset = ((Vector2)pixelCords - midPixel) * (float)unityMapSize / (float)pixelMapSize;
 
-        return _lastTileUnityCord + new Vector3(-offset.x, 0, offset.y);
+        return _lastTileUnityCord + new Vector3(-offset.x+5, 0, offset.y-4.5f);
     }
     public Vector3 GPSCordinateToUnityCordinate(GPSLocation location)
     {
@@ -40,7 +40,7 @@ public class MapVisualiser : MonoBehaviour
         var pixelMapSize = MapUtilities.GoogleMapsTileSize;
         var unityMapSize = MapUtilities.UnityTileSize;
 
-        var offset = -_lastTileUnityCord + new Vector3(-(unityCords.x), 0, unityCords.z);
+        var offset = -_lastTileUnityCord + new Vector3(-(unityCords.x)-5, 0, unityCords.z+4.5f);
         var offset2d = new Vector2(offset.x, offset.z);
         var midPixel = MapUtilities.TileToPixel(_lastTileCords);
         var pixelCords = offset2d / (float)unityMapSize * (float)pixelMapSize + midPixel;
@@ -75,6 +75,11 @@ public class MapVisualiser : MonoBehaviour
         Vector2 worldCords = MapUtilities.LatLonToWorld(gpsLocation);
         var pixelCords = MapUtilities.WorldToPixel(worldCords, CurrentZoomLevel);
         SetPosition(pixelCords);
+    }
+
+    public void SetCameraPosition(Vector3 pos)
+    {
+        _camera.Teleport(pos);
     }
 
     private void Start()

@@ -20,11 +20,14 @@ public class MapModeChanger : MonoBehaviour
     private int _zoomLevel { get=> _currentZoomLevel; set {
             _currentZoomLevel = Mathf.Clamp(value,2,20);
 
+            if(_currentZoomLevel != value) return;
+
             var worldcords = _mapVisualiser.GetCameraWorldCords();
 
             _mapVisualiser.SetZoom(_currentZoomLevel);
             //_mapVisualiser.SetPosition(MapUtilities.WorldToPixel(MapUtilities.LatLonToWorld(GPS.instance.GetLastGPSLocation()), _currentZoomLevel));
             _mapVisualiser.SetPosition(worldcords);
+            _mapVisualiser.SetCameraPosition(_mapVisualiser.WorldCordToUnityCordinate(worldcords));
             _mapVisualiser.UpdateAllPlaneTextures();
         } }
 
@@ -53,9 +56,8 @@ public class MapModeChanger : MonoBehaviour
     {
         _mapVisualiser.SetZoom(_currentZoomLevel);
         _mapVisualiser.SetPosition(MapUtilities.LatLonToWorld(GPS.instance.GetLastGPSLocation()));
+        _mapVisualiser.SetCameraPosition(_mapVisualiser.GPSCordinateToUnityCordinate(GPS.instance.GetLastGPSLocation()));
         _mapVisualiser.UpdateAllPlaneTextures();
-
-        // snap camera to the users position
     }
 
     private void _zoomIn()
