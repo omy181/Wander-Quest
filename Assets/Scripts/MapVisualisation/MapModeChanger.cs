@@ -11,6 +11,7 @@ public class MapModeChanger : MonoBehaviour
 
     [SerializeField] private Button _zoomInButton;
     [SerializeField] private Button _zoomOutButton;
+    [SerializeField] private Button _reCenterButton;
 
     private const int _closeUpZoom = 16;
     private const int _globalZoom = 3;
@@ -19,18 +20,18 @@ public class MapModeChanger : MonoBehaviour
     private int _zoomLevel { get=> _currentZoomLevel; set {
             _currentZoomLevel = Mathf.Clamp(value,2,20);
 
+            var worldcords = _mapVisualiser.GetCameraWorldCords();
+
             _mapVisualiser.SetZoom(_currentZoomLevel);
-            _mapVisualiser.SetPosition(MapUtilities.WorldToPixel(MapUtilities.LatLonToWorld(GPS.instance.GetLastGPSLocation()), _currentZoomLevel));
-            // _mapVisualiser.SetPosition(_mapVisualiser.GetCameraPixelCords());
+            //_mapVisualiser.SetPosition(MapUtilities.WorldToPixel(MapUtilities.LatLonToWorld(GPS.instance.GetLastGPSLocation()), _currentZoomLevel));
+            _mapVisualiser.SetPosition(worldcords);
             _mapVisualiser.UpdateAllPlaneTextures();
         } }
 
     private void MapInitalization()
     {
         _currentZoomLevel = _closeUpZoom;
-        _mapVisualiser.SetZoom(_currentZoomLevel);
-        _mapVisualiser.SetPosition(MapUtilities.WorldToPixel(MapUtilities.LatLonToWorld(GPS.instance.GetLastGPSLocation()), _currentZoomLevel));
-        _mapVisualiser.UpdateAllPlaneTextures();
+        _reCenter();
     }
 
     private void Start()
@@ -43,8 +44,18 @@ public class MapModeChanger : MonoBehaviour
 
         _zoomInButton.onClick.AddListener(_zoomIn);
         _zoomOutButton.onClick.AddListener(_zoomOut);
+        _reCenterButton.onClick.AddListener(_reCenter);
 
         StartCoroutine(MapTilesAPI.instance.StartMapTiles(MapInitalization));
+    }
+
+    private void _reCenter()
+    {
+        _mapVisualiser.SetZoom(_currentZoomLevel);
+        _mapVisualiser.SetPosition(MapUtilities.LatLonToWorld(GPS.instance.GetLastGPSLocation()));
+        _mapVisualiser.UpdateAllPlaneTextures();
+
+        // snap camera to the users position
     }
 
     private void _zoomIn()

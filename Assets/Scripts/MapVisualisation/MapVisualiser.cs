@@ -17,8 +17,9 @@ public class MapVisualiser : MonoBehaviour
     private int _zoomLevel = 19;
     public int CurrentZoomLevel => _zoomLevel;
 
-    public Vector3 PixelCordToUnityCordinate(Vector2Int pixelCords)
+    public Vector3 WorldCordToUnityCordinate(Vector2 worldCords)
     {
+        var pixelCords = MapUtilities.WorldToPixel(worldCords,CurrentZoomLevel);
         var midPixel = (Vector2)MapUtilities.TileToPixel(_lastTileCords);
 
         var pixelMapSize = MapUtilities.GoogleMapsTileSize;
@@ -31,11 +32,10 @@ public class MapVisualiser : MonoBehaviour
     public Vector3 GPSCordinateToUnityCordinate(GPSLocation location)
     {
         var worldCords = MapUtilities.LatLonToWorld(location);
-        var pixelCords = MapUtilities.WorldToPixel(worldCords, CurrentZoomLevel);
-        return PixelCordToUnityCordinate(pixelCords);
+        return WorldCordToUnityCordinate(worldCords);
     }
 
-    public Vector2Int UnityToPixelCords(Vector3 unityCords)
+    public Vector2 UnityToWorldCords(Vector3 unityCords)
     {
         var pixelMapSize = MapUtilities.GoogleMapsTileSize;
         var unityMapSize = MapUtilities.UnityTileSize;
@@ -45,12 +45,12 @@ public class MapVisualiser : MonoBehaviour
         var midPixel = MapUtilities.TileToPixel(_lastTileCords);
         var pixelCords = offset2d / (float)unityMapSize * (float)pixelMapSize + midPixel;
 
-        return new Vector2Int((int)pixelCords.x,(int)pixelCords.y) ;
+        return MapUtilities.PixelToWorld(new Vector2Int((int)pixelCords.x,(int)pixelCords.y),CurrentZoomLevel) ;
     }
 
-    public Vector2Int GetCameraPixelCords()
+    public Vector2 GetCameraWorldCords()
     {
-        return UnityToPixelCords(_camera.transform.position);
+        return UnityToWorldCords(_camera.transform.position);
     }
 
     public Action OnMapUpdated;
@@ -60,8 +60,9 @@ public class MapVisualiser : MonoBehaviour
         _zoomLevel = zoom;
     }
 
-    public void SetPosition(Vector2Int pixelCords)
-    {      
+    public void SetPosition(Vector2 worldlCords)
+    {
+        var pixelCords = MapUtilities.WorldToPixel(worldlCords,CurrentZoomLevel);
         _currentTileCords = MapUtilities.PixelToTile(pixelCords);
         _lastTileCords = _currentTileCords;
         _lastTileUnityCord = _getUnityPlaneByIndex(Vector2Int.zero).transform.position;

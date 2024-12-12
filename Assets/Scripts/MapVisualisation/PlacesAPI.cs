@@ -9,25 +9,6 @@ public class PlacesAPI : Singleton<PlacesAPI>
 {
     [SerializeField] private MapPinVisualiser _mapPinVisualiser;
     private string _resultsjson;
-    void Start()
-    {
-        /*
-        //     FOR TESTING
-
-        _resultsjson = testJsonPlaces;
-
-        // ADD PLACES INTO NEW QUEST
-        var quest = QuestManager.instance.CreateNewQuest("Migros List", QuestType.MainQuest, _resultsjson);
-
-        _resultJsonToPlaces(_resultsjson).places.ForEach(place =>
-        {
-            var qPlace = QuestManager.instance.PlaceToQuestPlace(place);
-            QuestManager.instance.AddPlaceToQuest(quest, qPlace);
-        });
-
-        _mapPinVisualiser?.ShowPins(_resultJsonToPlaces(_resultsjson)); // SHOW ON MAP*/
-
-    }
 
     public IEnumerator StartSearchPlaces(string querry,Action<List<QuestPlace>> onPlacesFound)
     {
@@ -111,9 +92,6 @@ public class PlacesAPI : Singleton<PlacesAPI>
             return places;
         }
     }
-
-    private string testJsonPlaces => "{\"places\":[{\"id\":\"ChIJZaj4i_3BuxQRdaO3UjiY_dM\",\"location\":{\"latitude\":38.376557,\"longitude\":26.883778},\"adrFormatAddress\":\"\\u003cspan class=\\\"street-address\\\"\\u003eYalı, 264. Sk. No: 1\\u003c/span\\u003e, \\u003cspan class=\\\"postal-code\\\"\\u003e35310\\u003c/span\\u003e \\u003cspan class=\\\"locality\\\"\\u003eGüzelbahçe\\u003c/span\\u003e/\\u003cspan class=\\\"region\\\"\\u003eİzmir\\u003c/span\\u003e, \\u003cspan class=\\\"country-name\\\"\\u003eTürkiye\\u003c/span\\u003e\",\"displayName\":{\"text\":\"MM Migros\",\"languageCode\":\"tr\"}},{\"id\":\"ChIJa6HuMifDuxQRh8WGe-E3ZYY\",\"location\":{\"latitude\":38.37826,\"longitude\":26.894579000000004},\"adrFormatAddress\":\"\\u003cspan class=\\\"street-address\\\"\\u003eYalı, Mithatpaşa Cd. No: 345/A\\u003c/span\\u003e, \\u003cspan class=\\\"postal-code\\\"\\u003e35310\\u003c/span\\u003e \\u003cspan class=\\\"locality\\\"\\u003eGüzelbahçe\\u003c/span\\u003e/\\u003cspan class=\\\"region\\\"\\u003eİzmir\\u003c/span\\u003e, \\u003cspan class=\\\"country-name\\\"\\u003eTürkiye\\u003c/span\\u003e\",\"displayName\":{\"text\":\"Migros Jet\",\"languageCode\":\"en\"}},{\"id\":\"ChIJ-Rx9czHruxQR8oqWcoERR0c\",\"location\":{\"latitude\":38.3618483,\"longitude\":26.8830262},\"adrFormatAddress\":\"\\u003cspan class=\\\"street-address\\\"\\u003eKahramandere, Şht. Kemal Cd. No:118\\u003c/span\\u003e, \\u003cspan class=\\\"postal-code\\\"\\u003e35310\\u003c/span\\u003e \\u003cspan class=\\\"locality\\\"\\u003eGüzelbahçe\\u003c/span\\u003e/\\u003cspan class=\\\"region\\\"\\u003eİzmir\\u003c/span\\u003e, \\u003cspan class=\\\"country-name\\\"\\u003eTürkiye\\u003c/span\\u003e\",\"displayName\":{\"text\":\"M Migros\",\"languageCode\":\"en\"}},{\"id\":\"ChIJ-ycUbNfruxQRkro76hIr_cs\",\"location\":{\"latitude\":38.361399999999996,\"longitude\":26.889599999999998},\"adrFormatAddress\":\"\\u003cspan class=\\\"street-address\\\"\\u003eÇelebi, İstikbal Cd. No:164\\u003c/span\\u003e, \\u003cspan class=\\\"postal-code\\\"\\u003e35310\\u003c/span\\u003e \\u003cspan class=\\\"locality\\\"\\u003eGüzelbahçe\\u003c/span\\u003e/\\u003cspan class=\\\"region\\\"\\u003eİzmir\\u003c/span\\u003e, \\u003cspan class=\\\"country-name\\\"\\u003eTürkiye\\u003c/span\\u003e\",\"displayName\":{\"text\":\"M Migros\",\"languageCode\":\"tr\"}},{\"id\":\"ChIJ3UC-_B7quxQRhgGI9cSkMto\",\"location\":{\"latitude\":38.3585031,\"longitude\":26.888542599999997},\"adrFormatAddress\":\"\\u003cspan class=\\\"street-address\\\"\\u003eAtatürk, 555. Sk. No: 9\\u003c/span\\u003e, \\u003cspan class=\\\"postal-code\\\"\\u003e35310\\u003c/span\\u003e \\u003cspan class=\\\"locality\\\"\\u003eGüzelbahçe\\u003c/span\\u003e/\\u003cspan class=\\\"region\\\"\\u003eİzmir\\u003c/span\\u003e, \\u003cspan class=\\\"country-name\\\"\\u003eTürkiye\\u003c/span\\u003e\",\"displayName\":{\"text\":\"Migros Jet\",\"languageCode\":\"tr\"}}]}";
-
 
     public QuestPlace PlaceToQuestPlace(Place place)
     {
