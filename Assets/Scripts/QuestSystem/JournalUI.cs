@@ -48,9 +48,9 @@ public class JournalUI : MonoBehaviour
         _journalWindow.OnWindowActivated += _refreshQuests;
 
         var q = QuestManager.instance.CreateNewQuest(QuestType.MainQuest,"migros");
-        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(),"Migros MM","f",new Address(),true));
-        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros M", "3", new Address(), false));
-        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros ", "4", new Address(), true));
+        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(),"Migros MM","f",new Address("","","Guzelbahce","Izmir","Turkey"),true));
+        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros M", "3", new Address("", "", "Maltepe", "Izmir", "Turkey"), false));
+        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(), "Migros ", "4", new Address("", "", "Narlidere", "Izmir", "Turkey"), true));
     }
 
     

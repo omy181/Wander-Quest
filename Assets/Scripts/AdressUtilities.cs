@@ -4,13 +4,13 @@ public class AdressUtilities
 {
     public static Address ConvertHtmlToAddress(string html)
     {
-        Address address = new Address();
-
-        address.StreetAddress = ExtractTagContent(html, "street-address");
-        address.PostalCode = ExtractTagContent(html, "postal-code");
-        address.Locality = ExtractTagContent(html, "locality");
-        address.Region = ExtractTagContent(html, "region");
-        address.Country = ExtractTagContent(html, "country-name");
+        Address address = new Address(
+            ExtractTagContent(html, "street-address"),
+            ExtractTagContent(html, "postal-code"),
+            ExtractTagContent(html, "locality"),
+            ExtractTagContent(html, "region"),
+            ExtractTagContent(html, "country-name")
+            );
 
         return address;
     }
@@ -40,4 +40,13 @@ public class Address
     public string Locality;
     public string Region;
     public string Country;
+
+    public Address(string streetAddress, string postalCode, string locality, string region, string country)
+    {
+        StreetAddress = streetAddress;
+        PostalCode = postalCode;
+        Locality = locality;
+        Region = region;
+        Country = country;
+    }
 }
