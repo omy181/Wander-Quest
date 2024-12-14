@@ -14,6 +14,14 @@ public class PinObject : MonoBehaviour
         _place = place;
         _mapVisualiser = mapVisualiser;
         _mapVisualiser.OnMapUpdated += _updatePositionScale;
+
+        _updatePositionScale();
+    }
+
+    private void OnEnable()
+    {
+        if(_mapVisualiser)
+            _updatePositionScale();
     }
 
     private void _updatePositionScale()

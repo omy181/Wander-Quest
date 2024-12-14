@@ -13,10 +13,10 @@ public class MapPinVisualiser : MonoBehaviour
 
     public void ShowQuestPins(Quest quest)
     {
-        ShowPins(quest.GetPlaces());
+        CreatePins(quest.GetPlaces());
     }
 
-    public void ShowPins(List<QuestPlace> places)
+    public void CreatePins(List<QuestPlace> places)
     {
         foreach (var place in places)
         {
@@ -26,7 +26,30 @@ public class MapPinVisualiser : MonoBehaviour
             var pinobject = pin.GetComponent<PinObject>();
             pinobject.Initialize(place, _mapVisualiser);
 
+            pinobject.gameObject.SetActive(false);
+
             _pins.Add(pinobject);
+        }
+    }
+
+    public void FocusPins(List<QuestPlace> places)
+    {
+        HideAllPins();
+        foreach (var place in places)
+        {
+            var pin = _pins.Find(p => p._place.ID == place.ID);
+            if (pin)
+            {
+                pin.gameObject.SetActive(true);
+            }
+        }
+    }
+
+    public void HideAllPins()
+    {
+        foreach (var pin in _pins)
+        {
+            pin.gameObject.SetActive(false);
         }
     }
 

@@ -12,15 +12,21 @@ public class QuestSelector : MonoBehaviour
     [SerializeField] private GameObject _questPrefab;
     [SerializeField] private TMP_Text _activeQuestText;
     [SerializeField] private TMP_Text _activeQuestProgressText;
+    [SerializeField] private MapPinVisualiser _mapPinVisualiser;
 
     private Quest _activeQuest;
 
-    private void Update()
+    /*  private void Update()
+      {
+          if (Input.GetMouseButtonDown(0) && !HolyUtilities.isOnUI())  /// TODO:  ADD TOUCH SUPPORT
+          {
+              ShowQuestSelector(false);
+          }
+      }*/
+
+    public void ShowQuestSelectorToggle()
     {
-        if (Input.GetMouseButtonDown(0) && !HolyUtilities.isOnUI())  /// TODO:  ADD TOUCH SUPPORT
-        {
-            ShowQuestSelector(false);
-        }
+        ShowQuestSelector(!_questList.activeSelf);
     }
 
     public void ShowQuestSelector(bool state)
@@ -45,15 +51,17 @@ public class QuestSelector : MonoBehaviour
 
         QuestManager.instance.GetActiveQuests().ForEach(quest => {
             var questPrefab = Instantiate(_questPrefab, _questContent).GetComponent<QuestPrefab>();
-            questPrefab.SetQuestData(quest,()=> _selectQuest(quest));
+            questPrefab.SetQuestData(quest,()=> SelectQuest(quest));
         });
     }
 
-    private void _selectQuest(Quest quest)
+    public void SelectQuest(Quest quest)
     {
         _activeQuestText.text = quest.Title;
         _activeQuestProgressText.text = quest.TotalTraveledCount.ToString();
         _activeQuest = quest;
         ShowQuestSelector(false);
+
+        _mapPinVisualiser.FocusPins(quest.GetPlaces());
     }
 }

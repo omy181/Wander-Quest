@@ -4723,7 +4723,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -20.496033}
+  m_AnchoredPosition: {x: 0, y: -20.496155}
   m_SizeDelta: {x: -55.243225, y: -384.72705}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1349310305
@@ -8000,6 +8000,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _questSearchBar: {fileID: 2125231733}
+  _questSelector: {fileID: 1851561291}
 --- !u!114 &1851561291
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8018,6 +8019,7 @@ MonoBehaviour:
     type: 3}
   _activeQuestText: {fileID: 1275477432}
   _activeQuestProgressText: {fileID: 934419140}
+  _mapPinVisualiser: {fileID: 1591008147}
 --- !u!114 &1858543702 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2735915991501584028, guid: 57c34090ca1a2c54d8f4ce01f41bf151,
@@ -9516,7 +9518,7 @@ PrefabInstance:
     - target: {fileID: 2735915991501584028, guid: 57c34090ca1a2c54d8f4ce01f41bf151,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 6
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2735915991501584028, guid: 57c34090ca1a2c54d8f4ce01f41bf151,
         type: 3}
@@ -9531,7 +9533,7 @@ PrefabInstance:
     - target: {fileID: 2735915991501584028, guid: 57c34090ca1a2c54d8f4ce01f41bf151,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: ShowQuestSelector
+      value: ShowQuestSelectorToggle
       objectReference: {fileID: 0}
     - target: {fileID: 2735915991501584028, guid: 57c34090ca1a2c54d8f4ce01f41bf151,
         type: 3}

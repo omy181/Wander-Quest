@@ -7,14 +7,15 @@ using UnityEngine;
 public class QuestCreator : MonoBehaviour
 {
     [SerializeField] private TMP_InputField _questSearchBar;
+    [SerializeField] private QuestSelector _questSelector;
 
-    private void Update()
+  /*  private void Update()
     {
         if(Input.GetMouseButtonDown(0) && !HolyUtilities.isOnUI())  /// TODO:  ADD TOUCH SUPPORT
         {
             OpenQuestSearchBar(false);
         }
-    }
+    }*/
     public bool AddNewQuest()
     {
         var questQuerry = _questSearchBar.text;
@@ -33,14 +34,15 @@ public class QuestCreator : MonoBehaviour
 
         StartCoroutine(PlacesAPI.instance.StartSearchPlaces(questQuerry, (List<QuestPlace> places) =>
         {
-            FindObjectOfType<MapPinVisualiser>().ShowPins(places);
+            FindObjectOfType<MapPinVisualiser>().CreatePins(places);
             var quest = QuestManager.instance.CreateNewQuest(QuestType.MainQuest, questQuerry);
 
             places.ForEach(p => {
                 QuestManager.instance.AddPlaceToQuest(quest,p);
             });
-            
-        })); 
+
+            _questSelector.SelectQuest(quest);
+        }));
 
         return true;
     }
