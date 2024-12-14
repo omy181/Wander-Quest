@@ -57,8 +57,14 @@ public class JournalUI : MonoBehaviour
         _clearContents();
         quest.GetPlaces().ForEach(place => {
             var placePrefab = Instantiate(_placePrefab, _content).GetComponent<PlaceSlotUI>();
-            placePrefab.SetPlaceData(place,null);
+            placePrefab.SetPlaceData(place,()=> _goToPlace(place));
         });
+    }
+
+    private void _goToPlace(QuestPlace place)
+    {
+        WindowManager.instance.OpenPreviousWindow();
+        MapModeChanger.instance.FocusOnPlace(place);
     }
 
     private void _clearContents(){
@@ -74,11 +80,6 @@ public class JournalUI : MonoBehaviour
     void Awake()
     {     
         _journalWindow.OnWindowActivated += _refreshQuests;
-
-        var q = QuestManager.instance.CreateNewQuest(QuestType.MainQuest,"a-101");
-        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(),"A-101","f",new Address("","","Guzelbahce","Izmir","Turkey"),true));
-        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(), "A-101 Mega", "3", new Address("", "", "Maltepe", "Izmir", "Turkey"), false));
-        q.AddPlace(new QuestPlace(GPS.instance.GetLastGPSLocation(), "A-101 Epic ", "4", new Address("", "", "Narlidere", "Izmir", "Turkey"), true));
     }
 
     

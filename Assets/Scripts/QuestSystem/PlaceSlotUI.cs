@@ -21,6 +21,5 @@ public class PlaceSlotUI : MonoBehaviour
 
         if (onClick != null)
         _placeButton.onClick.AddListener(() => onClick());
-
     }
 }

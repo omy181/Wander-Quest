@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MapModeChanger : MonoBehaviour
+public class MapModeChanger : Singleton<MapModeChanger>
 {
     [SerializeField] private MapVisualiser _mapVisualiser;
     [SerializeField] private SwitchButton _switchButton;
@@ -50,6 +50,13 @@ public class MapModeChanger : MonoBehaviour
         _reCenterButton.onClick.AddListener(_reCenter);
 
         StartCoroutine(MapTilesAPI.instance.StartMapTiles(MapInitalization));
+    }
+
+    public void FocusOnPlace(QuestPlace place)
+    {
+        _mapVisualiser.SetPosition(MapUtilities.LatLonToWorld(place.Location));
+        _mapVisualiser.SetCameraPosition(_mapVisualiser.GPSCordinateToUnityCordinate(place.Location));
+        _mapVisualiser.UpdateAllPlaneTextures();
     }
 
     private void _reCenter()
