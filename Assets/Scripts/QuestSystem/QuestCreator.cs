@@ -23,6 +23,7 @@ public class QuestCreator : MonoBehaviour
         if (questQuerry.Equals(string.Empty) || questQuerry.Length <= 2)
         {
             print("Quest querry should be longer!");
+            OpenQuestSearchBar(false);
             return false;
         }
 
