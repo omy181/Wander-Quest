@@ -16,13 +16,10 @@ public class QuestSelector : MonoBehaviour
 
     private Quest _activeQuest;
 
-    /*  private void Update()
+      private void Update()
       {
-          if (Input.GetMouseButtonDown(0) && !HolyUtilities.isOnUI())  /// TODO:  ADD TOUCH SUPPORT
-          {
-              ShowQuestSelector(false);
-          }
-      }*/
+        CheckQuestProgression(_activeQuest);
+      }
 
     public void ShowQuestSelectorToggle()
     {
@@ -60,8 +57,29 @@ public class QuestSelector : MonoBehaviour
         _activeQuestText.text = quest.Title;
         _activeQuestProgressText.text = quest.TotalTraveledCount.ToString();
         _activeQuest = quest;
+        _mapPinVisualiser.FocusPins(quest.GetPlaces());
         ShowQuestSelector(false);
 
-        _mapPinVisualiser.FocusPins(quest.GetPlaces());
+
+    } 
+    private void CheckQuestProgression(Quest quest)
+    {
+        if (quest == null) return;
+
+        foreach (var place in quest.GetPlaces())
+        {
+            if (place.IsTraveled) continue;
+
+            var gpsworldcord = MapUtilities.LatLonToWorld(GPS.instance.GetLastGPSLocation());
+            var placeworldcord = MapUtilities.LatLonToWorld(place.Location);
+
+            var dis = Vector2.Distance(gpsworldcord, placeworldcord);
+
+            if(dis <= 0.0002055)
+            {
+                place.IsTraveled = true;
+                SelectQuest(quest);
+            }
+        }
     }
 }

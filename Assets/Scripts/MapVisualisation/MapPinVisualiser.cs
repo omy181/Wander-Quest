@@ -41,6 +41,7 @@ public class MapPinVisualiser : MonoBehaviour
             if (pin)
             {
                 pin.gameObject.SetActive(true);
+                pin.RefreshVisual();
             }
         }
     }

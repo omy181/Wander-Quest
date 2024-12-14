@@ -23,6 +23,9 @@ public struct GPSLocation
 
 public class GPS : Singleton<GPS>
 {
+    [SerializeField] private double test_latitude = 38.37694276669464;
+    [SerializeField] private double test_longitude = 26.88509838113758;
+
     private LocationInfo _lastLocation;
 
     public bool isUpdating;
@@ -31,7 +34,7 @@ public class GPS : Singleton<GPS>
     {
         if (ApplicationSettings.IsUnityEditor)
         {
-            return new GPSLocation(38.37694276669464, 26.88509838113758); // guzelbahce
+            return new GPSLocation(test_latitude, test_longitude);
         }
         else
         {
