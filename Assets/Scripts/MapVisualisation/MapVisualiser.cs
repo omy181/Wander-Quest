@@ -218,4 +218,6 @@ public struct GoogleTiles
         Y = y;
         Zoom = zoom;
     }
+
+    public string Id => $"{Zoom}_{X}_{Y}";
 }

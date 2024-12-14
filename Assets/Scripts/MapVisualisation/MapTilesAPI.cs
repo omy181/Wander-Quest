@@ -1,3 +1,4 @@
+using Holylib.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +10,6 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
 {
     private SessionResponse _sessionResponse;
 
-    private Dictionary<GoogleTiles, Texture2D> _cachedTileTextures = new();
     private Dictionary<Renderer, int> _rendererUpToDateness = new();
     private int _rendererCounter = 0;
 
@@ -51,13 +51,14 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
     {
         if (!_rendererUpToDateness.ContainsKey(renderer)) _rendererUpToDateness[renderer] = -1;
 
-        if (_cachedTileTextures.ContainsKey(tileData))
+        var cachedTexture = TextureCacher.instance.GetTextureByID(tileData.Id);
+
+        if (cachedTexture)
         {
-            renderer.material.mainTexture = _cachedTileTextures[tileData];
+            renderer.material.mainTexture = cachedTexture;
         }
         else if (!MapUtilities.DoesTileTexturePossible(tileData))
         {
-
             renderer.material.mainTexture = null;
         }
         else if (_sessionResponse != null)
@@ -74,7 +75,7 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
             else
             {
                 Texture2D texture = DownloadHandlerTexture.GetContent(request);
-                _cachedTileTextures[tileData] = texture;
+                TextureCacher.instance.SaveTexture(tileData.Id, texture);
 
                 // Apply the texture to the target renderer if available
                 if (renderer != null && _rendererUpToDateness[renderer] <= _rendererCounter)
