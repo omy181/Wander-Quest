@@ -23,6 +23,13 @@ public class QuestManager : Singleton<QuestManager>
         return quest;
     }
 
+    public void DeleteQuest(Quest quest)
+    {       
+        _activeQuests.Remove(quest);
+
+        ///TODO: delete this quest on database
+    }
+
     public bool IsQuestAvailable(Quest quest)
     {
         return _activeQuests.Any(q => q.ID == quest.ID);
