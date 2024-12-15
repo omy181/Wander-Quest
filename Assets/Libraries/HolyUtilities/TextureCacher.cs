@@ -39,6 +39,8 @@ namespace Holylib.Utilities
 
         public void SaveTexture(string id,Texture2D texture)
         {
+            _cachedTextures[id] = texture;
+
             Directory.CreateDirectory(_path);
 
             string filePath = Path.Combine(_path, $"{id}.png");
