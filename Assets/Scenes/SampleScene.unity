@@ -2099,13 +2099,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 516402115}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.8028668, z: 0.5961584, w: 0}
+  m_LocalRotation: {x: 0, y: -0.8038569, z: 0.5948228, w: 0}
   m_LocalPosition: {x: -5, y: 5.3900146, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1591008152}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: 107, y: 0, z: 180}
 --- !u!1001 &527973548
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8232,6 +8232,52 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1861863599}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1885251342
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1885251344}
+  - component: {fileID: 1885251343}
+  m_Layer: 0
+  m_Name: PerspectiveHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1885251343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1885251342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ca605ce4375eca4e9c6ead563a30370, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 516402120}
+  groundZ: 0
+--- !u!4 &1885251344
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1885251342}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5, y: 5.3899994, z: 5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &1886862627 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5915410584468658968, guid: 3e090c94483df8245bdd64239e9aa7eb,
@@ -10655,3 +10701,4 @@ SceneRoots:
   - {fileID: 1975315246}
   - {fileID: 1445053495}
   - {fileID: 1591008152}
+  - {fileID: 1885251344}
