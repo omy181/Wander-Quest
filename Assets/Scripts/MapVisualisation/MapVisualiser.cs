@@ -13,23 +13,44 @@ public class MapVisualiser : MonoBehaviour
     private Vector2Int _currentTileCords;
     private Vector2Int _lastTileCords;
     private Vector3 _lastTileUnityCord;
-    private GPSLocation _lastTileLocation;
 
     private int _zoomLevel = 19;
     public int CurrentZoomLevel => _zoomLevel;
 
-    public Vector3 GPSCordinateToUnityCordinate(GPSLocation location)
+    public Vector3 WorldCordToUnityCordinate(Vector2 worldCords)
     {
-        var worldCords = MapUtilities.LatLonToWorld(location);
-        var pixelCords = MapUtilities.WorldToPixel(worldCords, CurrentZoomLevel);
-        var midPixel = MapUtilities.TileToPixel(_lastTileCords);
+        var pixelCords = MapUtilities.WorldToPixel(worldCords,CurrentZoomLevel);
+        var midPixel = (Vector2)MapUtilities.TileToPixel(_lastTileCords);
 
         var pixelMapSize = MapUtilities.GoogleMapsTileSize;
         var unityMapSize = MapUtilities.UnityTileSize;
 
-        var offset = (pixelCords-midPixel) * unityMapSize / pixelMapSize;
+        var offset = ((Vector2)pixelCords - midPixel) * (float)unityMapSize / (float)pixelMapSize;
 
-        return _lastTileUnityCord + new Vector3(-offset.x+4,0,offset.y-4);
+        return _lastTileUnityCord + new Vector3(-offset.x+5, 0, offset.y-4.5f);
+    }
+    public Vector3 GPSCordinateToUnityCordinate(GPSLocation location)
+    {
+        var worldCords = MapUtilities.LatLonToWorld(location);
+        return WorldCordToUnityCordinate(worldCords);
+    }
+
+    public Vector2 UnityToWorldCords(Vector3 unityCords)
+    {
+        var pixelMapSize = MapUtilities.GoogleMapsTileSize;
+        var unityMapSize = MapUtilities.UnityTileSize;
+
+        var offset = -_lastTileUnityCord + new Vector3(-(unityCords.x)-5, 0, unityCords.z+4.5f);
+        var offset2d = new Vector2(offset.x, offset.z);
+        var midPixel = MapUtilities.TileToPixel(_lastTileCords);
+        var pixelCords = offset2d / (float)unityMapSize * (float)pixelMapSize + midPixel;
+
+        return MapUtilities.PixelToWorld(new Vector2Int((int)pixelCords.x,(int)pixelCords.y),CurrentZoomLevel) ;
+    }
+
+    public Vector2 GetCameraWorldCords()
+    {
+        return UnityToWorldCords(_camera.transform.position);
     }
 
     public Action OnMapUpdated;
@@ -39,11 +60,9 @@ public class MapVisualiser : MonoBehaviour
         _zoomLevel = zoom;
     }
 
-    public void SetPosition(GPSLocation gpsLocation)
+    public void SetPosition(Vector2 worldlCords)
     {
-        _lastTileLocation = gpsLocation;
-        var worldCords = MapUtilities.LatLonToWorld(gpsLocation);
-        var pixelCords = MapUtilities.WorldToPixel(worldCords, CurrentZoomLevel);
+        var pixelCords = MapUtilities.WorldToPixel(worldlCords,CurrentZoomLevel);
         _currentTileCords = MapUtilities.PixelToTile(pixelCords);
         _lastTileCords = _currentTileCords;
         _lastTileUnityCord = _getUnityPlaneByIndex(Vector2Int.zero).transform.position;
@@ -51,15 +70,26 @@ public class MapVisualiser : MonoBehaviour
         OnMapUpdated?.Invoke();
     }
 
+    public void SetPosition(GPSLocation gpsLocation)
+    {
+        Vector2 worldCords = MapUtilities.LatLonToWorld(gpsLocation);
+        var pixelCords = MapUtilities.WorldToPixel(worldCords, CurrentZoomLevel);
+        SetPosition(pixelCords);
+    }
+
+    public void SetCameraPosition(Vector3 pos)
+    {
+        _camera.Teleport(pos);
+    }
+
     private void Start()
     {
         _initializePlanes();
-        SetPosition(GPS.instance.GetLastGPSLocation());
     }
 
     private void Update()
     {
-        //_setPlanePoitions();
+        _setPlanePoitions();
     }
 
     private void _initializePlanes()
@@ -188,4 +218,6 @@ public struct GoogleTiles
         Y = y;
         Zoom = zoom;
     }
+
+    public string Id => $"{Zoom}_{X}_{Y}";
 }

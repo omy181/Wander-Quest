@@ -12,13 +12,27 @@ public class QuestManager : Singleton<QuestManager>
         ///TODO: on the start of the game this function will pull all active quests from database into the _activeQuests list
     }
 
-    public Quest CreateNewQuest(string title,QuestType questType,string mapsQuerry)
+    public Quest CreateNewQuest(QuestType questType,string mapsQuerry)
     {
-        Quest quest = new(title, questType, mapsQuerry,new());
+        Quest quest = new(questType, mapsQuerry,new());
+        if (IsQuestAvailable(quest)) return quest;
+        
         _activeQuests.Add(quest);
 
         ///TODO: add this quest to the database
         return quest;
+    }
+
+    public void DeleteQuest(Quest quest)
+    {       
+        _activeQuests.Remove(quest);
+
+        ///TODO: delete this quest on database
+    }
+
+    public bool IsQuestAvailable(Quest quest)
+    {
+        return _activeQuests.Any(q => q.ID == quest.ID);
     }
 
     public List<Quest> GetActiveQuests()
@@ -33,4 +47,5 @@ public class QuestManager : Singleton<QuestManager>
             ///TODO: update this quest on the database as well
         }
     }
+
 }

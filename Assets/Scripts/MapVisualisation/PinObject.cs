@@ -6,18 +6,40 @@ public class PinObject : MonoBehaviour
 {
     [SerializeField] private TMPro.TMP_Text _name;
     private MapVisualiser _mapVisualiser;
-    public Place _place { get; private set; }
-    public void Initialize(Place place,MapVisualiser mapVisualiser)
+    public QuestPlace _place { get; private set; }
+    public void Initialize(QuestPlace place,MapVisualiser mapVisualiser)
     {
-        _name.text = place.displayName.text;
+        _name.text = place.Name;
         transform.name = _name.text;
         _place = place;
         _mapVisualiser = mapVisualiser;
-        _mapVisualiser.OnMapUpdated += _updatePosition;
+        _mapVisualiser.OnMapUpdated += RefreshVisual;
+
+        RefreshVisual();
     }
 
-    private void _updatePosition()
+    private void OnEnable()
+    {
+        if(_mapVisualiser)
+            RefreshVisual();
+    }
+
+    private void _updatePositionScale()
     {        
-        transform.position = _mapVisualiser.GPSCordinateToUnityCordinate(new GPSLocation(_place.location.latitude, _place.location.longitude)); ;
+        transform.position = _mapVisualiser.GPSCordinateToUnityCordinate(_place.Location);
+        transform.localScale = Vector3.Lerp(Vector3.one*0.005f,Vector3.one,_mapVisualiser.CurrentZoomLevel/22f);
+    }
+
+    public void RefreshVisual()
+    {
+        if (_place.IsTraveled)
+        {
+            /// TODO: change the color
+
+            _name.text = $"+{_place.Name}+";
+        }
+      
+
+        _updatePositionScale();
     }
 }

@@ -1,20 +1,29 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class PlacesAPI : MonoBehaviour
+public class PlacesAPI : Singleton<PlacesAPI>
 {
     [SerializeField] private MapPinVisualiser _mapPinVisualiser;
     private string _resultsjson;
-    void Start()
+
+    public IEnumerator StartSearchPlaces(string querry,Action<List<QuestPlace>> onPlacesFound)
     {
-        //StartCoroutine(SearchPlaces(_getJsonPayload("migros", GPS.instance.GetLastGPSLocation(), 500f,5)));
+        yield return StartCoroutine(_searchPlaces(_getJsonPayload(querry, GPS.instance.GetLastGPSLocation(), 500f, 5)));
+
+        List<QuestPlace> list = new();
+        _resultJsonToPlaces(_resultsjson).places.ForEach(place =>
+        {
+            list.Add(PlaceToQuestPlace(place));
+        });
+
+        onPlacesFound(list);
     }
 
-    IEnumerator SearchPlaces(string jsonPayload)
+    private IEnumerator _searchPlaces(string jsonPayload)
     {
         // Define the API endpoint
         string url = "https://places.googleapis.com/v1/places:searchText";
@@ -30,7 +39,7 @@ public class PlacesAPI : MonoBehaviour
 
         // Set additional headers
         request.SetRequestHeader("X-Goog-Api-Key", API.GetKey());
-        request.SetRequestHeader("X-Goog-FieldMask", "places.id,places.displayName,places.location");
+        request.SetRequestHeader("X-Goog-FieldMask", "places.id,places.displayName,places.location,places.adrFormatAddress");
 
         // Send the request and wait for a response
         yield return request.SendWebRequest();
@@ -46,9 +55,8 @@ public class PlacesAPI : MonoBehaviour
             //Debug.Log(request.downloadHandler.text);
             _resultsjson = request.downloadHandler.text;
 
-            _resultJsonToPlaces(_resultsjson).places.ForEach((p)=>print(p.id+" - "+p.displayName.text +" - "+ p.location.latitude +","+p.location.longitude));
+            //_resultJsonToPlaces(_resultsjson).places.ForEach((p)=>print(p.id+" - "+p.displayName.text +" - "+ p.location.latitude +","+p.location.longitude + " - "+ AdressUtilities.ConvertHtmlToAddress(p.adrFormatAddress).Locality ));
 
-            _mapPinVisualiser.ShowPins(_resultJsonToPlaces(_resultsjson)); // SHOW ON MAP
         }
     }
 
@@ -84,7 +92,28 @@ public class PlacesAPI : MonoBehaviour
             return places;
         }
     }
+
+    public QuestPlace PlaceToQuestPlace(Place place)
+    {
+        return new QuestPlace(place.location, place.displayName.text, place.id, AdressUtilities.ConvertHtmlToAddress(place.adrFormatAddress),place.isTraveled);
+    }
+
+    public Place QuestPlaceToPlace(QuestPlace qPlace)
+    {
+        var place = new Place();
+
+        place.id = qPlace.ID;
+        place.displayName = new DisplayName();
+        place.displayName.text = qPlace.Name;
+        place.location = qPlace.Location;
+        place.adrFormatAddress = AdressUtilities.ConvertAddressToHtml(qPlace.Address);
+        place.isTraveled = qPlace.IsTraveled;
+
+        return place;
+    }
+
 }
+
 
 [Serializable]
 public class Places
@@ -95,16 +124,11 @@ public class Places
 [Serializable]
 public class Place
 {
-    public Location location;
+    public GPSLocation location;
     public DisplayName displayName;
     public string id;
-}
-
-[Serializable]
-public class Location
-{
-    public float latitude;
-    public float longitude;
+    public string adrFormatAddress;
+    public bool isTraveled;
 }
 
 [Serializable]

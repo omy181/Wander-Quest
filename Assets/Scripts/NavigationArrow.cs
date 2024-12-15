@@ -9,10 +9,11 @@ public class NavigationArrow : MonoBehaviour
 
 
     private void Start() {
-        SetDestination(38.45180248754061f, 27.201164958903657f); // for debug
+        SetDestination(90, 90); // always point at north
     }
     private void _rotateArrow(){
         float angle = Gyroscope.FindAngleToTarget(_targetLatitude, _targetLongitude);
+        if (angle == -1) return;
         _arrow.transform.localRotation = Quaternion.Euler(0,0,angle);
 
     }

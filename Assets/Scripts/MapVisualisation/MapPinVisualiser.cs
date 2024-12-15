@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using UnityEngine;
 
 public class MapPinVisualiser : MonoBehaviour
@@ -12,26 +11,55 @@ public class MapPinVisualiser : MonoBehaviour
 
     private List<PinObject> _pins = new();
 
-    public void ShowPins(Places places)
+    public void ShowQuestPins(Quest quest)
     {
-        foreach (Place p in places.places)
-        {
-            if (_pins.Any(po => po._place.id == p.id)) continue;
+        CreatePins(quest.GetPlaces());
+    }
 
-            var pin = Instantiate(_pinObject, _mapVisualiser.GPSCordinateToUnityCordinate(new GPSLocation(p.location.latitude, p.location.longitude)), Quaternion.identity);
+    public void CreatePins(List<QuestPlace> places)
+    {
+        foreach (var place in places)
+        {
+            if (_pins.Any(placeObj => placeObj._place.ID == place.ID)) continue;
+
+            var pin = Instantiate(_pinObject, _mapVisualiser.GPSCordinateToUnityCordinate(place.Location), Quaternion.identity);
             var pinobject = pin.GetComponent<PinObject>();
-            pinobject.Initialize(p, _mapVisualiser);
+            pinobject.Initialize(place, _mapVisualiser);
+
+            pinobject.gameObject.SetActive(false);
 
             _pins.Add(pinobject);
         }
     }
 
-    private void Update()
+    public void FocusPins(List<QuestPlace> places)
     {
-        MoveUserPin();
+        HideAllPins();
+        foreach (var place in places)
+        {
+            var pin = _pins.Find(p => p._place.ID == place.ID);
+            if (pin)
+            {
+                pin.gameObject.SetActive(true);
+                pin.RefreshVisual();
+            }
+        }
     }
 
-    public void MoveUserPin()
+    public void HideAllPins()
+    {
+        foreach (var pin in _pins)
+        {
+            pin.gameObject.SetActive(false);
+        }
+    }
+
+    private void Update()
+    {
+        _moveUserPin();
+    }
+
+    private void _moveUserPin()
     {
         _userPin.transform.position = _mapVisualiser.GPSCordinateToUnityCordinate(GPS.instance.GetLastGPSLocation());
     }

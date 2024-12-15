@@ -1,3 +1,4 @@
+using Holylib.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,14 +10,16 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
 {
     private SessionResponse _sessionResponse;
 
-    private Dictionary<GoogleTiles, Texture2D> _cachedTileTextures = new();
+    private Dictionary<Renderer, int> _rendererUpToDateness = new();
+    private int _rendererCounter = 0;
 
-    void Start()
+    public IEnumerator StartMapTiles(Action OnStarted)
     {
-       // StartCoroutine(StartMapTileSession(_getJsonPayload()));
+        yield return StartCoroutine(_startMapTileSession(_getJsonPayload()));
+        OnStarted();
     }
 
-    IEnumerator StartMapTileSession(string jsonPayload)
+    private IEnumerator _startMapTileSession(string jsonPayload)
     {
         string url = $"https://tile.googleapis.com/v1/createSession?key={API.GetKey()}";
 
@@ -42,11 +45,17 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
         }
     }
 
+
+
     public IEnumerator SetTileTexture(GoogleTiles tileData,int orientation,Renderer renderer)
     {
-        if (_cachedTileTextures.ContainsKey(tileData))
+        if (!_rendererUpToDateness.ContainsKey(renderer)) _rendererUpToDateness[renderer] = -1;
+
+        var cachedTexture = TextureCacher.instance.GetTextureByID(tileData.Id);
+
+        if (cachedTexture)
         {
-            renderer.material.mainTexture = _cachedTileTextures[tileData];
+            renderer.material.mainTexture = cachedTexture;
         }
         else if (!MapUtilities.DoesTileTexturePossible(tileData))
         {
@@ -54,6 +63,7 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
         }
         else if (_sessionResponse != null)
         {
+
             string url = $"https://tile.googleapis.com/v1/2dtiles/{tileData.Zoom}/{tileData.X}/{tileData.Y}?session={_sessionResponse.session}&key={API.GetKey()}&orientation={orientation}";
 
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
@@ -65,10 +75,10 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
             else
             {
                 Texture2D texture = DownloadHandlerTexture.GetContent(request);
-                _cachedTileTextures[tileData] = texture;
+                TextureCacher.instance.SaveTexture(tileData.Id, texture);
 
                 // Apply the texture to the target renderer if available
-                if (renderer != null)
+                if (renderer != null && _rendererUpToDateness[renderer] <= _rendererCounter)
                 {
                     renderer.material.mainTexture = texture;
                 }
@@ -76,6 +86,8 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
                 {
                     Debug.LogWarning("Target Renderer is not assigned.");
                 }
+
+                _rendererCounter++;
             }
         }
         else
