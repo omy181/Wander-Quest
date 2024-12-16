@@ -25,7 +25,7 @@ public class PerspectivePan : MonoBehaviour
     private Vector3 _getWorldPosition(float zLevel)
     {
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        Plane ground = new Plane(cam.transform.forward, new Vector3(0, 0, zLevel));
+        Plane ground = new Plane(Vector3.down, new Vector3(0, 0, zLevel));
         if (ground.Raycast(ray, out float distance)){
             return ray.GetPoint(distance);
         }
