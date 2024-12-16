@@ -1,3 +1,4 @@
+using Firebase.Database;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,19 +8,39 @@ public class QuestManager : Singleton<QuestManager>
 {
     private List<Quest> _activeQuests = new();
 
-    public void InitializeQuests()
+    private DatabaseReference _dbReference;
+    private string _currentUsername;
+    private void Start()
     {
-        ///TODO: on the start of the game this function will pull all active quests from database into the _activeQuests list
+        InitializeQuests("mahmutland", null);
     }
 
-    public Quest CreateNewQuest(QuestType questType,string mapsQuerry)
+    public void InitializeQuests(string username, System.Action onQuestsLoadedCallback)
     {
-        Quest quest = new(questType, mapsQuerry,new());
+        _currentUsername = username;
+        _dbReference = FirebaseDatabase.DefaultInstance.RootReference;
+        StartCoroutine(_loadQuests(onQuestsLoadedCallback));
+    }
+
+    public Quest CreateNewQuest(QuestType questType, string mapsQuerry)
+    {
+        Quest quest = new(questType, mapsQuerry, new());
         if (IsQuestAvailable(quest)) return quest;
-        
         _activeQuests.Add(quest);
 
-        ///TODO: add this quest to the database
+        string questJson = JsonConvert.SerializeObject(quest);
+        _dbReference.Child("users").Child(_currentUsername).Child("quests").Child(quest.ID).SetRawJsonValueAsync(questJson)
+            .ContinueWith(task =>
+            {
+                if (task.IsCompleted)
+                {
+                    Debug.Log("Quest added successfully.");
+                }
+                else
+                {
+                    Debug.LogError("Failed to add quest.");
+                }
+            });
         return quest;
     }
 
@@ -48,4 +69,25 @@ public class QuestManager : Singleton<QuestManager>
         }
     }
 
+    private IEnumerator _loadQuests(System.Action onQuestsLoadedCallback)
+    {
+        var questsData = _dbReference.Child("users").Child(_currentUsername).Child("quests").GetValueAsync();
+        yield return new WaitUntil(() => questsData.IsCompleted);
+
+        if (questsData.Result.Exists)
+        {
+            foreach (var child in questsData.Result.Children)
+            {
+                string questJson = child.GetRawJsonValue();
+                Quest quest = JsonConvert.DeserializeObject<Quest>(questJson);
+                _activeQuests.Add(quest);
+            }
+        }
+        else
+        {
+            Debug.Log("No quests found for this user.");
+        }
+
+        onQuestsLoadedCallback?.Invoke();
+    }
 }
