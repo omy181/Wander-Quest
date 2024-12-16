@@ -17,20 +17,20 @@ public class LoginManager : Singleton<LoginManager>
 		_loginUI.OnLoginButtonPressed += _login;
 	}
 
+	///Todo:									Sign up ve login kisimlarini ayirdim ben. log in kisminda eger kullanici yoksa yeni kullanici olusturmasin
+
 	private void _login()
 	{
-		Username = _loginUI.GetUserName();
+		Username = _loginUI.GetLogInUserName();
 
-		// Validate that the username is not empty or invalid
 		if (string.IsNullOrEmpty(Username))
 		{
 			Debug.LogWarning("Username cannot be empty!");
 			return;
 		}
 
-        // Disable the login UI to avoid multiple submissions while loading data
-        _loginUI.ShowLoginPanel(false);
-
+        _loginUI.ShowLoginWindow(false);  /// TODO:              bu fonksiyonu burda cagirma, login islemi basarili bir sekilde tamamlandiginda cagir
+			
 
 		CheckUserExists();
 	}
@@ -56,7 +56,6 @@ public class LoginManager : Singleton<LoginManager>
 			else
 			{
 				Debug.LogError("Failed to check if user exists.");
-                _loginUI.ShowLoginPanel(true);
             }
 		});
 	}
@@ -85,14 +84,12 @@ public class LoginManager : Singleton<LoginManager>
 					else
 					{
 						Debug.LogError("Failed to create quest branch.");
-                        _loginUI.ShowLoginPanel(true);
                     }
 				});
 			}
 			else
 			{
 				Debug.LogError("Failed to create user.");
-                _loginUI.ShowLoginPanel(true);
             }
 		});
 	}
@@ -125,7 +122,6 @@ public class LoginManager : Singleton<LoginManager>
 						else
 						{
 							Debug.LogError("Failed to create quest branch.");
-                            _loginUI.ShowLoginPanel(true);
                         }
 					});
 				}
@@ -133,7 +129,6 @@ public class LoginManager : Singleton<LoginManager>
 			else
 			{
 				Debug.LogError("Failed to check quests branch.");
-                _loginUI.ShowLoginPanel(true);
             }
 		});
 	}
@@ -144,6 +139,5 @@ public class LoginManager : Singleton<LoginManager>
 		Debug.Log("Quests loaded for user: " + Username);
 
         // Directly switch to the game panel after quests are loaded
-        _loginUI.ShowLoginPanel(true);
     }
 }

@@ -11,7 +11,7 @@ public class WindowManager : Singleton<WindowManager>
     }
     public void OpenWindow(Window window)
     {
-        if (_previousWindow == _currentWindow) return;
+        if (_currentWindow == window) return;
 
         _previousWindow = _currentWindow;
         _currentWindow = window;

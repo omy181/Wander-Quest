@@ -7,20 +7,61 @@ using UnityEngine.UI;
 
 public class LoginUI : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField _usernameInputField;
     [SerializeField] private Window _loginWindow;
+
+    [Header("Log in")]
+    [SerializeField] private GameObject _loginContainer;
+    [SerializeField] private TMP_InputField _logInUsernameInputField;
+    [SerializeField] private TMP_InputField _logInPassordInputField;
     [SerializeField] private Button _loginButton;
+    [SerializeField] private Button _goToSignUpButton;
+
+    [Header("Sign up")]
+    [SerializeField] private GameObject _signupContainer;
+    [SerializeField] private TMP_InputField _signUpUsernameInputField;
+    [SerializeField] private TMP_InputField _signUpPassordInputField;
+    [SerializeField] private Button _signUpButton;
+    [SerializeField] private Button _goToLoginButton;
+
+    [Space]
+    [SerializeField] private TMP_Text _warningText;
+
 
     private void Awake()
     {
-        _loginButton.onClick.AddListener(()=>OnLoginButtonPressed());
-    }
-    public string GetUserName()
-    {
-        return _usernameInputField.text;
+        _loginButton.onClick.AddListener(()=> { GiveWarning(""); OnLoginButtonPressed();});
+        _signUpButton.onClick.AddListener(()=> { GiveWarning(""); OnSignUpButtonPressed(); });
+
+        _goToLoginButton.onClick.AddListener(()=> _showLoginContainer(true));
+        _goToSignUpButton.onClick.AddListener(() => _showLoginContainer(false));
+
+        GiveWarning("");
     }
 
-    public void ShowLoginPanel(bool state)
+    private void Start()
+    {
+        ShowLoginWindow(true);
+    }
+    public string GetLogInUserName()
+    {
+        return _logInUsernameInputField.text;
+    }
+
+    public string GetLogInPassword()
+    {
+        return _logInPassordInputField.text;
+    }
+    public string GetSignUpUserName()
+    {
+        return _signUpUsernameInputField.text;
+    }
+
+    public string GetSignUpPassword()
+    {
+        return _signUpPassordInputField.text;
+    }
+
+    public void ShowLoginWindow(bool state)
     {
         if (state)
         {
@@ -33,5 +74,20 @@ public class LoginUI : MonoBehaviour
         
     }
 
+    private void _showLoginContainer(bool state)
+    {
+        _loginContainer.SetActive(state);
+        _signupContainer.SetActive(!state);
+
+        GiveWarning("");
+    }
+
+    // Bu fonksiyonu: This user already exists, username can't be this short falan diye kullaniciya uyari vermek icin kullan
+    public void GiveWarning(string warning)
+    {
+        _warningText.text = warning;
+    }
+
     public Action OnLoginButtonPressed;
+    public Action OnSignUpButtonPressed;
 }
