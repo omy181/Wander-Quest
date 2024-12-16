@@ -1,4 +1,6 @@
 using Firebase.Database;
+using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,7 @@ public class QuestManager : Singleton<QuestManager>
         InitializeQuests("mahmutland", null);
     }
 
-    public void InitializeQuests(string username, System.Action onQuestsLoadedCallback)
+    public void InitializeQuests(string username, Action onQuestsLoadedCallback)
     {
         _currentUsername = username;
         _dbReference = FirebaseDatabase.DefaultInstance.RootReference;
@@ -69,7 +71,7 @@ public class QuestManager : Singleton<QuestManager>
         }
     }
 
-    private IEnumerator _loadQuests(System.Action onQuestsLoadedCallback)
+    private IEnumerator _loadQuests(Action onQuestsLoadedCallback)
     {
         var questsData = _dbReference.Child("users").Child(_currentUsername).Child("quests").GetValueAsync();
         yield return new WaitUntil(() => questsData.IsCompleted);
