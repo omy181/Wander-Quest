@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Holylib.Utilities;
+using UnityEngine.EventSystems;
 
 public class InputManager : Singleton<InputManager>
 {
-    public bool OutsideOfUI(){
-        return Input.GetMouseButtonDown(0) && !HolyUtilities.isOnUI();
+    
+    public bool IsTouchOnUI(){
+        return EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId);
+    }
+    public bool TouchOutsideOfUI(){
+        return Input.GetMouseButtonDown(0) && !IsTouchOnUI();
     }
 }
