@@ -2,40 +2,42 @@ using Firebase.Database;
 using TMPro;
 using UnityEngine;
 
-public class LoginManager : MonoBehaviour
+public class LoginManager : Singleton<LoginManager>
 {
-	public TMP_InputField usernameInputField;
-	public GameObject loginPanel;
-	public GameObject gamePanel;
+	[SerializeField] private LoginUI _loginUI;
 
-	private string username;
-	private DatabaseReference dbReference;
+	public string Username { get; private set; }
+	public DatabaseReference DbReference { get; private set; }
 
-	void Start()
+    protected override void Awake()
 	{
-		dbReference = FirebaseDatabase.DefaultInstance.RootReference;
+		base.Awake();
+
+		DbReference = FirebaseDatabase.DefaultInstance.RootReference;
+		_loginUI.OnLoginButtonPressed += _login;
 	}
 
-	public void Login()
+	private void _login()
 	{
-		username = usernameInputField.text.Trim();
+		Username = _loginUI.GetUserName();
 
 		// Validate that the username is not empty or invalid
-		if (string.IsNullOrEmpty(username))
+		if (string.IsNullOrEmpty(Username))
 		{
 			Debug.LogWarning("Username cannot be empty!");
 			return;
 		}
 
-		// Disable the login UI to avoid multiple submissions while loading data
-		loginPanel.SetActive(false);
+        // Disable the login UI to avoid multiple submissions while loading data
+        _loginUI.ShowLoginPanel(false);
+
 
 		CheckUserExists();
 	}
 
 	private void CheckUserExists()
 	{
-		dbReference.Child("users").Child(username).GetValueAsync().ContinueWith(task =>
+		DbReference.Child("users").Child(Username).GetValueAsync().ContinueWith(task =>
 		{
 			if (task.IsCompleted)
 			{
@@ -54,51 +56,51 @@ public class LoginManager : MonoBehaviour
 			else
 			{
 				Debug.LogError("Failed to check if user exists.");
-				ShowLoginPanel();
-			}
+                _loginUI.ShowLoginPanel(true);
+            }
 		});
 	}
 
 	private void CreateUser()
 	{
 		// Create a new user object with a default email (you can modify this)
-		User newUser = new User(username, "default_email@example.com");
+		User newUser = new User(Username, "default_email@example.com");
 		string json = JsonUtility.ToJson(newUser);
 
-		dbReference.Child("users").Child(username).SetRawJsonValueAsync(json).ContinueWith(task =>
+		DbReference.Child("users").Child(Username).SetRawJsonValueAsync(json).ContinueWith(task =>
 		{
 			if (task.IsCompleted)
 			{
 				Debug.Log("New user created successfully!");
 
 				// Create the quests branch for the new user
-				dbReference.Child("users").Child(username).Child("quests").SetValueAsync("").ContinueWith(questTask =>
+				DbReference.Child("users").Child(Username).Child("quests").SetValueAsync("").ContinueWith(questTask =>
 				{
 					if (questTask.IsCompleted)
 					{
 						Debug.Log("Quest branch created successfully!");
 						// Initialize quests after creating the user and quest branch
-						QuestManager.instance.InitializeQuests(username, OnQuestsLoaded);
+						QuestManager.instance.InitializeQuests(OnQuestsLoaded);
 					}
 					else
 					{
 						Debug.LogError("Failed to create quest branch.");
-						ShowLoginPanel();
-					}
+                        _loginUI.ShowLoginPanel(true);
+                    }
 				});
 			}
 			else
 			{
 				Debug.LogError("Failed to create user.");
-				ShowLoginPanel();
-			}
+                _loginUI.ShowLoginPanel(true);
+            }
 		});
 	}
 
 	private void CheckAndInitializeQuests()
 	{
 		// Check if the quests branch exists
-		dbReference.Child("users").Child(username).Child("quests").GetValueAsync().ContinueWith(task =>
+		DbReference.Child("users").Child(Username).Child("quests").GetValueAsync().ContinueWith(task =>
 		{
 			if (task.IsCompleted)
 			{
@@ -106,59 +108,42 @@ public class LoginManager : MonoBehaviour
 				{
 					// Quests branch exists, initialize quests
 					Debug.Log("Quests branch exists for user.");
-					QuestManager.instance.InitializeQuests(username, OnQuestsLoaded);
+					QuestManager.instance.InitializeQuests(OnQuestsLoaded);
 				}
 				else
 				{
 					// No quests branch, create one
 					Debug.Log("No quests branch, creating one.");
-					dbReference.Child("users").Child(username).Child("quests").SetValueAsync("").ContinueWith(questTask =>
+					DbReference.Child("users").Child(Username).Child("quests").SetValueAsync("").ContinueWith(questTask =>
 					{
 						if (questTask.IsCompleted)
 						{
 							Debug.Log("Quest branch created successfully!");
 							// Initialize quests after creating the quest branch
-							QuestManager.instance.InitializeQuests(username, OnQuestsLoaded);
+							QuestManager.instance.InitializeQuests(OnQuestsLoaded);
 						}
 						else
 						{
 							Debug.LogError("Failed to create quest branch.");
-							ShowLoginPanel();
-						}
+                            _loginUI.ShowLoginPanel(true);
+                        }
 					});
 				}
 			}
 			else
 			{
 				Debug.LogError("Failed to check quests branch.");
-				ShowLoginPanel();
-			}
+                _loginUI.ShowLoginPanel(true);
+            }
 		});
 	}
 
 	// Callback method when quests are loaded
 	private void OnQuestsLoaded()
 	{
-		Debug.Log("Quests loaded for user: " + username);
+		Debug.Log("Quests loaded for user: " + Username);
 
-		// Directly switch to the game panel after quests are loaded
-		SwitchToGamePanel();
-	}
-
-	// Method to switch to the game panel
-	private void SwitchToGamePanel()
-	{
-		// Ensure we are on the main thread when updating UI
-		if (gamePanel != null)
-		{
-			print("hello");
-			gamePanel.SetActive(true);
-		}
-	}
-
-	// To show the login panel again if an error occurs
-	private void ShowLoginPanel()
-	{
-		loginPanel.SetActive(true);
-	}
+        // Directly switch to the game panel after quests are loaded
+        _loginUI.ShowLoginPanel(true);
+    }
 }

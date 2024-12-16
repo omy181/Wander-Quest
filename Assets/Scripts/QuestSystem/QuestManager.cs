@@ -1,4 +1,3 @@
-using Firebase.Database;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -10,17 +9,8 @@ public class QuestManager : Singleton<QuestManager>
 {
     private List<Quest> _activeQuests = new();
 
-    private DatabaseReference _dbReference;
-    private string _currentUsername;
-    private void Start()
+    public void InitializeQuests(Action onQuestsLoadedCallback)
     {
-        InitializeQuests("mahmutland", null);
-    }
-
-    public void InitializeQuests(string username, Action onQuestsLoadedCallback)
-    {
-        _currentUsername = username;
-        _dbReference = FirebaseDatabase.DefaultInstance.RootReference;
         StartCoroutine(_loadQuests(onQuestsLoadedCallback));
     }
 
@@ -31,7 +21,7 @@ public class QuestManager : Singleton<QuestManager>
         _activeQuests.Add(quest);
 
         string questJson = JsonConvert.SerializeObject(quest);
-        _dbReference.Child("users").Child(_currentUsername).Child("quests").Child(quest.ID).SetRawJsonValueAsync(questJson)
+        LoginManager.instance.DbReference.Child("users").Child(LoginManager.instance.Username).Child("quests").Child(quest.ID).SetRawJsonValueAsync(questJson)
             .ContinueWith(task =>
             {
                 if (task.IsCompleted)
@@ -73,7 +63,7 @@ public class QuestManager : Singleton<QuestManager>
 
     private IEnumerator _loadQuests(Action onQuestsLoadedCallback)
     {
-        var questsData = _dbReference.Child("users").Child(_currentUsername).Child("quests").GetValueAsync();
+        var questsData = LoginManager.instance.DbReference.Child("users").Child(LoginManager.instance.Username).Child("quests").GetValueAsync();
         yield return new WaitUntil(() => questsData.IsCompleted);
 
         if (questsData.Result.Exists)
