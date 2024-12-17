@@ -10,7 +10,7 @@ public class PerspectivePan : MonoBehaviour
 
     void Update()
     {
-        if(InputManager.instance.OutsideOfUI()){
+        if(InputManager.instance.TouchOutsideOfUI()){
             _touchStart = _getWorldPosition(groundZ);
             _touched = true;
         }
