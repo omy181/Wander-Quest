@@ -1,6 +1,8 @@
+using Firebase.Auth;
 using Firebase.Database;
 using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class LoginManager : Singleton<LoginManager>
 {
@@ -8,136 +10,158 @@ public class LoginManager : Singleton<LoginManager>
 
 	public string Username { get; private set; }
 	public DatabaseReference DbReference { get; private set; }
+	private FirebaseAuth _auth;
 
-    protected override void Awake()
+	protected override void Awake()
 	{
 		base.Awake();
 
 		DbReference = FirebaseDatabase.DefaultInstance.RootReference;
-		_loginUI.OnLoginButtonPressed += _login;
+		_auth = FirebaseAuth.DefaultInstance;
+
+		_loginUI.OnLoginButtonPressed += HandleLogin;
+		_loginUI.OnSignUpButtonPressed += HandleSignUp;
 	}
 
-	///Todo:									Sign up ve login kisimlarini ayirdim ben. log in kisminda eger kullanici yoksa yeni kullanici olusturmasin
-
-	private void _login()
+	private void HandleLogin()
 	{
-		Username = _loginUI.GetLogInUserName();
+		string username = _loginUI.GetLogInUserName();
+		string password = _loginUI.GetLogInPassword();
 
-		if (string.IsNullOrEmpty(Username))
+		if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
 		{
-			Debug.LogWarning("Username cannot be empty!");
+			_loginUI.GiveWarning("Please enter both username and password.");
 			return;
 		}
 
-        _loginUI.ShowLoginWindow(false);  /// TODO:              bu fonksiyonu burda cagirma, login islemi basarili bir sekilde tamamlandiginda cagir
-			
-
-		CheckUserExists();
-	}
-
-	private void CheckUserExists()
-	{
-		DbReference.Child("users").Child(Username).GetValueAsync().ContinueWith(task =>
+		// Check credentials in the database
+		DbReference.Child("users").Child(username).GetValueAsync().ContinueWith(task =>
 		{
-			if (task.IsCompleted)
+			if (task.IsCompletedSuccessfully)
 			{
-				if (task.Result.Exists)
+				DataSnapshot snapshot = task.Result;
+
+				if (snapshot.Exists && snapshot.Child("password").Value.ToString() == password)
 				{
-					// User exists, proceed to check for quests
-					Debug.Log("User exists, checking quests branch.");
+					Username = username;
+					Debug.Log($"Login successful: {username}");
+					_loginUI.ShowLoginWindow(false);
 					CheckAndInitializeQuests();
 				}
 				else
 				{
-					// User doesn't exist, create a new user profile
-					CreateUser();
+					Debug.LogError("Login failed: Invalid username or password.");
+					_loginUI.GiveWarning("Invalid username or password.");
 				}
 			}
 			else
 			{
-				Debug.LogError("Failed to check if user exists.");
-            }
+				Debug.LogError($"Failed to fetch user data: {task.Exception?.Message}");
+				_loginUI.GiveWarning("Login failed. Try again later.");
+			}
 		});
 	}
 
-	private void CreateUser()
+	private void HandleSignUp()
 	{
-		// Create a new user object with a default email (you can modify this)
-		User newUser = new User(Username, "default_email@example.com");
-		string json = JsonUtility.ToJson(newUser);
+		string username = _loginUI.GetSignUpUserName();
+		string password = _loginUI.GetSignUpPassword();
 
-		DbReference.Child("users").Child(Username).SetRawJsonValueAsync(json).ContinueWith(task =>
+		if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || password.Length < 6)
 		{
-			if (task.IsCompleted)
-			{
-				Debug.Log("New user created successfully!");
+			_loginUI.GiveWarning("Password must be at least 6 characters.");
+			return;
+		}
 
-				// Create the quests branch for the new user
-				DbReference.Child("users").Child(Username).Child("quests").SetValueAsync("").ContinueWith(questTask =>
+		// Check if the username already exists
+		DbReference.Child("users").Child(username).GetValueAsync().ContinueWith(task =>
+		{
+			if (task.IsCompletedSuccessfully)
+			{
+				if (task.Result.Exists)
 				{
-					if (questTask.IsCompleted)
-					{
-						Debug.Log("Quest branch created successfully!");
-						// Initialize quests after creating the user and quest branch
-						QuestManager.instance.InitializeQuests(OnQuestsLoaded);
-					}
-					else
-					{
-						Debug.LogError("Failed to create quest branch.");
-                    }
-				});
+					Debug.LogError("Signup failed: Username already exists.");
+					_loginUI.GiveWarning("Username already exists. Please choose a different one.");
+				}
+				else
+				{
+					// Create a new user
+					CreateUserInDatabase(username, password);
+				}
 			}
 			else
 			{
-				Debug.LogError("Failed to create user.");
-            }
+				Debug.LogError($"Failed to check username: {task.Exception?.Message}");
+				_loginUI.GiveWarning("Signup failed. Try again later.");
+			}
+		});
+	}
+
+	private void CreateUserInDatabase(string username, string password)
+	{
+		User newUser = new User(username, password);
+		string json = JsonUtility.ToJson(newUser);
+
+		DbReference.Child("users").Child(username).SetRawJsonValueAsync(json).ContinueWith(task =>
+		{
+			if (task.IsCompletedSuccessfully)
+			{
+				Debug.Log("New user created in the database.");
+				InitializeEmptyQuestBranch(username);
+			}
+			else
+			{
+				Debug.LogError($"Failed to create user in database: {task.Exception?.Message}");
+				_loginUI.GiveWarning("Failed to complete signup process.");
+			}
+		});
+	}
+
+	private void InitializeEmptyQuestBranch(string username)
+	{
+		DbReference.Child("users").Child(username).Child("quests").SetValueAsync(new List<string>()).ContinueWith(task =>
+		{
+			if (task.IsCompletedSuccessfully)
+			{
+				Debug.Log("Quest branch initialized.");
+				QuestManager.instance.InitializeQuests(OnQuestsLoaded);
+			}
+			else
+			{
+				Debug.LogError($"Failed to initialize quest branch: {task.Exception?.Message}");
+				_loginUI.GiveWarning("Failed to initialize user data.");
+			}
 		});
 	}
 
 	private void CheckAndInitializeQuests()
 	{
-		// Check if the quests branch exists
 		DbReference.Child("users").Child(Username).Child("quests").GetValueAsync().ContinueWith(task =>
 		{
-			if (task.IsCompleted)
+			if (task.IsCompletedSuccessfully)
 			{
 				if (task.Result.Exists)
 				{
-					// Quests branch exists, initialize quests
-					Debug.Log("Quests branch exists for user.");
+					Debug.Log("Quests branch exists.");
 					QuestManager.instance.InitializeQuests(OnQuestsLoaded);
 				}
 				else
 				{
-					// No quests branch, create one
-					Debug.Log("No quests branch, creating one.");
-					DbReference.Child("users").Child(Username).Child("quests").SetValueAsync("").ContinueWith(questTask =>
-					{
-						if (questTask.IsCompleted)
-						{
-							Debug.Log("Quest branch created successfully!");
-							// Initialize quests after creating the quest branch
-							QuestManager.instance.InitializeQuests(OnQuestsLoaded);
-						}
-						else
-						{
-							Debug.LogError("Failed to create quest branch.");
-                        }
-					});
+					Debug.Log("No quests found. Initializing empty quest branch.");
+					InitializeEmptyQuestBranch(Username);
 				}
 			}
 			else
 			{
-				Debug.LogError("Failed to check quests branch.");
-            }
+				Debug.LogError($"Failed to check quests branch: {task.Exception?.Message}");
+				_loginUI.GiveWarning("Failed to load user data.");
+			}
 		});
 	}
 
-	// Callback method when quests are loaded
 	private void OnQuestsLoaded()
 	{
-		Debug.Log("Quests loaded for user: " + Username);
-
-        // Directly switch to the game panel after quests are loaded
-    }
+		Debug.Log("Quests loaded successfully.");
+		// Transition to the game panel after quests are loaded
+	}
 }
