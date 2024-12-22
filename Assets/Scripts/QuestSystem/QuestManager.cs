@@ -21,7 +21,11 @@ public class QuestManager : Singleton<QuestManager>
         _activeQuests.Add(quest);
 
         string questJson = JsonConvert.SerializeObject(quest);
-        LoginManager.instance.DbReference.Child("users").Child(LoginManager.instance.Username).Child("quests").Child(quest.ID).SetRawJsonValueAsync(questJson)
+        LoginManager.instance.DbReference.Child("users")
+            .Child(LoginManager.instance.Username)
+            .Child("quests")
+            .Child(quest.ID)
+            .SetRawJsonValueAsync(questJson)
             .ContinueWith(task =>
             {
                 if (task.IsCompleted)
@@ -37,11 +41,26 @@ public class QuestManager : Singleton<QuestManager>
     }
 
     public void DeleteQuest(Quest quest)
-    {       
-        _activeQuests.Remove(quest);
+    {
+		_activeQuests.Remove(quest);
 
-        ///TODO: delete this quest on database
-    }
+		LoginManager.instance.DbReference.Child("users")
+			.Child(LoginManager.instance.Username)
+			.Child("quests")
+			.Child(quest.ID)
+			.RemoveValueAsync()
+			.ContinueWith(task =>
+			{
+				if (task.IsCompleted)
+				{
+					Debug.Log($"Quest {quest.ID} deleted successfully.");
+				}
+				else
+				{
+					Debug.LogError($"Failed to delete quest {quest.ID}: {task.Exception}");
+				}
+			});
+	}
 
     public bool IsQuestAvailable(Quest quest)
     {
@@ -55,15 +74,37 @@ public class QuestManager : Singleton<QuestManager>
 
     public void AddPlaceToQuest(Quest quest,QuestPlace place)
     {
-        if (quest.AddPlace(place))
-        {
-            ///TODO: update this quest on the database as well
-        }
-    }
+		if (quest.AddPlace(place))
+		{
+			string updatedQuestJson = JsonConvert.SerializeObject(quest);
+			LoginManager.instance.DbReference.Child("users")
+				.Child(LoginManager.instance.Username)
+				.Child("quests")
+				.Child(quest.ID)
+				.SetRawJsonValueAsync(updatedQuestJson)
+				.ContinueWith(task =>
+				{
+					if (task.IsCompleted)
+					{
+						Debug.Log($"Quest {quest.ID} updated successfully with new place.");
+					}
+					else
+					{
+						Debug.LogError($"Failed to update quest {quest.ID}: {task.Exception}");
+					}
+				});
+		}
+		else
+		{
+			Debug.LogWarning("Place was not added to the quest (duplicate or invalid).");
+		}
+	}
 
     private IEnumerator _loadQuests(Action onQuestsLoadedCallback)
     {
-        var questsData = LoginManager.instance.DbReference.Child("users").Child(LoginManager.instance.Username).Child("quests").GetValueAsync();
+        var questsData = LoginManager.instance.DbReference.Child("users")
+            .Child(LoginManager.instance.Username)
+            .Child("quests").GetValueAsync();
         yield return new WaitUntil(() => questsData.IsCompleted);
 
         if (questsData.Result.Exists)
