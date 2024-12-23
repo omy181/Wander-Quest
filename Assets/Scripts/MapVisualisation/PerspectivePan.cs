@@ -4,19 +4,19 @@ using UnityEngine;
 public class PerspectivePan : MonoBehaviour
 {
     private Vector3 _touchStart; 
-    public Camera cam; 
-    public float groundZ = 0f;
+    [SerializeField] private Camera _cam; 
+    [SerializeField] private float _groundZ = 0f;
     private bool _touched = false;
 
     void Update()
     {
         if(InputManager.instance.TouchOutsideOfUI()){
-            _touchStart = _getWorldPosition(groundZ);
+            _touchStart = _getWorldPosition(_groundZ);
             _touched = true;
         }
         if(Input.GetMouseButton(0) && _touched){
-            Vector3 direction = _touchStart - _getWorldPosition(groundZ); 
-            cam.transform.position += direction;            
+            Vector3 direction = _touchStart - _getWorldPosition(_groundZ); 
+            _cam.transform.position += direction;            
         }
         if(Input.GetMouseButtonUp(0)){
             _touched = false;
@@ -25,7 +25,7 @@ public class PerspectivePan : MonoBehaviour
     }
 
     private Vector3 _getWorldPosition(float zLevel){
-        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+        Ray ray = _cam.ScreenPointToRay(Input.mousePosition);
         Plane ground = new Plane(Vector3.down, new Vector3(0, 0, zLevel));
         if (ground.Raycast(ray, out float distance)){
             return ray.GetPoint(distance);
