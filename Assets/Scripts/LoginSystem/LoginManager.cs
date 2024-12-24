@@ -21,7 +21,9 @@ public class LoginManager : Singleton<LoginManager>
 
 		_loginUI.OnLoginButtonPressed += HandleLogin;
 		_loginUI.OnSignUpButtonPressed += HandleSignUp;
+		
 	}
+
 
 	private void HandleLogin()
 	{
@@ -30,11 +32,11 @@ public class LoginManager : Singleton<LoginManager>
 
 		if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
 		{
+			Debug.LogWarning("Login failed: Username or password is empty.");
 			_loginUI.GiveWarning("Please enter both username and password.");
 			return;
 		}
 
-		// Check credentials in the database
 		DbReference.Child("users").Child(username).GetValueAsync().ContinueWith(task =>
 		{
 			if (task.IsCompletedSuccessfully)
@@ -45,19 +47,30 @@ public class LoginManager : Singleton<LoginManager>
 				{
 					Username = username;
 					Debug.Log($"Login successful: {username}");
-					_loginUI.ShowLoginWindow(false);
+
+					MainThreadDispatcher.Instance.Enqueue(() =>
+					{
+						_loginUI.ShowLoginWindow(false);
+					});
+
 					CheckAndInitializeQuests();
 				}
 				else
 				{
 					Debug.LogError("Login failed: Invalid username or password.");
-					_loginUI.GiveWarning("Invalid username or password.");
+					MainThreadDispatcher.Instance.Enqueue(() =>
+					{
+						_loginUI.GiveWarning("Invalid username or password.");
+					});
 				}
 			}
 			else
 			{
 				Debug.LogError($"Failed to fetch user data: {task.Exception?.Message}");
-				_loginUI.GiveWarning("Login failed. Try again later.");
+				MainThreadDispatcher.Instance.Enqueue(() =>
+				{
+					_loginUI.GiveWarning("Login failed. Try again later.");
+				});
 			}
 		});
 	}
@@ -81,7 +94,10 @@ public class LoginManager : Singleton<LoginManager>
 				if (task.Result.Exists)
 				{
 					Debug.LogError("Signup failed: Username already exists.");
-					_loginUI.GiveWarning("Username already exists. Please choose a different one.");
+					MainThreadDispatcher.Instance.Enqueue(() =>
+					{
+						_loginUI.GiveWarning("Username already exists. Please choose a different one.");
+					});
 				}
 				else
 				{
@@ -92,7 +108,10 @@ public class LoginManager : Singleton<LoginManager>
 			else
 			{
 				Debug.LogError($"Failed to check username: {task.Exception?.Message}");
-				_loginUI.GiveWarning("Signup failed. Try again later.");
+				MainThreadDispatcher.Instance.Enqueue(() =>
+				{
+					_loginUI.GiveWarning("Signup failed. Try again later.");
+				});
 			}
 		});
 	}
@@ -112,7 +131,10 @@ public class LoginManager : Singleton<LoginManager>
 			else
 			{
 				Debug.LogError($"Failed to create user in database: {task.Exception?.Message}");
-				_loginUI.GiveWarning("Failed to complete signup process.");
+				MainThreadDispatcher.Instance.Enqueue(() =>
+				{
+					_loginUI.GiveWarning("Failed to complete signup process.");
+				});
 			}
 		});
 	}
@@ -124,12 +146,18 @@ public class LoginManager : Singleton<LoginManager>
 			if (task.IsCompletedSuccessfully)
 			{
 				Debug.Log("Quest branch initialized.");
-				QuestManager.instance.InitializeQuests(OnQuestsLoaded);
+				MainThreadDispatcher.Instance.Enqueue(() =>
+				{
+					QuestManager.instance.InitializeQuests(OnQuestsLoaded);
+				});
 			}
 			else
 			{
 				Debug.LogError($"Failed to initialize quest branch: {task.Exception?.Message}");
-				_loginUI.GiveWarning("Failed to initialize user data.");
+				MainThreadDispatcher.Instance.Enqueue(() =>
+				{
+					_loginUI.GiveWarning("Failed to initialize user data.");
+				});
 			}
 		});
 	}
@@ -143,7 +171,10 @@ public class LoginManager : Singleton<LoginManager>
 				if (task.Result.Exists)
 				{
 					Debug.Log("Quests branch exists.");
-					QuestManager.instance.InitializeQuests(OnQuestsLoaded);
+					MainThreadDispatcher.Instance.Enqueue(() =>
+					{
+						QuestManager.instance.InitializeQuests(OnQuestsLoaded);
+					});
 				}
 				else
 				{
@@ -154,7 +185,10 @@ public class LoginManager : Singleton<LoginManager>
 			else
 			{
 				Debug.LogError($"Failed to check quests branch: {task.Exception?.Message}");
-				_loginUI.GiveWarning("Failed to load user data.");
+				MainThreadDispatcher.Instance.Enqueue(() =>
+				{
+					_loginUI.GiveWarning("Failed to load user data.");
+				});
 			}
 		});
 	}
@@ -163,5 +197,9 @@ public class LoginManager : Singleton<LoginManager>
 	{
 		Debug.Log("Quests loaded successfully.");
 		// Transition to the game panel after quests are loaded
+		MainThreadDispatcher.Instance.Enqueue(() =>
+		{
+			Debug.Log("Transitioning to game panel...");
+		});
 	}
 }
