@@ -19,13 +19,13 @@ public class LoginManager : Singleton<LoginManager>
 		DbReference = FirebaseDatabase.DefaultInstance.RootReference;
 		_auth = FirebaseAuth.DefaultInstance;
 
-		_loginUI.OnLoginButtonPressed += HandleLogin;
-		_loginUI.OnSignUpButtonPressed += HandleSignUp;
+		_loginUI.OnLoginButtonPressed += _handleLogin;
+		_loginUI.OnSignUpButtonPressed += _handleSignUp;
 		
 	}
 
 
-	private void HandleLogin()
+	private void _handleLogin()
 	{
 		string username = _loginUI.GetLogInUserName();
 		string password = _loginUI.GetLogInPassword();
@@ -53,7 +53,7 @@ public class LoginManager : Singleton<LoginManager>
 						_loginUI.ShowLoginWindow(false);
 					});
 
-					CheckAndInitializeQuests();
+					_checkAndInitializeQuests();
 				}
 				else
 				{
@@ -75,7 +75,7 @@ public class LoginManager : Singleton<LoginManager>
 		});
 	}
 
-	private void HandleSignUp()
+	private void _handleSignUp()
 	{
 		string username = _loginUI.GetSignUpUserName();
 		string password = _loginUI.GetSignUpPassword();
@@ -102,7 +102,7 @@ public class LoginManager : Singleton<LoginManager>
 				else
 				{
 					// Create a new user
-					CreateUserInDatabase(username, password);
+					_createUserInDatabase(username, password);
 				}
 			}
 			else
@@ -116,7 +116,7 @@ public class LoginManager : Singleton<LoginManager>
 		});
 	}
 
-	private void CreateUserInDatabase(string username, string password)
+	private void _createUserInDatabase(string username, string password)
 	{
 		User newUser = new User(username, password);
 		string json = JsonUtility.ToJson(newUser);
@@ -126,7 +126,7 @@ public class LoginManager : Singleton<LoginManager>
 			if (task.IsCompletedSuccessfully)
 			{
 				Debug.Log("New user created in the database.");
-				InitializeEmptyQuestBranch(username);
+				_initializeEmptyQuestBranch(username);
 			}
 			else
 			{
@@ -139,7 +139,7 @@ public class LoginManager : Singleton<LoginManager>
 		});
 	}
 
-	private void InitializeEmptyQuestBranch(string username)
+	private void _initializeEmptyQuestBranch(string username)
 	{
 		DbReference.Child("users").Child(username).Child("quests").SetValueAsync(new List<string>()).ContinueWith(task =>
 		{
@@ -148,7 +148,7 @@ public class LoginManager : Singleton<LoginManager>
 				Debug.Log("Quest branch initialized.");
 				MainThreadDispatcher.Instance.Enqueue(() =>
 				{
-					QuestManager.instance.InitializeQuests(OnQuestsLoaded);
+					QuestManager.instance.InitializeQuests(_onQuestsLoaded);
 				});
 			}
 			else
@@ -162,7 +162,7 @@ public class LoginManager : Singleton<LoginManager>
 		});
 	}
 
-	private void CheckAndInitializeQuests()
+	private void _checkAndInitializeQuests()
 	{
 		DbReference.Child("users").Child(Username).Child("quests").GetValueAsync().ContinueWith(task =>
 		{
@@ -173,13 +173,13 @@ public class LoginManager : Singleton<LoginManager>
 					Debug.Log("Quests branch exists.");
 					MainThreadDispatcher.Instance.Enqueue(() =>
 					{
-						QuestManager.instance.InitializeQuests(OnQuestsLoaded);
+						QuestManager.instance.InitializeQuests(_onQuestsLoaded);
 					});
 				}
 				else
 				{
 					Debug.Log("No quests found. Initializing empty quest branch.");
-					InitializeEmptyQuestBranch(Username);
+					_initializeEmptyQuestBranch(Username);
 				}
 			}
 			else
@@ -193,7 +193,7 @@ public class LoginManager : Singleton<LoginManager>
 		});
 	}
 
-	private void OnQuestsLoaded()
+	private void _onQuestsLoaded()
 	{
 		Debug.Log("Quests loaded successfully.");
 		// Transition to the game panel after quests are loaded
