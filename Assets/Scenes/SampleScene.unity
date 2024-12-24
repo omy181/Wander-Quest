@@ -2218,7 +2218,6 @@ GameObject:
   - component: {fileID: 516402119}
   - component: {fileID: 516402118}
   - component: {fileID: 516402116}
-  - component: {fileID: 516402117}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2239,19 +2238,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CamSpeed: 10
---- !u!114 &516402117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 516402115}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0945e6a69fe9c4c45b7657081e6c63a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _cam: {fileID: 516402116}
 --- !u!114 &516402118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2363,13 +2349,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 516402115}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.8028668, z: 0.5961584, w: 0}
+  m_LocalRotation: {x: 0, y: -0.8038569, z: 0.5948228, w: 0}
   m_LocalPosition: {x: -5, y: 5.3900146, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1591008152}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 180}
+  m_LocalEulerAnglesHint: {x: 107, y: 0, z: 180}
 --- !u!1001 &527973548
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7849,6 +7835,7 @@ GameObject:
   - component: {fileID: 1591008149}
   - component: {fileID: 1591008148}
   - component: {fileID: 1591008147}
+  - component: {fileID: 1591008153}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -7948,6 +7935,20 @@ Transform:
   - {fileID: 1019446013}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1591008153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1591008146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ca605ce4375eca4e9c6ead563a30370, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _cam: {fileID: 516402120}
+  _groundZ: 0
 --- !u!1 &1594298051
 GameObject:
   m_ObjectHideFlags: 0
