@@ -57,6 +57,7 @@ public class QuestSelector : MonoBehaviour
         _activeQuestText.text = quest.Title;
         _activeQuestProgressText.text = quest.TotalTraveledCount.ToString();
         _activeQuest = quest;
+        _mapPinVisualiser.CreatePins(quest.GetPlaces());
         _mapPinVisualiser.FocusPins(quest.GetPlaces());
         ShowQuestSelector(false);
 
