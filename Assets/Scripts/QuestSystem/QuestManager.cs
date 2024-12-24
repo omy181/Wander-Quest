@@ -100,6 +100,27 @@ public class QuestManager : Singleton<QuestManager>
 		}
 	}
 
+    public void UpdatePlaceData(Quest quest,QuestPlace place)
+    {
+        string updatedQuestJson = JsonConvert.SerializeObject(quest);
+        LoginManager.instance.DbReference.Child("users")
+            .Child(LoginManager.instance.Username)
+            .Child("quests")
+            .Child(quest.ID)
+            .SetRawJsonValueAsync(updatedQuestJson)
+            .ContinueWith(task =>
+            {
+                if (task.IsCompleted)
+                {
+                    Debug.Log($"Quest {quest.ID} updated successfully with new place.");
+                }
+                else
+                {
+                    Debug.LogError($"Failed to update quest {quest.ID}: {task.Exception}");
+                }
+            });
+    }
+
     private IEnumerator _loadQuests(Action onQuestsLoadedCallback)
     {
         var questsData = LoginManager.instance.DbReference.Child("users")

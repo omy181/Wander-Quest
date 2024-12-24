@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class QuestSelector : MonoBehaviour
+public class QuestSelector : Singleton<QuestSelector>
 {
     [SerializeField] private GameObject _questList;
     [SerializeField] private Transform _questContent;
@@ -14,16 +14,23 @@ public class QuestSelector : MonoBehaviour
     [SerializeField] private TMP_Text _activeQuestProgressText;
     [SerializeField] private MapPinVisualiser _mapPinVisualiser;
 
+    private bool _isQuestSelectorOpen => _questList.activeSelf;
+
     private Quest _activeQuest;
 
-      private void Update()
-      {
-        CheckQuestProgression(_activeQuest);
-      }
+    private void Start()
+    {
+        UIManager.instance.OnUICancel += ()=> ShowQuestSelector(false);
+    }
+
+    private void Update()
+    {
+        _checkQuestProgression(_activeQuest);
+    }
 
     public void ShowQuestSelectorToggle()
     {
-        ShowQuestSelector(!_questList.activeSelf);
+        ShowQuestSelector(!_isQuestSelectorOpen);
     }
 
     public void ShowQuestSelector(bool state)
@@ -57,13 +64,12 @@ public class QuestSelector : MonoBehaviour
         _activeQuestText.text = quest.Title;
         _activeQuestProgressText.text = quest.TotalTraveledCount.ToString();
         _activeQuest = quest;
-        _mapPinVisualiser.CreatePins(quest.GetPlaces());
-        _mapPinVisualiser.FocusPins(quest.GetPlaces());
+        _mapPinVisualiser.FocusPins(quest);
         ShowQuestSelector(false);
 
 
     } 
-    private void CheckQuestProgression(Quest quest)
+    private void _checkQuestProgression(Quest quest)
     {
         if (quest == null) return;
 
@@ -79,6 +85,8 @@ public class QuestSelector : MonoBehaviour
             if(dis <= 0.0002055)
             {
                 place.IsTraveled = true;
+                QuestManager.instance.UpdatePlaceData(quest,place);
+                NotificationManager.SendDiscoveryNotification(place.Name);
                 SelectQuest(quest);
             }
         }

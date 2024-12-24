@@ -57,13 +57,14 @@ public class JournalUI : MonoBehaviour
         _clearContents();
         quest.GetPlaces().ForEach(place => {
             var placePrefab = Instantiate(_placePrefab, _content).GetComponent<PlaceSlotUI>();
-            placePrefab.SetPlaceData(place,()=> _goToPlace(place));
+            placePrefab.SetPlaceData(place,()=> _goToPlace(quest,place));
         });
     }
 
-    private void _goToPlace(QuestPlace place)
+    private void _goToPlace(Quest quest,QuestPlace place)
     {
         WindowManager.instance.OpenPreviousWindow();
+        QuestSelector.instance.SelectQuest(quest);
         MapModeChanger.instance.FocusOnPlace(place);
     }
 

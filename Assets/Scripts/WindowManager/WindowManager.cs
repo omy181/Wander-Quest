@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 public class WindowManager : Singleton<WindowManager>
 {
@@ -18,10 +19,14 @@ public class WindowManager : Singleton<WindowManager>
 
         _previousWindow?.Deactivate();
         _currentWindow?.Activate();
+
+        OnWindowChanged?.Invoke();
     }
 
     public void OpenPreviousWindow()
     {
         OpenWindow(_previousWindow);
     }
+
+    public Action OnWindowChanged;
 }

@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PinObject : MonoBehaviour
 {
     [SerializeField] private TMPro.TMP_Text _name;
+    [SerializeField] private Image _back;
     private MapVisualiser _mapVisualiser;
     public QuestPlace _place { get; private set; }
     public void Initialize(QuestPlace place,MapVisualiser mapVisualiser)
@@ -34,11 +36,12 @@ public class PinObject : MonoBehaviour
     {
         if (_place.IsTraveled)
         {
-            /// TODO: change the color
-
-            _name.text = $"+{_place.Name}+";
+            _back.color = Color.green;
         }
-      
+        else
+        {
+            _back.color = Color.red;
+        }
 
         _updatePositionScale();
     }

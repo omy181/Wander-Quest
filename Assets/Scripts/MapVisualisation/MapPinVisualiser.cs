@@ -11,11 +11,6 @@ public class MapPinVisualiser : MonoBehaviour
 
     private List<PinObject> _pins = new();
 
-    public void ShowQuestPins(Quest quest)
-    {
-        CreatePins(quest.GetPlaces());
-    }
-
     public void CreatePins(List<QuestPlace> places)
     {
         foreach (var place in places)
@@ -32,10 +27,12 @@ public class MapPinVisualiser : MonoBehaviour
         }
     }
 
-    public void FocusPins(List<QuestPlace> places)
+    public void FocusPins(Quest quest)
     {
         HideAllPins();
-        foreach (var place in places)
+        CreatePins(quest.GetPlaces());
+
+        foreach (var place in quest.GetPlaces())
         {
             var pin = _pins.Find(p => p._place.ID == place.ID);
             if (pin)

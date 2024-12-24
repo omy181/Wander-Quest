@@ -9,16 +9,13 @@ public class QuestCreator : MonoBehaviour
     [SerializeField] private TMP_InputField _questSearchBar;
     [SerializeField] private QuestSelector _questSelector;
 
-  /*  private void Update()
-    {
-        if(Input.GetMouseButtonDown(0) && !HolyUtilities.isOnUI())  /// TODO:  ADD TOUCH SUPPORT
-        {
-            OpenQuestSearchBar(false);
-        }
-    }*/
+    protected bool _isCreatorOpen => _questSearchBar.gameObject.activeSelf;
+
     public bool AddNewQuest()
     {
+
         var questQuerry = _questSearchBar.text;
+        _questSearchBar.text = "";
 
         if (questQuerry.Equals(string.Empty) || questQuerry.Length <= 2)
         {

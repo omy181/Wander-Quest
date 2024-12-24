@@ -13,7 +13,7 @@ public class InputManager : Singleton<InputManager>
             : HolyUtilities.isOnUI();
     }
     
-    public bool TouchOutsideOfUI(){
+    public bool DidTouchOutsideOfUI(){
         return Input.GetMouseButtonDown(0) && !IsTouchOnUI();
     }
 }
