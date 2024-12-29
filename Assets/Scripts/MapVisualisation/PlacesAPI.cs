@@ -43,7 +43,7 @@ public class PlacesAPI : Singleton<PlacesAPI>
 
         // Send the request and wait for a response
         yield return request.SendWebRequest();
-
+        Debug.Log(request.result);
         // Check for errors
         if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
         {
