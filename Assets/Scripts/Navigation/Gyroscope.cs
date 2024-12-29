@@ -32,11 +32,9 @@ public static class Gyroscope
         switch (orientation)
         {
             case DeviceOrientation.FaceUp:
-            Debug.Log("FaceUp detected");
             angle.z += 15;
             break;
             case DeviceOrientation.FaceDown:
-                Debug.Log("FaceDown detected");
                 angle.z -= 15;
                 break;
             case DeviceOrientation.Portrait:
