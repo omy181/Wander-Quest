@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -10,69 +11,64 @@ public class PlacesAPI : Singleton<PlacesAPI>
     [SerializeField] private MapPinVisualiser _mapPinVisualiser;
     private string _resultsjson;
 
-    public IEnumerator StartSearchPlaces(string querry,Action<List<QuestPlace>> onPlacesFound)
+    public IEnumerator StartSearchPlaces(string query, Action<List<QuestPlace>> onPlacesFound)
     {
-        yield return StartCoroutine(_searchPlaces(_getJsonPayload(querry, GPS.instance.GetLastGPSLocation(), 500f, 5)));
+        yield return StartCoroutine(_searchPlaces(_getJsonPayload(query, GPS.instance.GetLastGPSLocation(), 500f, 5)));
 
-        List<QuestPlace> list = new();
-        _resultJsonToPlaces(_resultsjson).places.ForEach(place =>
+        List<QuestPlace> list = new List<QuestPlace>();
+        var placesResult = _resultJsonToPlaces(_resultsjson);
+        if (placesResult != null && placesResult.places != null)
         {
-            list.Add(PlaceToQuestPlace(place));
-        });
+            placesResult.places.ForEach(place =>
+            {
+                list.Add(PlaceToQuestPlace(place));
+            });
+        }
 
         onPlacesFound(list);
     }
 
     private IEnumerator _searchPlaces(string jsonPayload)
     {
-        // Define the API endpoint
         string url = "https://places.googleapis.com/v1/places:searchText";
-
-        // Create the UnityWebRequest for a POST request
         UnityWebRequest request = new UnityWebRequest(url, "POST");
 
-        // Set the content type header to application/json
+        // Debugging: Log the outgoing payload
+        Debug.Log("Request payload: " + jsonPayload);
+
         byte[] jsonToSend = Encoding.UTF8.GetBytes(jsonPayload);
         request.uploadHandler = new UploadHandlerRaw(jsonToSend);
         request.downloadHandler = new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
-
-        // Set additional headers
         request.SetRequestHeader("X-Goog-Api-Key", API.GetKey());
-        request.SetRequestHeader("X-Goog-FieldMask", "places.id,places.displayName,places.location,places.adrFormatAddress");
+        request.SetRequestHeader("X-Goog-FieldMask", "places.id,places.displayName,places.location,places.formattedAddress");
 
-        // Send the request and wait for a response
         yield return request.SendWebRequest();
 
-        // Check for errors
-        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+        if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("Error: " + request.error);
+            Debug.LogError($"Error: {request.error}\nResponse: {request.downloadHandler?.text}");
             _resultsjson = "";
         }
         else
         {
-            //Debug.Log(request.downloadHandler.text);
             _resultsjson = request.downloadHandler.text;
-
-            //_resultJsonToPlaces(_resultsjson).places.ForEach((p)=>print(p.id+" - "+p.displayName.text +" - "+ p.location.latitude +","+p.location.longitude + " - "+ AdressUtilities.ConvertHtmlToAddress(p.adrFormatAddress).Locality ));
-
+            Debug.Log("Received response: " + _resultsjson);
         }
     }
 
-    private string _getJsonPayload(string querry,GPSLocation location, float radius,int resultCount)
+    private string _getJsonPayload(string query, GPSLocation location, float radius, int resultCount)
     {
-        return $@"
-        {{
-            ""textQuery"": ""{querry}"",
+        return $@"{{
+            ""textQuery"": ""{EscapeJsonString(query)}"",
             ""pageSize"": {resultCount},
             ""locationBias"": {{
                 ""circle"": {{
                     ""center"": {{
-                        ""latitude"": {location.latitude},
-                        ""longitude"": {location.longitude}
+                        ""latitude"": {location.latitude.ToString(CultureInfo.InvariantCulture)},
+                        ""longitude"": {location.longitude.ToString(CultureInfo.InvariantCulture)}
                     }},
-                    ""radius"": {radius}
+                    ""radius"": {radius.ToString(CultureInfo.InvariantCulture)}
                 }}
             }}
         }}";
@@ -80,40 +76,50 @@ public class PlacesAPI : Singleton<PlacesAPI>
 
     private Places _resultJsonToPlaces(string jsonstring)
     {
-        if(jsonstring != "")
+        if (!string.IsNullOrEmpty(jsonstring))
         {
-            return JsonUtility.FromJson<Places>(jsonstring);
+            try
+            {
+                return JsonUtility.FromJson<Places>(jsonstring);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"JSON parsing error: {e.Message}");
+                return new Places { places = new List<Place>() };
+            }
         }
-        else
-        {
-            Debug.LogError("Resultjson is empty!");
-            var places = new Places();
-            places.places = new List<Place>();
-            return places;
-        }
+        Debug.LogError("Result JSON is empty!");
+        return new Places { places = new List<Place>() };
+    }
+
+    private string EscapeJsonString(string input)
+    {
+        return input.Replace("\"", "\\\"");
     }
 
     public QuestPlace PlaceToQuestPlace(Place place)
     {
-        return new QuestPlace(place.location, place.displayName.text, place.id, AdressUtilities.ConvertHtmlToAddress(place.adrFormatAddress),place.isTraveled);
+        return new QuestPlace(
+            place.location,
+            place.displayName.text,
+            place.id,
+            AdressUtilities.ConvertHtmlToAddress(place.formattedAddress), // Updated field name
+            place.isTraveled
+        );
     }
 
     public Place QuestPlaceToPlace(QuestPlace qPlace)
     {
-        var place = new Place();
-
-        place.id = qPlace.ID;
-        place.displayName = new DisplayName();
-        place.displayName.text = qPlace.Name;
-        place.location = qPlace.Location;
-        place.adrFormatAddress = AdressUtilities.ConvertAddressToHtml(qPlace.Address);
-        place.isTraveled = qPlace.IsTraveled;
-
-        return place;
+        return new Place
+        {
+            id = qPlace.ID,
+            displayName = new DisplayName { text = qPlace.Name },
+            location = qPlace.Location,
+            formattedAddress = AdressUtilities.ConvertAddressToHtml(qPlace.Address),
+            isTraveled = qPlace.IsTraveled
+        };
     }
-
 }
-
 
 [Serializable]
 public class Places
@@ -127,7 +133,7 @@ public class Place
     public GPSLocation location;
     public DisplayName displayName;
     public string id;
-    public string adrFormatAddress;
+    public string formattedAddress; // Updated field name
     public bool isTraveled;
 }
 
