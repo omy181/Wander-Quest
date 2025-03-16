@@ -33,9 +33,6 @@ public class PlacesAPI : Singleton<PlacesAPI>
         string url = "https://places.googleapis.com/v1/places:searchText";
         UnityWebRequest request = new UnityWebRequest(url, "POST");
 
-        // Debugging: Log the outgoing payload
-        Debug.Log("Request payload: " + jsonPayload);
-
         byte[] jsonToSend = Encoding.UTF8.GetBytes(jsonPayload);
         request.uploadHandler = new UploadHandlerRaw(jsonToSend);
         request.downloadHandler = new DownloadHandlerBuffer();
@@ -53,7 +50,7 @@ public class PlacesAPI : Singleton<PlacesAPI>
         else
         {
             _resultsjson = request.downloadHandler.text;
-            Debug.Log("Received response: " + _resultsjson);
+            //Debug.Log("Received response: " + _resultsjson);
         }
     }
 
@@ -103,7 +100,7 @@ public class PlacesAPI : Singleton<PlacesAPI>
             place.location,
             place.displayName.text,
             place.id,
-            AdressUtilities.ConvertHtmlToAddress(place.formattedAddress), // Updated field name
+            AdressUtilities.ConvertHtmlToAddress(place.formattedAddress),
             place.isTraveled
         );
     }
@@ -133,7 +130,7 @@ public class Place
     public GPSLocation location;
     public DisplayName displayName;
     public string id;
-    public string formattedAddress; // Updated field name
+    public string formattedAddress;
     public bool isTraveled;
 }
 
