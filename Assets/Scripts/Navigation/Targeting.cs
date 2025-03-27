@@ -5,15 +5,19 @@ using UnityEngine;
 public class Targeting : MonoBehaviour
 {
     [SerializeField] private GameObject _navigationArrow;
-
+    private PlaceSlotUI _placeSlotUi;
     private void Start() {
-        //_navigationArrow.SetActive(false);
         print("b");
+        _placeSlotUi = GetComponent<PlaceSlotUI>();
     }
     public void AddAsTarget(){
         print("a");
         _navigationArrow.SetActive(true);
-        _chooseLocation((float)38.37694276669464,(float)26.88509838113758);
+
+        var place = _placeSlotUi.ReturnInfo();
+        print("lat: " + place.Location.latitude + " lon: " + place.Location.longitude);
+        _chooseLocation((float)place.Location.latitude,(float)place.Location.longitude);
+        //_chooseLocation((float)38.37694276669464,(float)26.88509838113758);
         //_navigationArrow.SetDestination(float targetLatitude, float targetLongitude)
     }
 
@@ -21,4 +25,8 @@ public class Targeting : MonoBehaviour
         _navigationArrow.GetComponent<NavigationArrow>().SetDestination(targetLatitude, targetLongitude);
        
     }
+
+
+
+  
 }
