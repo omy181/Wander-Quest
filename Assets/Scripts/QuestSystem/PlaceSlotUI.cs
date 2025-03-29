@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public class PlaceSlotUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _titleText;
-    //public TextMeshProUGUI _titleText;
     [SerializeField] private TextMeshProUGUI _adressText;
     [SerializeField] private Button _placeButton;
     [SerializeField] private Image _background;

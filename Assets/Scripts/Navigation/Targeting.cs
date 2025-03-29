@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Targeting : MonoBehaviour
 {
-    [SerializeField] private GameObject _navigationArrow;
+    
     private PlaceSlotUI _placeSlotUi;
     private void Start() {
         print("b");
@@ -12,17 +12,23 @@ public class Targeting : MonoBehaviour
     }
     public void AddAsTarget(){
         print("a");
-        _navigationArrow.SetActive(true);
-
         var place = _placeSlotUi.ReturnInfo();
-        print("lat: " + place.Location.latitude + " lon: " + place.Location.longitude);
-        _chooseLocation((float)place.Location.latitude,(float)place.Location.longitude);
+        TargetManager.instance.SetTarget(place);
+        //SetTargetmangaerfunc(place);
+        print("lat1: " + place.Location.latitude + " lon1: " + place.Location.longitude);
+        //_chooseLocation((float)place.Location.latitude,(float)place.Location.longitude);
         //_chooseLocation((float)38.37694276669464,(float)26.88509838113758);
         //_navigationArrow.SetDestination(float targetLatitude, float targetLongitude)
     }
 
-    private void _chooseLocation(float targetLatitude, float targetLongitude){
-        _navigationArrow.GetComponent<NavigationArrow>().SetDestination(targetLatitude, targetLongitude);
+    public void CloseTarget(){
+        print("d");
+        //TargetManager.instance.CancelTarget();
+    }
+
+// target manager
+    private void _chooseLocation(float targetLatitude, float targetLongitude){ // questplace
+        //_navigationArrow.GetComponent<NavigationArrow>().SetDestination(targetLatitude, targetLongitude);
        
     }
 
