@@ -6,8 +6,9 @@ using UnityEngine.UI;
 
 public class TargetManager : Singleton<TargetManager>
 {
-    [SerializeField] private GameObject _navigationArrow;
+    [SerializeField] private NavigationArrow _navigationArrow;
     [SerializeField] private Button _cancelTargetButton;
+    private QuestPlace _currentTarget;
 
     void Start()
     {
@@ -15,14 +16,13 @@ public class TargetManager : Singleton<TargetManager>
     }
 
     public void SetTarget(QuestPlace place){
-        print("c");
-        _navigationArrow.SetActive(true);
-        print("lat: " + place.Location.latitude + " lon: " + place.Location.longitude);
-        _navigationArrow.GetComponent<NavigationArrow>().SetDestination((float)place.Location.latitude,(float)place.Location.longitude);
+        _currentTarget = place;
+        _navigationArrow.gameObject.SetActive(true);
+        _navigationArrow.SetDestination((float)_currentTarget.Location.latitude,(float)_currentTarget.Location.longitude);
     }
 
     public void CancelTarget(){
-        print("e");
-        _navigationArrow.SetActive(false);
+        _navigationArrow.gameObject.SetActive(false);
+        _currentTarget = null;
     }
 }
