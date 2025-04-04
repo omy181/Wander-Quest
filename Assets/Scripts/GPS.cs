@@ -23,8 +23,8 @@ public struct GPSLocation
 
 public class GPS : Singleton<GPS>
 {
-    [SerializeField] private double test_latitude = 38.37694276669464;
-    [SerializeField] private double test_longitude = 26.88509838113758;
+    [SerializeField] private double test_latitude = 56.6420988598888;
+    [SerializeField] private double test_longitude = 14.91592350839002;
 
     private LocationInfo _lastLocation;
 
