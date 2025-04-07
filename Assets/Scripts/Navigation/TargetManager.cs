@@ -13,10 +13,12 @@ public class TargetManager : Singleton<TargetManager>
     void Start()
     {
         _cancelTargetButton.onClick.AddListener(CancelTarget);
+        _cancelTargetButton.gameObject.SetActive(false);
     }
 
     public void SetTarget(QuestPlace place){
         _currentTarget = place;
+        _cancelTargetButton.gameObject.SetActive(true);
         _navigationArrow.gameObject.SetActive(true);
         _navigationArrow.SetDestination((float)_currentTarget.Location.latitude,(float)_currentTarget.Location.longitude);
     }
@@ -24,5 +26,6 @@ public class TargetManager : Singleton<TargetManager>
     public void CancelTarget(){
         _navigationArrow.gameObject.SetActive(false);
         _currentTarget = null;
+        _cancelTargetButton.gameObject.SetActive(false);
     }
 }

@@ -18,7 +18,7 @@ public class PlaceSlotUI : MonoBehaviour
     {
         _titleText.text = place.Name;
         _adressText.text = $"{place.Address.Locality}\n{place.Address.Region}\n{place.Address.Country}";
-
+        
         _background.color = place.IsTraveled ? Color.green * 1.2f : Color.red * 1.2f;
 
         if (onClick != null)
