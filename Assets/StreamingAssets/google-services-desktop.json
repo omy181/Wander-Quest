@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "730146566611",
+    "firebase_url": "https://wanderquest-25885-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "wanderquest-25885",
+    "storage_bucket": "wanderquest-25885.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730146566611:android:601d4d699cde3bc223ff26",
+        "android_client_info": {
+          "package_name": "com.UnityTechnologies.com.unity.template.urpblank"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_sPeXNkLuOKJZT_It8-NTMO7GLLYaILY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
