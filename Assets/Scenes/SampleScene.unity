@@ -8173,6 +8173,8 @@ GameObject:
   - component: {fileID: 1591008148}
   - component: {fileID: 1591008147}
   - component: {fileID: 1591008153}
+  - component: {fileID: 1591008155}
+  - component: {fileID: 1591008154}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -8286,6 +8288,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cam: {fileID: 516402120}
   _groundZ: 0
+--- !u!114 &1591008154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1591008146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1cafcb69da398444f8843df8d35d06ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _placeNamePrefab: {fileID: 4998876613299574815, guid: c84f29abbd91c0243a42b8cf302880af,
+    type: 3}
+--- !u!114 &1591008155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1591008146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69e95bd89bdc5b241a5f4fb6db993dd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _csvFile: {fileID: 4900000, guid: 71c1207e38b52164eb3bb7e81e062b5b, type: 3}
 --- !u!1 &1594298051
 GameObject:
   m_ObjectHideFlags: 0
