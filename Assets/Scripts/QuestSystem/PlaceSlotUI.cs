@@ -12,14 +12,36 @@ public class PlaceSlotUI : MonoBehaviour
     [SerializeField] private Button _placeButton;
     [SerializeField] private Image _background;
 
+    private JournalUI _journalUi;
+
     public void SetPlaceData(QuestPlace place, Action onClick)
     {
         _titleText.text = place.Name;
         _adressText.text = $"{place.Address.Locality}\n{place.Address.Region}\n{place.Address.Country}";
-
+        
         _background.color = place.IsTraveled ? Color.green * 1.2f : Color.red * 1.2f;
 
         if (onClick != null)
         _placeButton.onClick.AddListener(() => onClick());
     }
+
+    void Start()
+    {
+        _journalUi = GetComponentInParent<JournalUI>();   
+    }
+
+    public QuestPlace ReturnInfo()
+    {
+        Quest quest = _journalUi.GetQuest();
+        foreach (var place in quest.GetPlaces())
+        {
+            if (place.Name == _titleText.text)
+            {
+                print("Place: " + place.Name);
+                return place;
+            }
+        }
+        return null;
+    }
+    
 }

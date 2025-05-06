@@ -8,7 +8,6 @@ public static class Gyroscope
         if(_canUseGyro()){
             var gyro = Input.gyro;
             gyro.enabled = true;
-
             float bearing = _calculateBearing((float)GPS.instance.GetLastGPSLocation().latitude, (float)GPS.instance.GetLastGPSLocation().longitude, targetLatitude,targetLongitude);
             float heading = _getGyroHeading();
 
@@ -23,10 +22,31 @@ public static class Gyroscope
     private static float _getGyroHeading()
     {
         Quaternion gyro = Input.gyro.attitude;
-        Vector3 gyroEuler = gyro.eulerAngles;
+        Vector3 gyroEuler = _correctAngle(gyro.eulerAngles);
         return gyroEuler.z;
     }
 
+    private static Vector3 _correctAngle(Vector3 angle)
+    {
+        var orientation = Input.deviceOrientation;
+        switch (orientation)
+        {
+            case DeviceOrientation.FaceUp:
+            angle.z += 15;
+            break;
+            case DeviceOrientation.FaceDown:
+                angle.z -= 15;
+                break;
+            case DeviceOrientation.Portrait:
+            case DeviceOrientation.LandscapeLeft:
+            case DeviceOrientation.LandscapeRight:
+                break;
+            default:
+                Debug.LogWarning("Unknown device orientation");
+                break;
+        }
+        return angle;
+    }
 
     private static float _calculateBearing(float lat1, float lon1, float lat2, float lon2)
     {

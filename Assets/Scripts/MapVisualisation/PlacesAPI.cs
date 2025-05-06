@@ -38,7 +38,7 @@ public class PlacesAPI : Singleton<PlacesAPI>
         request.downloadHandler = new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
         request.SetRequestHeader("X-Goog-Api-Key", API.GetKey());
-        request.SetRequestHeader("X-Goog-FieldMask", "places.id,places.displayName,places.location,places.formattedAddress");
+        request.SetRequestHeader("X-Goog-FieldMask", "places.id,places.displayName,places.location,places.adrFormatAddress");
 
         yield return request.SendWebRequest();
 
@@ -100,7 +100,7 @@ public class PlacesAPI : Singleton<PlacesAPI>
             place.location,
             place.displayName.text,
             place.id,
-            AdressUtilities.ConvertHtmlToAddress(place.formattedAddress),
+            AdressUtilities.ConvertHtmlToAddress(place.adrFormatAddress),
             place.isTraveled
         );
     }
@@ -112,7 +112,7 @@ public class PlacesAPI : Singleton<PlacesAPI>
             id = qPlace.ID,
             displayName = new DisplayName { text = qPlace.Name },
             location = qPlace.Location,
-            formattedAddress = AdressUtilities.ConvertAddressToHtml(qPlace.Address),
+            adrFormatAddress = AdressUtilities.ConvertAddressToHtml(qPlace.Address),
             isTraveled = qPlace.IsTraveled
         };
     }
@@ -130,7 +130,7 @@ public class Place
     public GPSLocation location;
     public DisplayName displayName;
     public string id;
-    public string formattedAddress;
+    public string adrFormatAddress;
     public bool isTraveled;
 }
 

@@ -15,6 +15,8 @@ public class JournalUI : MonoBehaviour
     [SerializeField] private Button _deleteQuestButton;
     [SerializeField] private Button _backButton;
 
+    private Quest _currentQuest;
+
     public void ShowQuestsOfType(QuestType questType)
     {
         _header.text = questType.ToString()+"s";
@@ -37,6 +39,7 @@ public class JournalUI : MonoBehaviour
 
     private void _openQuestPanel(Quest quest)
     {
+        _currentQuest = quest;
         _deleteQuestButton.gameObject.SetActive(true);
         _deleteQuestButton.onClick.RemoveAllListeners();
         _deleteQuestButton.onClick.AddListener(()=>_deleteQuest(quest));
@@ -57,11 +60,30 @@ public class JournalUI : MonoBehaviour
         _clearContents();
         quest.GetPlaces().ForEach(place => {
             var placePrefab = Instantiate(_placePrefab, _content).GetComponent<PlaceSlotUI>();
-            placePrefab.SetPlaceData(place,()=> _goToPlace(quest,place));
+            placePrefab.SetPlaceData(place,()=> _goToPlace(place));
+            //ReturnInfo(quest, placePrefab._titleText);
+            //GetQuest(quest);
         });
     }
 
-    private void _goToPlace(Quest quest,QuestPlace place)
+    public Quest GetQuest(){
+        return _currentQuest;
+    }
+
+/*
+     public QuestPlace ReturnInfo(Quest quest, TextMeshProUGUI textMeshPro)
+    {
+        foreach (var place in quest.GetPlaces())
+        {
+            if (place.Name == textMeshPro.text)
+            {
+                return place;
+            }
+        }
+        return null;
+    }
+*/    
+    private void _goToPlace(QuestPlace place)
     {
         WindowManager.instance.OpenPreviousWindow();
         QuestSelector.instance.SelectQuest(quest);

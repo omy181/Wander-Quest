@@ -90,6 +90,7 @@ GameObject:
   - component: {fileID: 6531292169625990241}
   - component: {fileID: 3443476515321287753}
   - component: {fileID: 7426491142463596061}
+  - component: {fileID: 2234903261402531396}
   m_Layer: 5
   m_Name: PlaceUI
   m_TagString: Untagged
@@ -161,9 +162,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7426491142463596061}
-        m_TargetAssemblyTypeName: QuestPrefab, Assembly-CSharp
-        m_MethodName: 
+      - m_Target: {fileID: 2234903261402531396}
+        m_TargetAssemblyTypeName: Targeting, Assembly-CSharp
+        m_MethodName: AddAsTarget
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -209,6 +210,18 @@ MonoBehaviour:
   _adressText: {fileID: 9102023851995699474}
   _placeButton: {fileID: 6531292169625990241}
   _background: {fileID: 7590945256697281322}
+--- !u!114 &2234903261402531396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3317719684625538666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ccc62834a07cdb4c9a68d134880b94b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5499378406632145177
 GameObject:
   m_ObjectHideFlags: 0
