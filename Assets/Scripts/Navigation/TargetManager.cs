@@ -14,6 +14,7 @@ public class TargetManager : Singleton<TargetManager>
     {
         _cancelTargetButton.onClick.AddListener(CancelTarget);
         _cancelTargetButton.gameObject.SetActive(false);
+        _navigationArrow.gameObject.SetActive(false);
     }
 
     public void SetTarget(QuestPlace place){

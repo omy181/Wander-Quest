@@ -86,7 +86,7 @@ public class JournalUI : MonoBehaviour
     private void _goToPlace(QuestPlace place)
     {
         WindowManager.instance.OpenPreviousWindow();
-        QuestSelector.instance.SelectQuest(quest);
+        QuestSelector.instance.SelectQuest(_currentQuest);
         MapModeChanger.instance.FocusOnPlace(place);
     }
 
