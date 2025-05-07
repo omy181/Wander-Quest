@@ -83,5 +83,29 @@ namespace Holylib.Utilities
 
             return rot;
         }
+
+
+        public static void ChangeMaterialColor(MeshRenderer renderer, Color color)
+        {
+            MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+
+            renderer.GetPropertyBlock(propertyBlock);
+
+            propertyBlock.SetColor("_BaseColor", color);
+            propertyBlock.SetColor("_EmissionColor", color);
+
+            renderer.SetPropertyBlock(propertyBlock);
+        }
+
+        public static void ChangeMaterialColor(MeshRenderer renderer, Color color, int index)
+        {
+            MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+
+            renderer.GetPropertyBlock(propertyBlock, index);
+
+            propertyBlock.SetColor("_BaseColor", color);
+
+            renderer.SetPropertyBlock(propertyBlock, index);
+        }
     }
 }

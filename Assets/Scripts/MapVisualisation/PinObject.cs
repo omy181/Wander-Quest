@@ -1,3 +1,4 @@
+using Holylib.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class PinObject : MonoBehaviour
 {
     [SerializeField] private TMPro.TMP_Text _name;
     [SerializeField] private Image _back;
+    [SerializeField] private MeshRenderer _model;
     private MapVisualiser _mapVisualiser;
     public QuestPlace _place { get; private set; }
     public void Initialize(QuestPlace place,MapVisualiser mapVisualiser)
@@ -18,6 +20,8 @@ public class PinObject : MonoBehaviour
         _mapVisualiser.OnMapUpdated += RefreshVisual;
 
         RefreshVisual();
+
+        _model.transform.Rotate(0,Random.Range(-90f,90f),0);
     }
 
     private void OnEnable()
@@ -36,10 +40,12 @@ public class PinObject : MonoBehaviour
     {
         if (_place.IsTraveled)
         {
+            HolyUtilities.ChangeMaterialColor(_model, Color.green);
             _back.color = Color.green;
         }
         else
         {
+            HolyUtilities.ChangeMaterialColor(_model, Color.red);
             _back.color = Color.red;
         }
 
