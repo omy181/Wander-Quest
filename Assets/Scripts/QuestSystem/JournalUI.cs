@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,7 +28,8 @@ public class JournalUI : MonoBehaviour
 
         _clearContents();
 
-        QuestManager.instance.GetActiveQuests().ForEach(quest => {
+        List<Quest> orderedQuestList = QuestManager.instance.GetActiveQuests().OrderByDescending(p => p.TotalPlaceCount).ToList();
+        orderedQuestList.ForEach(quest => {
             if(quest.QuestType == questType)
             {
                 var questPrefab = Instantiate(_questPrefab, _content).GetComponent<QuestPrefab>();
@@ -64,6 +66,7 @@ public class JournalUI : MonoBehaviour
             //ReturnInfo(quest, placePrefab._titleText);
             //GetQuest(quest);
         });
+
     }
 
     public Quest GetQuest(){
