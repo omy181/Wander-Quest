@@ -195,11 +195,11 @@ public class LoginManager : Singleton<LoginManager>
 
 	private void _onQuestsLoaded()
 	{
-		Debug.Log("Quests loaded successfully.");
+		//Debug.Log("Quests loaded successfully.");
 		// Transition to the game panel after quests are loaded
 		MainThreadDispatcher.Instance.Enqueue(() =>
 		{
-			Debug.Log("Transitioning to game panel...");
+			//Debug.Log("Transitioning to game panel...");
 		});
 	}
 }

@@ -8,7 +8,7 @@ public class PlaceNameVisualisation : MonoBehaviour
     [SerializeField] private PlacePinObject _placeNamePrefab;
     void Start()
     {
-        _mapVisualiser = FindObjectOfType<MapVisualiser>();
+        _mapVisualiser = FindFirstObjectByType<MapVisualiser>();
         _createNamePins();       
     }
 

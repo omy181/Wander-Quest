@@ -47,7 +47,7 @@ namespace Holylib.Utilities
             byte[] bytes = texture.EncodeToPNG();
             File.WriteAllBytes(filePath, bytes);
 
-            Debug.Log($"Texture saved at: {filePath}");
+            //Debug.Log($"Texture saved at: {filePath}");
         }
 
         private Texture2D _loadTextureFromDisk(string id)

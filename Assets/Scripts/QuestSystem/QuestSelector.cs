@@ -13,6 +13,7 @@ public class QuestSelector : Singleton<QuestSelector>
     [SerializeField] private TMP_Text _activeQuestText;
     [SerializeField] private TMP_Text _activeQuestProgressText;
     [SerializeField] private MapPinVisualiser _mapPinVisualiser;
+    [SerializeField] private Button _scanButton;
 
     private bool _isQuestSelectorOpen => _questList.activeSelf;
 
@@ -20,6 +21,7 @@ public class QuestSelector : Singleton<QuestSelector>
 
     private void Start()
     {
+        _scanButton.onClick.AddListener(_scanArea);
         UIManager.instance.OnUICancel += ()=> ShowQuestSelector(false);
     }
 
@@ -89,6 +91,24 @@ public class QuestSelector : Singleton<QuestSelector>
                 NotificationManager.SendDiscoveryNotification(place.Name);
                 SelectQuest(quest);
             }
+        }
+    }
+
+    private void _scanArea()
+    {
+        if (_activeQuest != null)
+        {
+            StartCoroutine(PlacesAPI.instance.StartSearchPlaces(_activeQuest.MapsQuerry,10, (List<QuestPlace> places) =>
+            {
+                _mapPinVisualiser.CreatePins(places);
+
+                places.ForEach(p => {
+                    QuestManager.instance.AddPlaceToQuest(_activeQuest, p);
+                });
+
+                SelectQuest(_activeQuest);
+                _mapPinVisualiser.FocusPins(_activeQuest);
+            }));
         }
     }
 }

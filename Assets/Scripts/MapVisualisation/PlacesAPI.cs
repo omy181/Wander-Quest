@@ -11,9 +11,9 @@ public class PlacesAPI : Singleton<PlacesAPI>
     [SerializeField] private MapPinVisualiser _mapPinVisualiser;
     private string _resultsjson;
 
-    public IEnumerator StartSearchPlaces(string query, Action<List<QuestPlace>> onPlacesFound)
+    public IEnumerator StartSearchPlaces(string query,int resultCount, Action<List<QuestPlace>> onPlacesFound)
     {
-        yield return StartCoroutine(_searchPlaces(_getJsonPayload(query, GPS.instance.GetLastGPSLocation(), 500f, 5)));
+        yield return StartCoroutine(_searchPlaces(_getJsonPayload(query, GPS.instance.GetLastGPSLocation(), 500f, resultCount)));
 
         List<QuestPlace> list = new List<QuestPlace>();
         var placesResult = _resultJsonToPlaces(_resultsjson);

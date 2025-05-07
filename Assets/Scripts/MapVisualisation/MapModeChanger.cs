@@ -21,15 +21,18 @@ public class MapModeChanger : Singleton<MapModeChanger>
             _currentZoomLevel = Mathf.Clamp(value,2,20);
 
             if(_currentZoomLevel != value) return;
+            _reCenter();
 
+            /*
             var worldcords = _mapVisualiser.GetCameraWorldCords();
-
             _mapVisualiser.SetZoom(_currentZoomLevel);
             //_mapVisualiser.SetPosition(MapUtilities.WorldToPixel(MapUtilities.LatLonToWorld(GPS.instance.GetLastGPSLocation()), _currentZoomLevel));
             _mapVisualiser.SetPosition(worldcords);
             _mapVisualiser.SetCameraPosition(_mapVisualiser.WorldCordToUnityCordinate(worldcords));
             _mapVisualiser.UpdateAllPlaneTextures();
-        } }
+            */
+        }
+    }
 
     private void MapInitalization()
     {
