@@ -82,6 +82,11 @@ public class MapVisualiser : MonoBehaviour
         _camera.Teleport(pos);
     }
 
+    public Vector3 GetCameraPosition()
+    {
+        return _camera.CamPosition3D;
+    }
+
     private void Start()
     {
         _initializePlanes();

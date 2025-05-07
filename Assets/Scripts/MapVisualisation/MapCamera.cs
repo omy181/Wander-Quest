@@ -5,6 +5,7 @@ using UnityEngine;
 public class MapCamera : MonoBehaviour
 {
     public Vector2 CamPosition2D=> new Vector2(transform.position.x,transform.position.z);
+    public Vector3 CamPosition3D => transform.position;
 
     public float CamSpeed;
 

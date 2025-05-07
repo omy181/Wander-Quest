@@ -55,6 +55,19 @@ public class MapModeChanger : Singleton<MapModeChanger>
         StartCoroutine(MapTilesAPI.instance.StartMapTiles(MapInitalization));
     }
 
+    private void Update()
+    {
+        _checkIsOnCenter();
+    }
+
+    private void _checkIsOnCenter()
+    {
+        var despos = _mapVisualiser.GPSCordinateToUnityCordinate(GPS.instance.GetLastGPSLocation());
+        var pos = new Vector3(despos.x, _mapVisualiser.GetCameraPosition().y, despos.z);
+        var dis = Vector3.Distance(_mapVisualiser.GetCameraPosition(), pos);
+        _reCenterButton.gameObject.SetActive(dis >= 4);
+    }
+
     public void FocusOnPlace(QuestPlace place)
     {
         _mapVisualiser.SetPosition(MapUtilities.LatLonToWorld(place.Location));
