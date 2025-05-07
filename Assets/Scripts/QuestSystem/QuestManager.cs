@@ -144,4 +144,37 @@ public class QuestManager : Singleton<QuestManager>
 
         onQuestsLoadedCallback?.Invoke();
     }
+
+    public IEnumerator LoadAQuestOfAllUsers(Quest questToSearch,Action<List<QuestLeaderBoard>> onQuestsLoadedCallback)
+    {
+        var usersRef = LoginManager.instance.DbReference.Child("users");
+        var usersData = usersRef.GetValueAsync();
+        yield return new WaitUntil(() => usersData.IsCompleted);
+
+        List<QuestLeaderBoard> leaderboards = new List<QuestLeaderBoard>();
+
+        if (usersData.Result.Exists)
+        {
+            foreach (var userNode in usersData.Result.Children)
+            {
+                string username = userNode.Key;
+                var questsNode = userNode.Child("quests");
+
+                foreach (var questNode in questsNode.Children)
+                {
+                    string json = questNode.GetRawJsonValue();
+                    Quest q = JsonConvert.DeserializeObject<Quest>(json);
+
+                    if (q.Title == questToSearch.Title)
+                    {
+                        leaderboards.Add(new QuestLeaderBoard(q, username));
+                        break; 
+                    }
+                }
+            }
+        }
+
+        onQuestsLoadedCallback?.Invoke(leaderboards);
+    }
+
 }

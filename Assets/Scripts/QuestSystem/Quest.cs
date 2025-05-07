@@ -73,3 +73,15 @@ public enum QuestType
 {
     MainQuest,SideQuest,DailyQuest
 }
+
+public class QuestLeaderBoard
+{
+    public Quest Quest;
+    public string UserName;
+
+    public QuestLeaderBoard(Quest quest, string userName)
+    {
+        Quest = quest;
+        UserName = userName;
+    }
+}
