@@ -21,7 +21,7 @@ public class TargetManager : Singleton<TargetManager>
         _currentTarget = place;
         _cancelTargetButton.gameObject.SetActive(true);
         _navigationArrow.gameObject.SetActive(true);
-        _navigationArrow.SetDestination((float)_currentTarget.Location.latitude,(float)_currentTarget.Location.longitude);
+        _navigationArrow.SetDestination((float)_currentTarget.Location.latitude,(float)_currentTarget.Location.longitude,place);
     }
 
     public void CancelTarget(){
