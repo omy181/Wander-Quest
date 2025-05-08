@@ -69,7 +69,7 @@ public class QuestSelector : Singleton<QuestSelector>
         _mapPinVisualiser.FocusPins(quest);
         ShowQuestSelector(false);
 
-
+        _scanArea();
     } 
     private void _checkQuestProgression(Quest quest)
     {
@@ -98,7 +98,7 @@ public class QuestSelector : Singleton<QuestSelector>
     {
         if (_activeQuest != null)
         {
-            StartCoroutine(PlacesAPI.instance.StartSearchPlaces(_activeQuest.MapsQuerry,10, (List<QuestPlace> places) =>
+            StartCoroutine(PlacesAPI.instance.StartSearchPlaces(_activeQuest.MapsQuerry,5, (List<QuestPlace> places) =>
             {
                 _mapPinVisualiser.CreatePins(places);
 
@@ -106,7 +106,7 @@ public class QuestSelector : Singleton<QuestSelector>
                     QuestManager.instance.AddPlaceToQuest(_activeQuest, p);
                 });
 
-                SelectQuest(_activeQuest);
+                
                 _mapPinVisualiser.FocusPins(_activeQuest);
             }));
         }
