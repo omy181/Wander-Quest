@@ -32,7 +32,6 @@ public class LoginManager : Singleton<LoginManager>
 
 		if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
 		{
-			Debug.LogWarning("Login failed: Username or password is empty.");
 			_loginUI.GiveWarning("Please enter both username and password.");
 			return;
 		}
@@ -46,7 +45,6 @@ public class LoginManager : Singleton<LoginManager>
 				if (snapshot.Exists && snapshot.Child("password").Value.ToString() == password)
 				{
 					Username = username;
-					Debug.Log($"Login successful: {username}");
 
 					MainThreadDispatcher.Instance.Enqueue(() =>
 					{
@@ -57,7 +55,6 @@ public class LoginManager : Singleton<LoginManager>
 				}
 				else
 				{
-					Debug.LogError("Login failed: Invalid username or password.");
 					MainThreadDispatcher.Instance.Enqueue(() =>
 					{
 						_loginUI.GiveWarning("Invalid username or password.");
@@ -66,7 +63,6 @@ public class LoginManager : Singleton<LoginManager>
 			}
 			else
 			{
-				Debug.LogError($"Failed to fetch user data: {task.Exception?.Message}");
 				MainThreadDispatcher.Instance.Enqueue(() =>
 				{
 					_loginUI.GiveWarning("Login failed. Try again later.");
@@ -93,7 +89,6 @@ public class LoginManager : Singleton<LoginManager>
 			{
 				if (task.Result.Exists)
 				{
-					Debug.LogError("Signup failed: Username already exists.");
 					MainThreadDispatcher.Instance.Enqueue(() =>
 					{
 						_loginUI.GiveWarning("Username already exists. Please choose a different one.");
@@ -107,7 +102,6 @@ public class LoginManager : Singleton<LoginManager>
 			}
 			else
 			{
-				Debug.LogError($"Failed to check username: {task.Exception?.Message}");
 				MainThreadDispatcher.Instance.Enqueue(() =>
 				{
 					_loginUI.GiveWarning("Signup failed. Try again later.");
@@ -125,12 +119,10 @@ public class LoginManager : Singleton<LoginManager>
 		{
 			if (task.IsCompletedSuccessfully)
 			{
-				Debug.Log("New user created in the database.");
 				_initializeEmptyQuestBranch(username);
 			}
 			else
 			{
-				Debug.LogError($"Failed to create user in database: {task.Exception?.Message}");
 				MainThreadDispatcher.Instance.Enqueue(() =>
 				{
 					_loginUI.GiveWarning("Failed to complete signup process.");
@@ -145,7 +137,6 @@ public class LoginManager : Singleton<LoginManager>
 		{
 			if (task.IsCompletedSuccessfully)
 			{
-				Debug.Log("Quest branch initialized.");
 				MainThreadDispatcher.Instance.Enqueue(() =>
 				{
 					QuestManager.instance.InitializeQuests(_onQuestsLoaded);
@@ -153,7 +144,6 @@ public class LoginManager : Singleton<LoginManager>
 			}
 			else
 			{
-				Debug.LogError($"Failed to initialize quest branch: {task.Exception?.Message}");
 				MainThreadDispatcher.Instance.Enqueue(() =>
 				{
 					_loginUI.GiveWarning("Failed to initialize user data.");
@@ -170,7 +160,6 @@ public class LoginManager : Singleton<LoginManager>
 			{
 				if (task.Result.Exists)
 				{
-					Debug.Log("Quests branch exists.");
 					MainThreadDispatcher.Instance.Enqueue(() =>
 					{
 						QuestManager.instance.InitializeQuests(_onQuestsLoaded);
@@ -178,13 +167,11 @@ public class LoginManager : Singleton<LoginManager>
 				}
 				else
 				{
-					Debug.Log("No quests found. Initializing empty quest branch.");
 					_initializeEmptyQuestBranch(Username);
 				}
 			}
 			else
 			{
-				Debug.LogError($"Failed to check quests branch: {task.Exception?.Message}");
 				MainThreadDispatcher.Instance.Enqueue(() =>
 				{
 					_loginUI.GiveWarning("Failed to load user data.");
