@@ -27,7 +27,7 @@ public class NavigationArrow : MonoBehaviour
     private void _rotateArrow(){
         float angle = Gyroscope.FindAngleToTarget(_targetLatitude, _targetLongitude);
         if (angle == -1) return;
-        _arrow.transform.localRotation = Quaternion.Euler(0,0,-angle);
+        _arrow.transform.localRotation = Quaternion.Euler(0,0,angle);
     }
 
     public void SetDestination(float targetLatitude, float targetLongitude,QuestPlace activelastPlace)
