@@ -2,10 +2,12 @@ using UnityEngine;
 
 public static class Gyroscope 
 {
+    /*
     public static void CalibrateGyro()
     {
-        
+
     }
+    */
     public static float FindAngleToTarget(float targetLatitude, float targetLongitude){
         
         if(_canUseGyro()){
