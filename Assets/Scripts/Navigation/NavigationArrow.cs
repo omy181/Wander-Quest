@@ -8,7 +8,6 @@ public class NavigationArrow : MonoBehaviour
 {
     [SerializeField] private TMP_Text _destinyText;
     [SerializeField] private Button _destinyFocusButton;
-    [SerializeField] private Button _calibrateButton;
     [SerializeField] private GameObject _arrow;
     private float _targetLatitude;
     private float _targetLongitude;
@@ -20,7 +19,6 @@ public class NavigationArrow : MonoBehaviour
     private void Start()
     {
         _destinyFocusButton.onClick.AddListener(_focus);
-        //_calibrateButton.onClick.AddListener(() => Gyroscope.CalibrateGyro());
         StartCoroutine(_initializeSensorsCoroutine());
     }
 
