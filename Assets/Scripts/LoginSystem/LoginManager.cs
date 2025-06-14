@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class LoginManager : Singleton<LoginManager>
 {
 	[SerializeField] private LoginUI _loginUI;
+	[SerializeField] private LoginWithGoogle _loginWithGoogle;
 
 	public string Username { get; private set; }
 	public DatabaseReference DbReference { get; private set; }
@@ -27,10 +28,17 @@ public class LoginManager : Singleton<LoginManager>
 
 	private void _handleLogin()
 	{
-		string username = _loginUI.GetLogInUserName();
+
+        _loginWithGoogle.Login();
+
+		return;
+        string username = _loginUI.GetLogInUserName();
 		string password = _loginUI.GetLogInPassword();
 
-		if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+		
+
+
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
 		{
 			_loginUI.GiveWarning("Please enter both username and password.");
 			return;

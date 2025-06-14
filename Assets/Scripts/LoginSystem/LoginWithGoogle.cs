@@ -17,9 +17,6 @@ public class LoginWithGoogle : MonoBehaviour
     Firebase.Auth.FirebaseAuth auth;
     Firebase.Auth.FirebaseUser user;
 
-    public TextMeshProUGUI Username, UserEmail;
-
-    public Image UserProfilePic;
     private string imageUrl;
     private bool isGoogleSignInInitialized = false;
     private void Start()
@@ -87,14 +84,19 @@ public class LoginWithGoogle : MonoBehaviour
                         signInCompleted.SetResult(((Task<FirebaseUser>)authTask).Result);
                         Debug.Log("Success");
                         user = auth.CurrentUser;
-                        Username.text = user.DisplayName;
-                        UserEmail.text = user.Email;
+                        ReturnLoginData(user.DisplayName, user.Email);
 
                         StartCoroutine(LoadImage(CheckImageUrl(user.PhotoUrl.ToString())));
                     }
                 });
             }
         });
+    }
+
+    public void ReturnLoginData(string username,string email)
+    {
+        Debug.Log(username);
+        Debug.Log(email);
     }
     private string CheckImageUrl(string url)
     {
@@ -115,7 +117,7 @@ public class LoginWithGoogle : MonoBehaviour
             Texture2D texture = DownloadHandlerTexture.GetContent(www);
             // Use the loaded texture here
             Debug.Log("Image loaded successfully");
-            UserProfilePic.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0));
+            //UserProfilePic.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0));
         }
         else
         {
