@@ -40,7 +40,7 @@ public class LoginWithGoogle : MonoBehaviour
         isGoogleSignInInitialized = false;
     }
 
-    public void Login(Action<Firebase.Auth.FirebaseUser> onLogin,Action<Sprite> onImageLaoded)
+    public void Login(Action<Firebase.Auth.FirebaseUser> onLogin,Action<Sprite> onImageLaoded,Action onLoginFailed)
     {
         if (!isGoogleSignInInitialized)
         {
@@ -63,12 +63,15 @@ public class LoginWithGoogle : MonoBehaviour
             {
                 signInCompleted.SetCanceled();
                 Debug.Log("Cancelled");
+
+                onLoginFailed?.Invoke();
             }
             else if (task.IsFaulted)
             {
                 signInCompleted.SetException(task.Exception);
 
                 Debug.Log("Faulted " + task.Exception);
+                onLoginFailed?.Invoke();
             }
             else
             {
@@ -83,6 +86,8 @@ public class LoginWithGoogle : MonoBehaviour
                     {
                         signInCompleted.SetException(authTask.Exception);
                         Debug.Log("Faulted In Auth " + task.Exception);
+
+                        onLoginFailed?.Invoke();
                     }
                     else
                     {

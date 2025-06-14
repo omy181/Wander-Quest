@@ -53,12 +53,23 @@ public class LoginManager : Singleton<LoginManager>
 
 		_loginWithGoogle.Logout();
 
+		StartCoroutine(nameof(_logOutWait));
+
+    }
+
+	private IEnumerator _logOutWait()
+	{
+        _loginUI.ShowLoadingScreen(true);
+
         _loginUI.ShowLoginWindow(true);
+		yield return new WaitForSecondsRealtime(2f);
+
+        _loginUI.ShowLoadingScreen(false);
     }
 
     private void _handleLogin()
 	{
-
+		_loginUI.ShowLoadingScreen(true);
 		_loginWithGoogle.Login((user) =>
 		{
 			User = user;
@@ -68,10 +79,15 @@ public class LoginManager : Singleton<LoginManager>
 
             ProfileUI.instance.SetProfileName(User.DisplayName, User.Email);
 
+            _loginUI.ShowLoadingScreen(false);
+
         }, (sprite) =>
 		{
             _profilePhoto = sprite;
 
+		}, () =>
+		{
+            _loginUI.ShowLoadingScreen(false);
         });
 
 

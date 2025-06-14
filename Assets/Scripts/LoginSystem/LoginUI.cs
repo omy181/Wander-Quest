@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class LoginUI : MonoBehaviour
 {
     [SerializeField] private Window _loginWindow;
+    [SerializeField] private Window _loadingWindow;
 
     [Header("Log in")]
     [SerializeField] private GameObject _loginContainer;
@@ -72,6 +73,18 @@ public class LoginUI : MonoBehaviour
             WindowManager.instance.OpenMainWindow();
         }
         
+    }
+
+    public void ShowLoadingScreen(bool state)
+    {
+        if (state)
+        {
+            _loadingWindow.Activate();
+        }
+        else
+        {
+            _loadingWindow.Deactivate();
+        }
     }
 
     private void _showLoginContainer(bool state)
