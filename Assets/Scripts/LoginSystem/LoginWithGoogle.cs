@@ -8,6 +8,7 @@ using TMPro;
 using Firebase.Auth;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using System;
 
 public class LoginWithGoogle : MonoBehaviour
 {
@@ -15,7 +16,6 @@ public class LoginWithGoogle : MonoBehaviour
     private GoogleSignInConfiguration configuration;
 
     Firebase.Auth.FirebaseAuth auth;
-    Firebase.Auth.FirebaseUser user;
 
     private string imageUrl;
     private bool isGoogleSignInInitialized = false;
@@ -29,7 +29,18 @@ public class LoginWithGoogle : MonoBehaviour
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
     }
 
-    public void Login()
+    public void Logout()
+    {
+        if (auth.CurrentUser != null)
+        {
+            auth.SignOut();
+        }
+
+        GoogleSignIn.DefaultInstance.SignOut();
+        isGoogleSignInInitialized = false;
+    }
+
+    public void Login(Action<Firebase.Auth.FirebaseUser> onLogin,Action<Sprite> onImageLaoded)
     {
         if (!isGoogleSignInInitialized)
         {
@@ -39,14 +50,8 @@ public class LoginWithGoogle : MonoBehaviour
                 WebClientId = GoogleAPI,
                 RequestEmail = true
             };
-
             isGoogleSignInInitialized = true;
         }
-        GoogleSignIn.Configuration = new GoogleSignInConfiguration
-        {
-            RequestIdToken = true,
-            WebClientId = GoogleAPI
-        };
         GoogleSignIn.Configuration.RequestEmail = true;
 
         Task<GoogleSignInUser> signIn = GoogleSignIn.DefaultInstance.SignIn();
@@ -57,13 +62,13 @@ public class LoginWithGoogle : MonoBehaviour
             if (task.IsCanceled)
             {
                 signInCompleted.SetCanceled();
-                //Debug.Log("Cancelled");
+                Debug.Log("Cancelled");
             }
             else if (task.IsFaulted)
             {
                 signInCompleted.SetException(task.Exception);
 
-                //Debug.Log("Faulted " + task.Exception);
+                Debug.Log("Faulted " + task.Exception);
             }
             else
             {
@@ -77,31 +82,23 @@ public class LoginWithGoogle : MonoBehaviour
                     else if (authTask.IsFaulted)
                     {
                         signInCompleted.SetException(authTask.Exception);
-                        //Debug.Log("Faulted In Auth " + task.Exception);
+                        Debug.Log("Faulted In Auth " + task.Exception);
                     }
                     else
                     {
                         signInCompleted.SetResult(((Task<FirebaseUser>)authTask).Result);
-                        //Debug.Log("Success");
-                        user = auth.CurrentUser;
-                        ReturnLoginData(user.DisplayName, user.Email);
+                        Debug.Log("Success");
+                        var user = auth.CurrentUser;
+                        onLogin?.Invoke(user);
 
-                        //StartCoroutine(LoadImage(CheckImageUrl(user.PhotoUrl.ToString())));
+                        StartCoroutine(_loadImage(_checkImageUrl(user.PhotoUrl.ToString()), onImageLaoded));
                     }
                 });
             }
         });
     }
 
-    public void ReturnLoginData(string username,string email)
-    {
-        MainThreadDispatcher.Instance.Enqueue(() => {
-            Debug.Log(username);
-            Debug.Log(email);
-        });
-        
-    }
-    private string CheckImageUrl(string url)
+    private string _checkImageUrl(string url)
     {
         if (!string.IsNullOrEmpty(url))
         {
@@ -110,7 +107,7 @@ public class LoginWithGoogle : MonoBehaviour
         return imageUrl;
     }
 
-    IEnumerator LoadImage(string imageUri)
+    private IEnumerator _loadImage(string imageUri,Action<Sprite> onImageLoaded)
     {
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(imageUri);
         yield return www.SendWebRequest();
@@ -120,7 +117,8 @@ public class LoginWithGoogle : MonoBehaviour
             Texture2D texture = DownloadHandlerTexture.GetContent(www);
             // Use the loaded texture here
             Debug.Log("Image loaded successfully");
-            //UserProfilePic.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0));
+            var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0));
+            onImageLoaded?.Invoke(sprite);
         }
         else
         {

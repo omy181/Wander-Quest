@@ -11,7 +11,14 @@ public class QuestManager : Singleton<QuestManager>
 
     public void InitializeQuests(Action onQuestsLoadedCallback)
     {
+        CleanQuests();
+
         StartCoroutine(_loadQuests(onQuestsLoadedCallback));
+    }
+
+    public void CleanQuests()
+    {
+        _activeQuests.Clear();
     }
 
     public Quest CreateNewQuest(QuestType questType, string mapsQuerry)

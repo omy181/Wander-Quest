@@ -3,14 +3,19 @@ using Firebase.Database;
 using TMPro;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
+using System;
+using UnityEngine.Networking;
 
 public class LoginManager : Singleton<LoginManager>
 {
 	[SerializeField] private LoginUI _loginUI;
 	[SerializeField] private LoginWithGoogle _loginWithGoogle;
 
-	public string Username { get; private set; }
-	public DatabaseReference DbReference { get; private set; }
+	public string Username => User.DisplayName;
+    private Sprite _profilePhoto { set { ProfileUI.instance.SetProfilePictures(value); } }
+    public Firebase.Auth.FirebaseUser User { get; private set; }
+    public DatabaseReference DbReference { get; private set; }
 	private FirebaseAuth _auth;
 
 	protected override void Awake()
@@ -22,20 +27,59 @@ public class LoginManager : Singleton<LoginManager>
 
 		_loginUI.OnLoginButtonPressed += _handleLogin;
 		_loginUI.OnSignUpButtonPressed += _handleSignUp;
-		
-	}
+		ProfileUI.instance.OnLogOutPressed += _logout;
 
+    }
 
-	private void _handleLogin()
+    private void Start()
+    {
+        if (_auth.CurrentUser != null)
+        {
+            User = _auth.CurrentUser;
+            _loginUI.ShowLoginWindow(false);
+            _checkAndInitializeQuests();
+
+			ProfileUI.instance.SetProfileName(User.DisplayName,User.Email);
+
+            string photoUrl = User.PhotoUrl != null ? User.PhotoUrl.ToString() : null;
+            if (!string.IsNullOrEmpty(photoUrl))
+                StartCoroutine(_loadImage(photoUrl, (sprite) => _profilePhoto = sprite));
+        }
+    }
+
+    private void _logout()
+    {
+        User = null;
+
+		_loginWithGoogle.Logout();
+
+        _loginUI.ShowLoginWindow(true);
+    }
+
+    private void _handleLogin()
 	{
 
-        _loginWithGoogle.Login();
+		_loginWithGoogle.Login((user) =>
+		{
+			User = user;
 
-		return;
+            _loginUI.ShowLoginWindow(false);
+            _checkAndInitializeQuests();
+
+            ProfileUI.instance.SetProfileName(User.DisplayName, User.Email);
+
+        }, (sprite) =>
+		{
+            _profilePhoto = sprite;
+
+        });
+
+
+
+        return;
+		/*
         string username = _loginUI.GetLogInUserName();
 		string password = _loginUI.GetLogInPassword();
-
-		
 
 
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
@@ -77,10 +121,12 @@ public class LoginManager : Singleton<LoginManager>
 				});
 			}
 		});
+		*/
 	}
 
 	private void _handleSignUp()
 	{
+		/*
 		string username = _loginUI.GetSignUpUserName();
 		string password = _loginUI.GetSignUpPassword();
 
@@ -116,6 +162,7 @@ public class LoginManager : Singleton<LoginManager>
 				});
 			}
 		});
+		*/
 	}
 
 	private void _createUserInDatabase(string username, string password)
@@ -197,4 +244,22 @@ public class LoginManager : Singleton<LoginManager>
 			//Debug.Log("Transitioning to game panel...");
 		});
 	}
+
+    private IEnumerator _loadImage(string imageUri, Action<Sprite> onImageLoaded)
+    {
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(imageUri);
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            Texture2D texture = DownloadHandlerTexture.GetContent(www);
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            onImageLoaded?.Invoke(sprite);
+        }
+        else
+        {
+            Debug.Log("Error loading image: " + www.error);
+        }
+    }
+
 }
