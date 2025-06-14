@@ -57,13 +57,13 @@ public class LoginWithGoogle : MonoBehaviour
             if (task.IsCanceled)
             {
                 signInCompleted.SetCanceled();
-                Debug.Log("Cancelled");
+                //Debug.Log("Cancelled");
             }
             else if (task.IsFaulted)
             {
                 signInCompleted.SetException(task.Exception);
 
-                Debug.Log("Faulted " + task.Exception);
+                //Debug.Log("Faulted " + task.Exception);
             }
             else
             {
@@ -77,16 +77,16 @@ public class LoginWithGoogle : MonoBehaviour
                     else if (authTask.IsFaulted)
                     {
                         signInCompleted.SetException(authTask.Exception);
-                        Debug.Log("Faulted In Auth " + task.Exception);
+                        //Debug.Log("Faulted In Auth " + task.Exception);
                     }
                     else
                     {
                         signInCompleted.SetResult(((Task<FirebaseUser>)authTask).Result);
-                        Debug.Log("Success");
+                        //Debug.Log("Success");
                         user = auth.CurrentUser;
                         ReturnLoginData(user.DisplayName, user.Email);
 
-                        StartCoroutine(LoadImage(CheckImageUrl(user.PhotoUrl.ToString())));
+                        //StartCoroutine(LoadImage(CheckImageUrl(user.PhotoUrl.ToString())));
                     }
                 });
             }
@@ -95,8 +95,11 @@ public class LoginWithGoogle : MonoBehaviour
 
     public void ReturnLoginData(string username,string email)
     {
-        Debug.Log(username);
-        Debug.Log(email);
+        MainThreadDispatcher.Instance.Enqueue(() => {
+            Debug.Log(username);
+            Debug.Log(email);
+        });
+        
     }
     private string CheckImageUrl(string url)
     {
