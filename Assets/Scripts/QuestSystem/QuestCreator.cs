@@ -30,7 +30,7 @@ public class QuestCreator : MonoBehaviour
 
         // FOR TESTING  Search and create the quest
 
-        StartCoroutine(PlacesAPI.instance.StartSearchPlaces(questQuerry,5, (List<QuestPlace> places) =>
+        StartCoroutine(PlacesAPI.instance.StartSearchPlaces(questQuerry,10, (List<QuestPlace> places) =>
         {
             FindFirstObjectByType<MapPinVisualiser>().CreatePins(places);
             var quest = QuestManager.instance.CreateNewQuest(QuestType.MainQuest, questQuerry);

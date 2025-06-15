@@ -18,11 +18,22 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
     {
         _clearContents();
         _setQuestDropdown();
+        _selectQuest(QuestSelector.instance._activeQuest);
+        _questDropDown.value = _questDropDown.options.FindIndex(o=>o.text == QuestSelector.instance._activeQuest.Title);
     }
 
     private void _selectQuest(int questIndex)
     {
         StartCoroutine(QuestManager.instance.LoadAQuestOfAllUsers(QuestManager.instance.GetActiveQuests()[questIndex], _refreshQuestList));
+    }
+
+    private void _selectQuest(Quest quest)
+    {
+        if(quest != null)
+        {
+            StartCoroutine(QuestManager.instance.LoadAQuestOfAllUsers(quest, _refreshQuestList));
+        }
+        
     }
 
     private void _refreshQuestList(List<QuestLeaderBoard> quests)

@@ -1,24 +1,29 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 public class Quest
 {
 	[JsonIgnore] public string Title { get; private set; }
 	[JsonProperty] public string MapsQuerry { get; private set; }
-	[JsonProperty] public QuestType QuestType { get; private set; }
+    [JsonProperty] public string QuestOwnerName { get; private set; }
+    [JsonProperty] public QuestType QuestType { get; private set; }
 
-    [JsonIgnore] public string ID => MapsQuerry;
+    [JsonIgnore] public string ID { get; private set; }
     [JsonIgnore] public int TotalTraveledCount => _places.Count(p=>p.IsTraveled);
     [JsonIgnore] public int TotalPlaceCount => _places.Count;
     [JsonProperty] private List<QuestPlace> _places;
 
-    public Quest(QuestType questType, string mapsQuerry, List<QuestPlace> places)
+    public Quest(QuestType questType, string mapsQuerry, List<QuestPlace> places,string username)
     {
+        QuestOwnerName = username;
         QuestType = questType;
         MapsQuerry = mapsQuerry;
         _places = places;
+        if (places == null) _places = new List<QuestPlace>();
         _createTitle();
+        _createID();
     }
 
     private void _createTitle()
@@ -29,6 +34,11 @@ public class Quest
             words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1).ToLower();
         }
         Title = string.Join(" ", words) + " List";
+    }
+
+    private void _createID()
+    {
+        ID = Regex.Replace(MapsQuerry, @"[\s\p{P}]", "").ToLower();
     }
 
     public bool AddPlace(QuestPlace place)
@@ -77,11 +87,12 @@ public enum QuestType
 public class QuestLeaderBoard
 {
     public Quest Quest;
-    public string UserName;
+    public string UserName=> Quest.QuestOwnerName;
+    public string UserID;
 
-    public QuestLeaderBoard(Quest quest, string userName)
+    public QuestLeaderBoard(Quest quest, string userID)
     {
         Quest = quest;
-        UserName = userName;
+        UserID = userID;
     }
 }

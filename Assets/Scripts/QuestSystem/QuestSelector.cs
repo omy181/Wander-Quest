@@ -17,7 +17,7 @@ public class QuestSelector : Singleton<QuestSelector>
 
     private bool _isQuestSelectorOpen => _questList.activeSelf;
 
-    private Quest _activeQuest;
+    public Quest _activeQuest { get; private set; }
 
     private void Start()
     {
@@ -63,6 +63,8 @@ public class QuestSelector : Singleton<QuestSelector>
 
     public void SelectQuest(Quest quest)
     {
+        if (quest == null) return;
+
         _activeQuestText.text = quest.Title;
         _activeQuestProgressText.text = quest.TotalTraveledCount.ToString();
         _activeQuest = quest;

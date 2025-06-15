@@ -10,7 +10,8 @@ public class QuestPrefab : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _titleText;
     [SerializeField] private TextMeshProUGUI _progressText;
     [SerializeField] private Button _questButton;
-
+    [SerializeField] private Image _background;
+    [SerializeField] private GameObject _sponsorIcon;
 
     public void SetQuestData(Quest quest,Action onClick)
     {
@@ -19,5 +20,19 @@ public class QuestPrefab : MonoBehaviour
 
         _questButton.onClick.AddListener(()=>onClick());
 
+        if(quest.QuestType == QuestType.SideQuest)
+        {
+            _sponsorIcon.SetActive(true);
+            _background.color = Color.Lerp(_background.color,Color.yellow,0.5f);
+        }
+        else
+        {
+            _sponsorIcon.SetActive(false);
+        }
+
+        if (quest.QuestType == QuestType.DailyQuest)
+        {
+            _background.color = Color.Lerp(_background.color, Color.green, 0.5f);
+        }
     }
 }

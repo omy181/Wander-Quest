@@ -42,6 +42,16 @@ public class LoginWithGoogle : MonoBehaviour
 
     public void Login(Action<Firebase.Auth.FirebaseUser> onLogin,Action<Sprite> onImageLaoded,Action onLoginFailed)
     {
+#if UNITY_EDITOR
+        Debug.Log("Simulating Google login in Editor.");
+
+        onLogin?.Invoke(null);
+        onImageLaoded?.Invoke(null);
+
+        return;
+#endif
+
+
         if (!isGoogleSignInInitialized)
         {
             GoogleSignIn.Configuration = new GoogleSignInConfiguration

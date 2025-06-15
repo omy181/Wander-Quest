@@ -12,9 +12,41 @@ public class LoginManager : Singleton<LoginManager>
 	[SerializeField] private LoginUI _loginUI;
 	[SerializeField] private LoginWithGoogle _loginWithGoogle;
 
-	public string Username => User.DisplayName;
-    private Sprite _profilePhoto { set { ProfileUI.instance.SetProfilePictures(value); } }
-    public Firebase.Auth.FirebaseUser User { get; private set; }
+	public string UserID { get {
+            
+#if UNITY_EDITOR
+
+            return "EditorUserID";
+#else
+			return _user.UserId;
+#endif
+        }
+    }
+	private Sprite _profilePhoto { set { ProfileUI.instance.SetProfilePictures(value); } }
+	private Firebase.Auth.FirebaseUser _user;
+
+	public string UserName { get {
+#if UNITY_EDITOR
+			
+            return "Editor User";
+#else
+			return _user.DisplayName;
+#endif
+        }
+    }
+
+    public string UserEmail
+    {
+        get
+        {
+#if UNITY_EDITOR
+            
+            return "EditorEmail@gmail.com";
+#else
+			return _user.Email;
+#endif
+        }
+    }
     public DatabaseReference DbReference { get; private set; }
 	private FirebaseAuth _auth;
 
@@ -35,21 +67,27 @@ public class LoginManager : Singleton<LoginManager>
     {
         if (_auth.CurrentUser != null)
         {
-            User = _auth.CurrentUser;
+
+#if UNITY_EDITOR
+
+#else
+			_user = _auth.CurrentUser;
+
+			string photoUrl = _user.PhotoUrl != null ? _user.PhotoUrl.ToString() : null;
+            if (!string.IsNullOrEmpty(photoUrl))
+                StartCoroutine(_loadImage(photoUrl, (sprite) => _profilePhoto = sprite));
+#endif
+
             _loginUI.ShowLoginWindow(false);
             _checkAndInitializeQuests();
 
-			ProfileUI.instance.SetProfileName(User.DisplayName,User.Email);
-
-            string photoUrl = User.PhotoUrl != null ? User.PhotoUrl.ToString() : null;
-            if (!string.IsNullOrEmpty(photoUrl))
-                StartCoroutine(_loadImage(photoUrl, (sprite) => _profilePhoto = sprite));
+            ProfileUI.instance.SetProfileName(UserName, UserEmail);
         }
     }
 
     private void _logout()
     {
-        User = null;
+        _user = null;
 
 		_loginWithGoogle.Logout();
 
@@ -62,7 +100,7 @@ public class LoginManager : Singleton<LoginManager>
         _loginUI.ShowLoadingScreen(true);
 
         _loginUI.ShowLoginWindow(true);
-		yield return new WaitForSecondsRealtime(2f);
+		yield return new WaitForSecondsRealtime(3f);
 
         _loginUI.ShowLoadingScreen(false);
     }
@@ -72,14 +110,26 @@ public class LoginManager : Singleton<LoginManager>
 		_loginUI.ShowLoadingScreen(true);
 		_loginWithGoogle.Login((user) =>
 		{
-			User = user;
+#if UNITY_EDITOR
+            _user = user;
 
             _loginUI.ShowLoginWindow(false);
             _checkAndInitializeQuests();
 
-            ProfileUI.instance.SetProfileName(User.DisplayName, User.Email);
+            ProfileUI.instance.SetProfileName(UserName, UserEmail);
 
             _loginUI.ShowLoadingScreen(false);
+#else
+         _user = user;
+
+            _loginUI.ShowLoginWindow(false);
+            _checkAndInitializeQuests();
+
+            ProfileUI.instance.SetProfileName(UserName, UserEmail);
+
+            _loginUI.ShowLoadingScreen(false);
+#endif
+
 
         }, (sprite) =>
 		{
@@ -90,95 +140,11 @@ public class LoginManager : Singleton<LoginManager>
             _loginUI.ShowLoadingScreen(false);
         });
 
-
-
-        return;
-		/*
-        string username = _loginUI.GetLogInUserName();
-		string password = _loginUI.GetLogInPassword();
-
-
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-		{
-			_loginUI.GiveWarning("Please enter both username and password.");
-			return;
-		}
-
-		DbReference.Child("users").Child(username).GetValueAsync().ContinueWith(task =>
-		{
-			if (task.IsCompletedSuccessfully)
-			{
-				DataSnapshot snapshot = task.Result;
-
-				if (snapshot.Exists && snapshot.Child("password").Value.ToString() == password)
-				{
-					Username = username;
-
-					MainThreadDispatcher.Instance.Enqueue(() =>
-					{
-						_loginUI.ShowLoginWindow(false);
-					});
-
-					_checkAndInitializeQuests();
-				}
-				else
-				{
-					MainThreadDispatcher.Instance.Enqueue(() =>
-					{
-						_loginUI.GiveWarning("Invalid username or password.");
-					});
-				}
-			}
-			else
-			{
-				MainThreadDispatcher.Instance.Enqueue(() =>
-				{
-					_loginUI.GiveWarning("Login failed. Try again later.");
-				});
-			}
-		});
-		*/
 	}
 
 	private void _handleSignUp()
 	{
-		/*
-		string username = _loginUI.GetSignUpUserName();
-		string password = _loginUI.GetSignUpPassword();
 
-		if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password) || password.Length < 6)
-		{
-			_loginUI.GiveWarning("Password must be at least 6 characters.");
-			return;
-		}
-
-		// Check if the username already exists
-		DbReference.Child("users").Child(username).GetValueAsync().ContinueWith(task =>
-		{
-			if (task.IsCompletedSuccessfully)
-			{
-				if (task.Result.Exists)
-				{
-					MainThreadDispatcher.Instance.Enqueue(() =>
-					{
-						_loginUI.GiveWarning("Username already exists. Please choose a different one.");
-					});
-				}
-				else
-				{
-					// Create a new user
-					_createUserInDatabase(username, password);
-				}
-			}
-			else
-			{
-				MainThreadDispatcher.Instance.Enqueue(() =>
-				{
-					_loginUI.GiveWarning("Signup failed. Try again later.");
-				});
-			}
-		});
-		*/
 	}
 
 	private void _createUserInDatabase(string username, string password)
@@ -225,7 +191,7 @@ public class LoginManager : Singleton<LoginManager>
 
 	private void _checkAndInitializeQuests()
 	{
-		DbReference.Child("users").Child(Username).Child("quests").GetValueAsync().ContinueWith(task =>
+		DbReference.Child("users").Child(UserID).Child("quests").GetValueAsync().ContinueWith(task =>
 		{
 			if (task.IsCompletedSuccessfully)
 			{
@@ -238,7 +204,7 @@ public class LoginManager : Singleton<LoginManager>
 				}
 				else
 				{
-					_initializeEmptyQuestBranch(Username);
+					_initializeEmptyQuestBranch(UserID);
 				}
 			}
 			else
@@ -253,11 +219,12 @@ public class LoginManager : Singleton<LoginManager>
 
 	private void _onQuestsLoaded()
 	{
-		//Debug.Log("Quests loaded successfully.");
 		// Transition to the game panel after quests are loaded
 		MainThreadDispatcher.Instance.Enqueue(() =>
 		{
-			//Debug.Log("Transitioning to game panel...");
+			QuestSelector.instance.SelectQuest(QuestManager.instance.GetMostRecentQuest());
+
+			QuestManager.instance.AddDefaultSideQuests();
 		});
 	}
 

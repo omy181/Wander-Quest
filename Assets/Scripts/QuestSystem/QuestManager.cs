@@ -23,13 +23,13 @@ public class QuestManager : Singleton<QuestManager>
 
     public Quest CreateNewQuest(QuestType questType, string mapsQuerry)
     {
-        Quest quest = new(questType, mapsQuerry, new());
+        Quest quest = new(questType, mapsQuerry, new(),LoginManager.instance.UserName);
         if (IsQuestAvailable(quest)) return quest;
         _activeQuests.Add(quest);
 
         string questJson = JsonConvert.SerializeObject(quest);
         LoginManager.instance.DbReference.Child("users")
-            .Child(LoginManager.instance.Username)
+            .Child(LoginManager.instance.UserID)
             .Child("quests")
             .Child(quest.ID)
             .SetRawJsonValueAsync(questJson)
@@ -52,7 +52,7 @@ public class QuestManager : Singleton<QuestManager>
 		_activeQuests.Remove(quest);
 
 		LoginManager.instance.DbReference.Child("users")
-			.Child(LoginManager.instance.Username)
+			.Child(LoginManager.instance.UserID)
 			.Child("quests")
 			.Child(quest.ID)
 			.RemoveValueAsync()
@@ -79,13 +79,20 @@ public class QuestManager : Singleton<QuestManager>
         return new List<Quest>(_activeQuests);
     }
 
+    public Quest GetMostRecentQuest()
+    {
+        if(_activeQuests.Count == 0) return null;
+
+        return _activeQuests.OrderByDescending(a=>a.TotalPlaceCount).First();
+    }
+
     public void AddPlaceToQuest(Quest quest,QuestPlace place)
     {
 		if (quest.AddPlace(place))
 		{
 			string updatedQuestJson = JsonConvert.SerializeObject(quest);
 			LoginManager.instance.DbReference.Child("users")
-				.Child(LoginManager.instance.Username)
+				.Child(LoginManager.instance.UserID)
 				.Child("quests")
 				.Child(quest.ID)
 				.SetRawJsonValueAsync(updatedQuestJson)
@@ -111,7 +118,7 @@ public class QuestManager : Singleton<QuestManager>
     {
         string updatedQuestJson = JsonConvert.SerializeObject(quest);
         LoginManager.instance.DbReference.Child("users")
-            .Child(LoginManager.instance.Username)
+            .Child(LoginManager.instance.UserID)
             .Child("quests")
             .Child(quest.ID)
             .SetRawJsonValueAsync(updatedQuestJson)
@@ -131,7 +138,7 @@ public class QuestManager : Singleton<QuestManager>
     private IEnumerator _loadQuests(Action onQuestsLoadedCallback)
     {
         var questsData = LoginManager.instance.DbReference.Child("users")
-            .Child(LoginManager.instance.Username)
+            .Child(LoginManager.instance.UserID)
             .Child("quests").GetValueAsync();
         yield return new WaitUntil(() => questsData.IsCompleted);
 
@@ -164,7 +171,7 @@ public class QuestManager : Singleton<QuestManager>
         {
             foreach (var userNode in usersData.Result.Children)
             {
-                string username = userNode.Key;
+                string userid = userNode.Key;
                 var questsNode = userNode.Child("quests");
 
                 foreach (var questNode in questsNode.Children)
@@ -174,7 +181,7 @@ public class QuestManager : Singleton<QuestManager>
 
                     if (q.Title == questToSearch.Title)
                     {
-                        leaderboards.Add(new QuestLeaderBoard(q, username));
+                        leaderboards.Add(new QuestLeaderBoard(q, userid));
                         break; 
                     }
                 }
@@ -184,4 +191,28 @@ public class QuestManager : Singleton<QuestManager>
         onQuestsLoadedCallback?.Invoke(leaderboards);
     }
 
+    public void AddDefaultSideQuests()
+    {
+        _searchAndAddQuest("Migros",QuestType.SideQuest);
+        _searchAndAddQuest("Cafe Nero", QuestType.SideQuest);
+        _searchAndAddQuest("Pablo", QuestType.SideQuest);
+
+        _searchAndAddQuest("Gym", QuestType.DailyQuest);
+        _searchAndAddQuest("Park", QuestType.DailyQuest);
+    }
+
+    private void _searchAndAddQuest(string querry,QuestType questType)
+    {
+        if (IsQuestAvailable(new Quest(questType, querry, new(), "test"))) return;
+
+        StartCoroutine(PlacesAPI.instance.StartSearchPlaces(querry, 10, (List<QuestPlace> places) =>
+        {
+            FindFirstObjectByType<MapPinVisualiser>().CreatePins(places);
+            var quest = CreateNewQuest(questType, querry);
+
+            places.ForEach(p => {
+                AddPlaceToQuest(quest, p);
+            });
+        }));
+    }
 }
