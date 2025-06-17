@@ -32,25 +32,19 @@ public class LoginWithGoogle : MonoBehaviour
     public void Logout()
     {
         if (auth.CurrentUser != null)
-        {
             auth.SignOut();
-        }
 
         GoogleSignIn.DefaultInstance.SignOut();
-        isGoogleSignInInitialized = false;
     }
 
-    public void Login(Action<Firebase.Auth.FirebaseUser> onLogin,Action<Sprite> onImageLaoded,Action onLoginFailed)
+    public void Login(Action<Firebase.Auth.FirebaseUser> onLogin, Action<Sprite> onImageLaoded, Action onLoginFailed)
     {
 #if UNITY_EDITOR
         Debug.Log("Simulating Google login in Editor.");
-
         onLogin?.Invoke(null);
         onImageLaoded?.Invoke(null);
-
         return;
 #endif
-
 
         if (!isGoogleSignInInitialized)
         {
@@ -62,54 +56,32 @@ public class LoginWithGoogle : MonoBehaviour
             };
             isGoogleSignInInitialized = true;
         }
-        GoogleSignIn.Configuration.RequestEmail = true;
 
-        Task<GoogleSignInUser> signIn = GoogleSignIn.DefaultInstance.SignIn();
+        var signIn = GoogleSignIn.DefaultInstance.SignIn();
 
-        TaskCompletionSource<FirebaseUser> signInCompleted = new TaskCompletionSource<FirebaseUser>();
         signIn.ContinueWith(task =>
         {
-            if (task.IsCanceled)
+            if (task.IsCanceled || task.IsFaulted)
             {
-                signInCompleted.SetCanceled();
-                Debug.Log("Cancelled");
-
+                Debug.Log("Sign-in failed.");
                 onLoginFailed?.Invoke();
+                return;
             }
-            else if (task.IsFaulted)
-            {
-                signInCompleted.SetException(task.Exception);
 
-                Debug.Log("Faulted " + task.Exception);
-                onLoginFailed?.Invoke();
-            }
-            else
+            var credential = GoogleAuthProvider.GetCredential(task.Result.IdToken, null);
+            auth.SignInWithCredentialAsync(credential).ContinueWith(authTask =>
             {
-                Credential credential = Firebase.Auth.GoogleAuthProvider.GetCredential(((Task<GoogleSignInUser>)task).Result.IdToken, null);
-                auth.SignInWithCredentialAsync(credential).ContinueWith(authTask =>
+                if (authTask.IsCanceled || authTask.IsFaulted)
                 {
-                    if (authTask.IsCanceled)
-                    {
-                        signInCompleted.SetCanceled();
-                    }
-                    else if (authTask.IsFaulted)
-                    {
-                        signInCompleted.SetException(authTask.Exception);
-                        Debug.Log("Faulted In Auth " + task.Exception);
+                    Debug.Log("Firebase auth failed.");
+                    onLoginFailed?.Invoke();
+                    return;
+                }
 
-                        onLoginFailed?.Invoke();
-                    }
-                    else
-                    {
-                        signInCompleted.SetResult(((Task<FirebaseUser>)authTask).Result);
-                        Debug.Log("Success");
-                        var user = auth.CurrentUser;
-                        onLogin?.Invoke(user);
-
-                        StartCoroutine(_loadImage(_checkImageUrl(user.PhotoUrl.ToString()), onImageLaoded));
-                    }
-                });
-            }
+                var user = auth.CurrentUser;
+                onLogin?.Invoke(user);
+                StartCoroutine(_loadImage(_checkImageUrl(user.PhotoUrl.ToString()), onImageLaoded));
+            });
         });
     }
 

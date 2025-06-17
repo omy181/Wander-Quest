@@ -100,7 +100,7 @@ public class LoginManager : Singleton<LoginManager>
         _loginUI.ShowLoadingScreen(true);
 
         _loginUI.ShowLoginWindow(true);
-		yield return new WaitForSecondsRealtime(3f);
+		yield return new WaitForSecondsRealtime(1f);
 
         _loginUI.ShowLoadingScreen(false);
     }
@@ -108,17 +108,20 @@ public class LoginManager : Singleton<LoginManager>
     private void _handleLogin()
 	{
 		_loginUI.ShowLoadingScreen(true);
-		_loginWithGoogle.Login((user) =>
+
+		try
 		{
+			_loginWithGoogle.Login((user) =>
+			{
 #if UNITY_EDITOR
-            _user = user;
+				_user = user;
 
-            _loginUI.ShowLoginWindow(false);
-            _checkAndInitializeQuests();
+				_loginUI.ShowLoginWindow(false);
+				_checkAndInitializeQuests();
 
-            ProfileUI.instance.SetProfileName(UserName, UserEmail);
+				ProfileUI.instance.SetProfileName(UserName, UserEmail);
 
-            _loginUI.ShowLoadingScreen(false);
+				_loginUI.ShowLoadingScreen(false);
 #else
          _user = user;
 
@@ -131,15 +134,21 @@ public class LoginManager : Singleton<LoginManager>
 #endif
 
 
-        }, (sprite) =>
-		{
-            _profilePhoto = sprite;
+			}, (sprite) =>
+			{
+				_profilePhoto = sprite;
 
-		}, () =>
+			}, () =>
+			{
+				_loginUI.ShowLoadingScreen(false);
+			});
+		}
+		catch (Exception e)
 		{
-            _loginUI.ShowLoadingScreen(false);
-        });
-
+			Debug.LogException(e);
+			_loginUI.ShowLoadingScreen(false);
+			Debug.Log("Couln't log in via Google");
+		}
 	}
 
 	private void _handleSignUp()
