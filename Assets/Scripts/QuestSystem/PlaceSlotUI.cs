@@ -8,11 +8,13 @@ using UnityEngine.UI;
 public class PlaceSlotUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _titleText;
+    [SerializeField] private TextMeshProUGUI _distance;
     [SerializeField] private TextMeshProUGUI _adressText;
     [SerializeField] private Button _placeButton;
     [SerializeField] private Image _background;
 
     private JournalUI _journalUi;
+    private QuestPlace _place;
 
     public void SetPlaceData(QuestPlace place, Action onClick)
     {
@@ -23,7 +25,17 @@ public class PlaceSlotUI : MonoBehaviour
 
         if (onClick != null)
         _placeButton.onClick.AddListener(() => onClick());
+
+        _place = place;
+
+        var playerWorldPos = MapUtilities.LatLonToWorld(GPS.instance.GetLastGPSLocation());
+        PlayerDistance = Vector2.Distance(playerWorldPos, MapUtilities.LatLonToWorld(_place.Location));
+
+        _distance.text = PlayerDistance.GetDistanceInKilometersAndMeters();
     }
+
+    public QuestPlace GetPlaceData => _place;
+    public float PlayerDistance;
 
     void Start()
     {

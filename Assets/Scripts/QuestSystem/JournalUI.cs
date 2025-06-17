@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,8 +16,25 @@ public class JournalUI : MonoBehaviour
     [SerializeField] private TMP_Text _header;
     [SerializeField] private Button _deleteQuestButton;
     [SerializeField] private Button _backButton;
+    [SerializeField] private TMP_Dropdown _sortDropdown;
+    [SerializeField] private GameObject _sortParent;
 
     private Quest _currentQuest;
+
+    private void Start()
+    {
+        _sortDropdown.AddOptions(new List<string>
+        {
+            "Alphabetical","Total Count","Traveled Count"
+        });
+
+        _sortDropdown.onValueChanged.AddListener(_onSortOptionChanged);
+    }
+
+    private void _onSortOptionChanged(int option)
+    {
+        _sortList(option+1);
+    }
 
     public void ShowQuestsOfType(QuestType questType)
     {
@@ -37,6 +55,9 @@ public class JournalUI : MonoBehaviour
             }
             
         });
+
+        _sortParent.gameObject.SetActive(true);
+        _sortList(_sortDropdown.value+1);
     }
 
     private void _openQuestPanel(Quest quest)
@@ -58,34 +79,70 @@ public class JournalUI : MonoBehaviour
     }
 
     public void ListPlaces(Quest quest)
-    {
+    {      
         _clearContents();
         quest.GetPlaces().ForEach(place => {
             var placePrefab = Instantiate(_placePrefab, _content).GetComponent<PlaceSlotUI>();
             placePrefab.SetPlaceData(place,()=> _goToPlace(place));
-            //ReturnInfo(quest, placePrefab._titleText);
-            //GetQuest(quest);
         });
 
+        _sortList(0);
+    }
+
+    private void _sortList(int option)
+    {
+        List<Transform> children = new List<Transform>();
+        for (int i = 0; i < _content.childCount; i++)
+            children.Add(_content.GetChild(i));
+
+        switch (option)
+        {
+            case 0: // Distance
+                children.Sort((a, b) =>
+                {
+                    var placeA = a.GetComponent<PlaceSlotUI>();
+                    var placeB = b.GetComponent<PlaceSlotUI>();
+
+                    return placeA.PlayerDistance.CompareTo(placeB.PlayerDistance);
+                });
+                break;
+
+            case 1: // Alphabetical (assumes alphabetical order by name)
+                children.Sort((a, b) =>
+                {
+                    var placeA = a.GetComponent<QuestPrefab>()._quest.Title;
+                    var placeB = b.GetComponent<QuestPrefab>()._quest.Title;
+                    return placeA.CompareTo(placeB);
+                });
+                break;
+            case 2: // Total Travel Count
+                children.Sort((a, b) =>
+                {
+                    var placeA = a.GetComponent<QuestPrefab>()._quest.TotalPlaceCount;
+                    var placeB = b.GetComponent<QuestPrefab>()._quest.TotalPlaceCount;
+                    return placeB.CompareTo(placeA);
+                });
+                break;
+
+            case 3: // Traveled Count (puts traveled ones first)
+                children.Sort((a, b) =>
+                {
+                    var traveledA = a.GetComponent<QuestPrefab>()._quest.TotalTraveledCount;
+                    var traveledB = b.GetComponent<QuestPrefab>()._quest.TotalTraveledCount;
+                    return traveledB.CompareTo(traveledA); // true TotalTraveledCount
+                });
+                break;
+        }
+
+        // Reorder in hierarchy
+        for (int i = 0; i < children.Count; i++)
+            children[i].SetSiblingIndex(i);
     }
 
     public Quest GetQuest(){
         return _currentQuest;
     }
-
-/*
-     public QuestPlace ReturnInfo(Quest quest, TextMeshProUGUI textMeshPro)
-    {
-        foreach (var place in quest.GetPlaces())
-        {
-            if (place.Name == textMeshPro.text)
-            {
-                return place;
-            }
-        }
-        return null;
-    }
-*/    
+ 
     private void _goToPlace(QuestPlace place)
     {
         WindowManager.instance.OpenPreviousWindow();
@@ -94,9 +151,17 @@ public class JournalUI : MonoBehaviour
     }
 
     private void _clearContents(){
+        var list = new List<Transform>();
         foreach (Transform child in _content) {
-            Destroy(child.gameObject);
+            list.Add(child);
         }
+        foreach(var c in list)
+        {
+            c.transform.SetParent(null);
+            Destroy(c.gameObject);
+        }
+        
+        _sortParent.gameObject.SetActive(false);
     }
     private void _refreshQuests()
     {
@@ -108,5 +173,4 @@ public class JournalUI : MonoBehaviour
         _journalWindow.OnWindowActivated += _refreshQuests;
     }
 
-    
 }

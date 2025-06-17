@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,8 +14,10 @@ public class QuestPrefab : MonoBehaviour
     [SerializeField] private Image _background;
     [SerializeField] private GameObject _sponsorIcon;
 
+    public Quest _quest;
     public void SetQuestData(Quest quest,Action onClick)
     {
+        _quest = quest;
         _titleText.text = quest.Title;
         _progressText.text = $"Traveled {quest.TotalTraveledCount}\n Found {quest.TotalPlaceCount}" ;
 

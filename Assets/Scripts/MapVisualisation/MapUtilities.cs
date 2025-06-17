@@ -64,5 +64,24 @@ public static class MapUtilities
         return new GPSLocation(latitude, longitude);
     }
 
+    // 1 Unity unit = ~111,000 meters (approx. for latitude/longitude projection)
+    private const float metersPerUnit = 111000f;
 
+    public static int GetDistanceInMeters(this float distance)
+    {
+        return Mathf.RoundToInt(distance * metersPerUnit);
+    }
+
+    public static int GetDistanceInKilometers(this float distance)
+    {
+        return Mathf.RoundToInt(distance * metersPerUnit / 1000f);
+    }
+
+    public static string GetDistanceInKilometersAndMeters(this float distance)
+    {
+        var meters = distance.GetDistanceInMeters();
+        if (meters >= 1000)
+            return distance.GetDistanceInKilometers()+"km";
+        return meters+"m";
+    }
 }
