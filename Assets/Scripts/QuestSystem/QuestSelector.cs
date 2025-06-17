@@ -90,6 +90,7 @@ public class QuestSelector : Singleton<QuestSelector>
             {
                 place.IsTraveled = true;
                 QuestManager.instance.UpdatePlaceData(quest,place);
+                LevelManager.instance.CurrentLevel += 0.35f;
                 NotificationManager.SendDiscoveryNotification(place.Name);
                 SelectQuest(quest);
             }

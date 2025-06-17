@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System;
 using UnityEngine.Networking;
+using Newtonsoft.Json;
 
 public class LoginManager : Singleton<LoginManager>
 {
@@ -118,8 +119,10 @@ public class LoginManager : Singleton<LoginManager>
 
 				_loginUI.ShowLoginWindow(false);
 				_checkAndInitializeQuests();
+				_checkAndInitializeUserData();
 
-				ProfileUI.instance.SetProfileName(UserName, UserEmail);
+
+                ProfileUI.instance.SetProfileName(UserName, UserEmail);
 
 				_loginUI.ShowLoadingScreen(false);
 #else
@@ -127,6 +130,7 @@ public class LoginManager : Singleton<LoginManager>
 
             _loginUI.ShowLoginWindow(false);
             _checkAndInitializeQuests();
+			_checkAndInitializeUserData();
 
             ProfileUI.instance.SetProfileName(UserName, UserEmail);
 
@@ -134,7 +138,7 @@ public class LoginManager : Singleton<LoginManager>
 #endif
 
 
-			}, (sprite) =>
+            }, (sprite) =>
 			{
 				_profilePhoto = sprite;
 
@@ -198,7 +202,30 @@ public class LoginManager : Singleton<LoginManager>
 		});
 	}
 
-	private void _checkAndInitializeQuests()
+    private void _initializeEmptyUserDataBranch(string username)
+    {
+		string userData = JsonConvert.SerializeObject(new UserData());
+        DbReference.Child("users").Child(username).Child("UserData").SetRawJsonValueAsync(userData).ContinueWith(task =>
+        {
+            if (task.IsCompletedSuccessfully)
+            {
+                MainThreadDispatcher.Instance.Enqueue(() =>
+                {
+                    LevelManager.instance.InitializeLevelData();
+                });
+                
+            }
+            else
+            {
+                MainThreadDispatcher.Instance.Enqueue(() =>
+                {
+                    _loginUI.GiveWarning("Failed to initialize user data.");
+                });
+            }
+        });
+    }
+
+    private void _checkAndInitializeQuests()
 	{
 		DbReference.Child("users").Child(UserID).Child("quests").GetValueAsync().ContinueWith(task =>
 		{
@@ -226,7 +253,35 @@ public class LoginManager : Singleton<LoginManager>
 		});
 	}
 
-	private void _onQuestsLoaded()
+    private void _checkAndInitializeUserData()
+    {
+        DbReference.Child("users").Child(UserID).Child("UserData").GetValueAsync().ContinueWith(task =>
+        {
+            if (task.IsCompletedSuccessfully)
+            {
+                if (task.Result.Exists)
+                {
+                    MainThreadDispatcher.Instance.Enqueue(() =>
+                    {
+                        LevelManager.instance.InitializeLevelData();
+                    });
+                }
+                else
+                {
+                    _initializeEmptyUserDataBranch(UserID);
+                }
+            }
+            else
+            {
+                MainThreadDispatcher.Instance.Enqueue(() =>
+                {
+                    _loginUI.GiveWarning("Failed to load user data.");
+                });
+            }
+        });
+    }
+
+    private void _onQuestsLoaded()
 	{
 		// Transition to the game panel after quests are loaded
 		MainThreadDispatcher.Instance.Enqueue(() =>

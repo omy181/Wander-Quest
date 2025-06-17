@@ -99,7 +99,7 @@ public class QuestManager : Singleton<QuestManager>
 				.ContinueWith(task =>
 				{
 					if (task.IsCompleted)
-					{
+					{                        
 						Debug.Log($"Quest {quest.ID} updated successfully with new place.");
 					}
 					else

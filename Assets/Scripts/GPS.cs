@@ -50,6 +50,30 @@ public class GPS : Singleton<GPS>
             StartCoroutine(GetLocation());
             isUpdating = !isUpdating;
         }
+
+#if UNITY_EDITOR
+        double precision = 0.00001d;
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            precision *= 100;
+        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            test_longitude -= precision;
+        }
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            test_longitude += precision;
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            test_latitude += precision;
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            test_latitude -= precision;
+        }
+#endif
     }
 
 
