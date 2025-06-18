@@ -12,11 +12,13 @@ public class JournalUI : MonoBehaviour
     [SerializeField] private GameObject _questPrefab;
     [SerializeField] private GameObject _placePrefab;
     [SerializeField] private Window _journalWindow;
+    [SerializeField] private Window _leaderboardWindow;
     [SerializeField] private Transform _content;
     [SerializeField] private TMP_Text _header;
     [SerializeField] private Button _deleteQuestButton;
     [SerializeField] private Button _backButton;
     [SerializeField] private Button _selectQuestButton;
+    [SerializeField] private Button _leaderboardButton;
     [SerializeField] private TMP_Dropdown _sortDropdown;
     [SerializeField] private GameObject _sortParent;
 
@@ -31,7 +33,9 @@ public class JournalUI : MonoBehaviour
 
         _sortDropdown.onValueChanged.AddListener(_onSortOptionChanged);
         _selectQuestButton.onClick.AddListener(_selectQuest);
+        _leaderboardButton.onClick.AddListener(_leaderboardOfQuest);
         _selectQuestButton.gameObject.SetActive(false);
+        _leaderboardButton.gameObject.SetActive(false);
     }
 
     private void _onSortOptionChanged(int option)
@@ -43,6 +47,13 @@ public class JournalUI : MonoBehaviour
     {
         WindowManager.instance.OpenPreviousWindow();
         QuestSelector.instance.SelectQuest(_currentQuest);
+    }
+
+    private void _leaderboardOfQuest()
+    {
+        WindowManager.instance.OpenPreviousWindow();
+        WindowManager.instance.OpenWindow(_leaderboardWindow);
+        LeaderboardManager.instance.ShowQuest(_currentQuest);
     }
     public void ShowQuestsOfType(QuestType questType)
     {
@@ -66,6 +77,7 @@ public class JournalUI : MonoBehaviour
             
         });
         _selectQuestButton.gameObject.SetActive(false);
+        _leaderboardButton.gameObject.SetActive(false);
         _sortParent.gameObject.SetActive(true);
         _sortList(_sortDropdown.value+1);
     }
@@ -75,6 +87,7 @@ public class JournalUI : MonoBehaviour
         _currentQuest = quest;
         _deleteQuestButton.gameObject.SetActive(true);
         _selectQuestButton.gameObject.SetActive(true);
+        _leaderboardButton.gameObject.SetActive(true);
         _deleteQuestButton.onClick.RemoveAllListeners();
         _deleteQuestButton.onClick.AddListener(()=>_deleteQuest(quest));
         _header.text = quest.Title;

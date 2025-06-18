@@ -22,6 +22,14 @@ public class LeaderboardManager : Singleton<LeaderboardManager>
         _questDropDown.value = _questDropDown.options.FindIndex(o=>o.text == QuestSelector.instance._activeQuest.Title);
     }
 
+    public void ShowQuest(Quest quest)
+    {
+        _clearContents();
+        _setQuestDropdown();
+        _selectQuest(quest);
+        _questDropDown.value = _questDropDown.options.FindIndex(o => o.text == quest.Title);
+    }
+
     private void _selectQuest(int questIndex)
     {
         StartCoroutine(QuestManager.instance.LoadAQuestOfAllUsers(QuestManager.instance.GetActiveQuests()[questIndex], _refreshQuestList));
