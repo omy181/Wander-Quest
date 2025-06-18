@@ -8,6 +8,7 @@ public class Quest
 {
 	[JsonIgnore] public string Title { get; private set; }
 	[JsonProperty] public string MapsQuerry { get; private set; }
+    [JsonProperty] public string MapsQuerryType { get; private set; }
     [JsonProperty] public string QuestOwnerName { get; private set; }
     [JsonProperty] public QuestType QuestType { get; private set; }
 
@@ -16,11 +17,12 @@ public class Quest
     [JsonIgnore] public int TotalPlaceCount => _places.Count;
     [JsonProperty] private List<QuestPlace> _places;
 
-    public Quest(QuestType questType, string mapsQuerry, List<QuestPlace> places,string username)
+    public Quest(QuestType questType, string mapsQuerry,string mapsQuerryType, List<QuestPlace> places,string username)
     {
         QuestOwnerName = username;
         QuestType = questType;
         MapsQuerry = mapsQuerry;
+        MapsQuerryType = mapsQuerryType;
         _places = places;
         if (places == null) _places = new List<QuestPlace>();
         _createTitle();
@@ -30,6 +32,12 @@ public class Quest
     private void _createTitle()
     {
         string[] words = MapsQuerry.Split(' ');
+
+        if (MapsQuerry == string.Empty && MapsQuerryType != string.Empty)
+        {
+            words = MapsQuerryType.Split('_');
+        }
+        
         for (int i = 0; i < words.Length; i++)
         {
             words[i] = char.ToUpper(words[i][0]) + words[i].Substring(1).ToLower();
@@ -39,6 +47,12 @@ public class Quest
 
     private void _createID()
     {
+        if (MapsQuerry == string.Empty && MapsQuerryType != string.Empty)
+        {
+            ID = MapsQuerryType;
+            return;
+        }
+
         ID = Regex.Replace(MapsQuerry, @"[\s\p{P}]", "").ToLower();
     }
 
@@ -82,7 +96,7 @@ public class QuestPlace
 
 public enum QuestType
 {
-    MainQuest,SideQuest,DailyQuest
+    MainQuest,SideQuest,DailyQuest,GenericQuest,UserQuest,SponsoredQuest
 }
 
 public class QuestLeaderBoard

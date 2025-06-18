@@ -16,11 +16,12 @@ public class JournalUI : MonoBehaviour
     [SerializeField] private TMP_Text _header;
     [SerializeField] private Button _deleteQuestButton;
     [SerializeField] private Button _backButton;
+    [SerializeField] private Button _selectQuestButton;
     [SerializeField] private TMP_Dropdown _sortDropdown;
     [SerializeField] private GameObject _sortParent;
 
     private Quest _currentQuest;
-
+    private QuestType _lastOpenedQuestTab = QuestType.SponsoredQuest;
     private void Start()
     {
         _sortDropdown.AddOptions(new List<string>
@@ -29,6 +30,8 @@ public class JournalUI : MonoBehaviour
         });
 
         _sortDropdown.onValueChanged.AddListener(_onSortOptionChanged);
+        _selectQuestButton.onClick.AddListener(_selectQuest);
+        _selectQuestButton.gameObject.SetActive(false);
     }
 
     private void _onSortOptionChanged(int option)
@@ -36,8 +39,15 @@ public class JournalUI : MonoBehaviour
         _sortList(option+1);
     }
 
+    private void _selectQuest()
+    {
+        WindowManager.instance.OpenPreviousWindow();
+        QuestSelector.instance.SelectQuest(_currentQuest);
+    }
     public void ShowQuestsOfType(QuestType questType)
     {
+
+        _lastOpenedQuestTab = questType;
         _header.text = questType.ToString()+"s";
         _deleteQuestButton.gameObject.SetActive(false);
 
@@ -55,7 +65,7 @@ public class JournalUI : MonoBehaviour
             }
             
         });
-
+        _selectQuestButton.gameObject.SetActive(false);
         _sortParent.gameObject.SetActive(true);
         _sortList(_sortDropdown.value+1);
     }
@@ -64,6 +74,7 @@ public class JournalUI : MonoBehaviour
     {
         _currentQuest = quest;
         _deleteQuestButton.gameObject.SetActive(true);
+        _selectQuestButton.gameObject.SetActive(true);
         _deleteQuestButton.onClick.RemoveAllListeners();
         _deleteQuestButton.onClick.AddListener(()=>_deleteQuest(quest));
         _header.text = quest.Title;
@@ -79,7 +90,7 @@ public class JournalUI : MonoBehaviour
     }
 
     public void ListPlaces(Quest quest)
-    {      
+    {
         _clearContents();
         quest.GetPlaces().ForEach(place => {
             var placePrefab = Instantiate(_placePrefab, _content).GetComponent<PlaceSlotUI>();
@@ -165,7 +176,7 @@ public class JournalUI : MonoBehaviour
     }
     private void _refreshQuests()
     {
-        ShowQuestsOfType(QuestType.MainQuest);
+        ShowQuestsOfType(_lastOpenedQuestTab);
     }
 
     void Awake()

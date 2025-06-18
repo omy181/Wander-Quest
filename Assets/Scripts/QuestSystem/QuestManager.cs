@@ -21,9 +21,9 @@ public class QuestManager : Singleton<QuestManager>
         _activeQuests.Clear();
     }
 
-    public Quest CreateNewQuest(QuestType questType, string mapsQuerry)
+    public Quest CreateNewQuest(QuestType questType, string mapsQuerry,string mapsQuerryType)
     {
-        Quest quest = new(questType, mapsQuerry, new(),LoginManager.instance.UserName);
+        Quest quest = new(questType, mapsQuerry, mapsQuerryType, new(),LoginManager.instance.UserName);
         if (IsQuestAvailable(quest)) return quest;
         _activeQuests.Add(quest);
 
@@ -193,26 +193,38 @@ public class QuestManager : Singleton<QuestManager>
 
     public void AddDefaultSideQuests()
     {
-        _searchAndAddQuest("Migros",QuestType.SideQuest);
-        _searchAndAddQuest("Cafe Nero", QuestType.SideQuest);
-        _searchAndAddQuest("Pablo", QuestType.SideQuest);
+        _searchAndAddQuest("Migros", "supermarket", QuestType.SponsoredQuest);
+        _searchAndAddQuest("Cafe Nero", "cafe", QuestType.SponsoredQuest);
+        _searchAndAddQuest("Pablo", "cafe", QuestType.SponsoredQuest);
 
-        _searchAndAddQuest("Gym", QuestType.DailyQuest);
-        _searchAndAddQuest("Park", QuestType.DailyQuest);
+        _searchAndAddQuest("", "gym", QuestType.GenericQuest);
+        _searchAndAddQuest("", "park", QuestType.GenericQuest);
+        _searchAndAddQuest("", "school", QuestType.GenericQuest);
+        _searchAndAddQuest("", "library", QuestType.GenericQuest);
+        _searchAndAddQuest("", "airport", QuestType.GenericQuest);
+        _searchAndAddQuest("", "gas_station", QuestType.GenericQuest);
+        _searchAndAddQuest("", "hotel", QuestType.GenericQuest);
+        _searchAndAddQuest("", "movie_theater", QuestType.GenericQuest);
+        _searchAndAddQuest("", "museum", QuestType.GenericQuest);
+        _searchAndAddQuest("", "tourist_attraction", QuestType.GenericQuest);
     }
 
-    private void _searchAndAddQuest(string querry,QuestType questType)
+    private void _searchAndAddQuest(string querry,string querryType,QuestType questType)
     {
-        if (IsQuestAvailable(new Quest(questType, querry, new(), "test"))) return;
+        if (IsQuestAvailable(new Quest(questType, querry, querryType, new(), "test"))) return;
 
+        CreateNewQuest(questType, querry, querryType);
+
+        /*  we sont search to limit api usage
         StartCoroutine(PlacesAPI.instance.StartSearchPlaces(querry, 10, (List<QuestPlace> places) =>
         {
             FindFirstObjectByType<MapPinVisualiser>().CreatePins(places);
-            var quest = CreateNewQuest(questType, querry);
+            var quest = CreateNewQuest(questType,querry,querryType);
 
             places.ForEach(p => {
                 AddPlaceToQuest(quest, p);
             });
-        }));
+        },querryType));
+        */
     }
 }

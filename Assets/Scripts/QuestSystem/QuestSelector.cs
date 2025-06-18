@@ -95,13 +95,22 @@ public class QuestSelector : Singleton<QuestSelector>
                 SelectQuest(quest);
             }
         }
+
+        var current = MapUtilities.LatLonToWorld(GPS.instance.GetLastGPSLocation());
+        var last = MapUtilities.LatLonToWorld(PlacesAPI.instance._lastSearchLocation);
+        var distance = MapUtilities.GetDistanceInMeters(Vector2.Distance(current,last));
+        if (distance > 4000)
+        {
+            _scanArea();
+            print("4km");
+        }
     }
 
     private void _scanArea()
     {
         if (_activeQuest != null)
         {
-            StartCoroutine(PlacesAPI.instance.StartSearchPlaces(_activeQuest.MapsQuerry,5, (List<QuestPlace> places) =>
+            StartCoroutine(PlacesAPI.instance.StartSearchPlaces(_activeQuest.MapsQuerry,10, (List<QuestPlace> places) =>
             {
                 _mapPinVisualiser.CreatePins(places);
 
@@ -111,7 +120,7 @@ public class QuestSelector : Singleton<QuestSelector>
 
                 
                 _mapPinVisualiser.FocusPins(_activeQuest);
-            }));
+            },_activeQuest.MapsQuerryType));
         }
     }
 }

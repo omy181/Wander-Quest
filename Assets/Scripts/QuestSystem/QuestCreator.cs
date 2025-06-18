@@ -33,14 +33,14 @@ public class QuestCreator : MonoBehaviour
         StartCoroutine(PlacesAPI.instance.StartSearchPlaces(questQuerry,10, (List<QuestPlace> places) =>
         {
             FindFirstObjectByType<MapPinVisualiser>().CreatePins(places);
-            var quest = QuestManager.instance.CreateNewQuest(QuestType.MainQuest, questQuerry);
+            var quest = QuestManager.instance.CreateNewQuest(QuestType.UserQuest, questQuerry,null);
 
             places.ForEach(p => {
                 QuestManager.instance.AddPlaceToQuest(quest,p);
             });
 
             _questSelector.SelectQuest(quest);
-        }));
+        }, null));
 
         return true;
     }

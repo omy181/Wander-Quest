@@ -22,7 +22,7 @@ public class QuestPrefab : MonoBehaviour
 
         _questButton.onClick.AddListener(()=>onClick());
 
-        if(quest.QuestType == QuestType.SideQuest)
+        if(quest.QuestType == QuestType.SponsoredQuest)
         {
             _sponsorIcon.SetActive(true);
             _background.color = Color.Lerp(_background.color,Color.yellow,0.5f);
@@ -32,7 +32,7 @@ public class QuestPrefab : MonoBehaviour
             _sponsorIcon.SetActive(false);
         }
 
-        if (quest.QuestType == QuestType.DailyQuest)
+        if (quest.QuestType == QuestType.GenericQuest)
         {
             _background.color = Color.Lerp(_background.color, Color.green, 0.5f);
         }

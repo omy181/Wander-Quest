@@ -11,9 +11,12 @@ public class PlacesAPI : Singleton<PlacesAPI>
     [SerializeField] private MapPinVisualiser _mapPinVisualiser;
     private string _resultsjson;
 
-    public IEnumerator StartSearchPlaces(string query,int resultCount, Action<List<QuestPlace>> onPlacesFound)
+    public GPSLocation _lastSearchLocation { get; private set; }
+    public IEnumerator StartSearchPlaces(string query,int resultCount, Action<List<QuestPlace>> onPlacesFound,string placeType)
     {
-        yield return StartCoroutine(_searchPlaces(_getJsonPayload(query, GPS.instance.GetLastGPSLocation(), 500f, resultCount)));
+        _lastSearchLocation = GPS.instance.GetLastGPSLocation();
+
+        yield return StartCoroutine(_searchPlaces(_getJsonPayload(query, GPS.instance.GetLastGPSLocation(), 10000f, resultCount, placeType),query != string.Empty));
 
         List<QuestPlace> list = new List<QuestPlace>();
         var placesResult = _resultJsonToPlaces(_resultsjson);
@@ -28,9 +31,13 @@ public class PlacesAPI : Singleton<PlacesAPI>
         onPlacesFound(list);
     }
 
-    private IEnumerator _searchPlaces(string jsonPayload)
+    private IEnumerator _searchPlaces(string jsonPayload,bool hasTextQuerry)
     {
-        string url = "https://places.googleapis.com/v1/places:searchText";
+        string url = hasTextQuerry
+            ? "https://places.googleapis.com/v1/places:searchText"
+            : "https://places.googleapis.com/v1/places:searchNearby";
+
+
         UnityWebRequest request = new UnityWebRequest(url, "POST");
 
         byte[] jsonToSend = Encoding.UTF8.GetBytes(jsonPayload);
@@ -50,26 +57,56 @@ public class PlacesAPI : Singleton<PlacesAPI>
         else
         {
             _resultsjson = request.downloadHandler.text;
-            //Debug.Log("Received response: " + _resultsjson);
         }
     }
 
-    private string _getJsonPayload(string query, GPSLocation location, float radius, int resultCount)
+
+    private string _getJsonPayload(string query, GPSLocation location, float radius, int resultCount, string includedType = null)
     {
-        return $@"{{
-            ""textQuery"": ""{EscapeJsonString(query)}"",
-            ""pageSize"": {resultCount},
-            ""locationBias"": {{
-                ""circle"": {{
-                    ""center"": {{
-                        ""latitude"": {location.latitude.ToString(CultureInfo.InvariantCulture)},
-                        ""longitude"": {location.longitude.ToString(CultureInfo.InvariantCulture)}
-                    }},
-                    ""radius"": {radius.ToString(CultureInfo.InvariantCulture)}
-                }}
+        string includedTypeJson = string.IsNullOrEmpty(includedType) ? "" : $@",""includedType"": ""{EscapeJsonString(includedType)}""";
+
+        if (string.IsNullOrEmpty(query))
+        {
+            string includedPrimaryTypesJson = string.IsNullOrEmpty(includedType)
+                ? ""
+                : $@",""includedPrimaryTypes"": [""{EscapeJsonString(includedType)}""]";
+
+            return $@"{{
+        ""locationRestriction"": {{
+            ""circle"": {{
+                ""center"": {{
+                    ""latitude"": {location.latitude.ToString(CultureInfo.InvariantCulture)},
+                    ""longitude"": {location.longitude.ToString(CultureInfo.InvariantCulture)}
+                }},
+                ""radius"": {radius.ToString(CultureInfo.InvariantCulture)}
             }}
-        }}";
+        }}{includedPrimaryTypesJson}
+    }}";
+        }
+
+        else
+        {
+            return $@"{{
+        ""textQuery"": ""{EscapeJsonString(query)}"",
+        ""pageSize"": {resultCount},
+        ""locationBias"": {{
+            ""circle"": {{
+                ""center"": {{
+                    ""latitude"": {location.latitude.ToString(CultureInfo.InvariantCulture)},
+                    ""longitude"": {location.longitude.ToString(CultureInfo.InvariantCulture)}
+                }},
+                ""radius"": {radius.ToString(CultureInfo.InvariantCulture)}
+            }}
+        }}{includedTypeJson}
+    }}";
+        }
+
+            
     }
+
+
+
+
 
     private Places _resultJsonToPlaces(string jsonstring)
     {
