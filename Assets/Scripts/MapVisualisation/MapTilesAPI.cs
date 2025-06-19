@@ -66,6 +66,7 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
 
             string url = $"https://tile.googleapis.com/v1/2dtiles/{tileData.Zoom}/{tileData.X}/{tileData.Y}?session={_sessionResponse.session}&key={API.GetKey()}&orientation={orientation}";
 
+
             UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
             yield return request.SendWebRequest();
             if (request.result != UnityWebRequest.Result.Success)
@@ -103,6 +104,8 @@ public class MapTilesAPI : Singleton<MapTilesAPI>
   ""mapType"": ""roadmap"",
   ""language"": ""en-US"",
   ""region"": ""US"",
+""scale"":""scaleFactor2x"",
+""highDpi"":true,
   ""styles"": [
     {
       ""featureType"": ""administrative.country"",
