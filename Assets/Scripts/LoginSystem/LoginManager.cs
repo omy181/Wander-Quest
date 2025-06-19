@@ -7,6 +7,7 @@ using System.Collections;
 using System;
 using UnityEngine.Networking;
 using Newtonsoft.Json;
+using UnityEngine.U2D;
 
 public class LoginManager : Singleton<LoginManager>
 {
@@ -15,24 +16,14 @@ public class LoginManager : Singleton<LoginManager>
 
 	public string UserID { get {
             
-#if UNITY_EDITOR
-
-            return "EditorUserID";
-#else
-			return _user.UserId;
-#endif
+            return _user != null ? _user.UserId : "EditorUserID";
         }
     }
 	private Sprite _profilePhoto { set { ProfileUI.instance.SetProfilePictures(value); } }
 	private Firebase.Auth.FirebaseUser _user;
 
-	public string UserName { get {
-#if UNITY_EDITOR
-			
-            return "Editor User";
-#else
-			return _user.DisplayName;
-#endif
+	public string UserName { get {	
+            return _user != null ? _user.DisplayName : "Editor User";
         }
     }
 
@@ -40,12 +31,7 @@ public class LoginManager : Singleton<LoginManager>
     {
         get
         {
-#if UNITY_EDITOR
-            
-            return "EditorEmail@gmail.com";
-#else
-			return _user.Email;
-#endif
+            return _user != null ? _user.Email : "EditorEmail@gmail.com";
         }
     }
     public DatabaseReference DbReference { get; private set; }
@@ -58,7 +44,8 @@ public class LoginManager : Singleton<LoginManager>
 		DbReference = FirebaseDatabase.DefaultInstance.RootReference;
 		_auth = FirebaseAuth.DefaultInstance;
 
-		_loginUI.OnLoginButtonPressed += _handleLogin;
+        _loginUI.OnTestLoginButtonPressed += _testLogin;
+        _loginUI.OnLoginButtonPressed += _handleLogin;
 		_loginUI.OnSignUpButtonPressed += _handleSignUp;
 		ProfileUI.instance.OnLogOutPressed += _logout;
 
@@ -104,6 +91,18 @@ public class LoginManager : Singleton<LoginManager>
 		yield return new WaitForSecondsRealtime(1f);
 
         _loginUI.ShowLoadingScreen(false);
+    }
+
+	private void _testLogin()
+	{
+        _user = null;
+
+        _checkAndInitializeQuests();
+        _checkAndInitializeUserData();
+
+        _profilePhoto = null;
+        ProfileUI.instance.SetProfileName(UserName, UserEmail);
+        _loginUI.ShowLoginWindow(false);
     }
 
     private void _handleLogin()

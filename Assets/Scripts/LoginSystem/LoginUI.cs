@@ -15,6 +15,7 @@ public class LoginUI : MonoBehaviour
     [SerializeField] private TMP_InputField _logInUsernameInputField;
     [SerializeField] private TMP_InputField _logInPassordInputField;
     [SerializeField] private Button _loginButton;
+    [SerializeField] private Button _testloginButton;
     [SerializeField] private Button _goToSignUpButton;
 
     [Header("Sign up")]
@@ -30,6 +31,7 @@ public class LoginUI : MonoBehaviour
 
     private void Awake()
     {
+        _testloginButton.onClick.AddListener(()=>OnTestLoginButtonPressed());
         _loginButton.onClick.AddListener(()=> { GiveWarning(""); OnLoginButtonPressed();});
         _signUpButton.onClick.AddListener(()=> { GiveWarning(""); OnSignUpButtonPressed(); });
 
@@ -101,6 +103,7 @@ public class LoginUI : MonoBehaviour
         _warningText.text = warning;
     }
 
+    public Action OnTestLoginButtonPressed;
     public Action OnLoginButtonPressed;
     public Action OnSignUpButtonPressed;
 }

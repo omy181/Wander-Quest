@@ -41,48 +41,52 @@ public class LoginWithGoogle : MonoBehaviour
     {
 #if UNITY_EDITOR
         Debug.Log("Simulating Google login in Editor.");
-        onLogin?.Invoke(null);
-        onImageLaoded?.Invoke(null);
+        onLogin.Invoke(null);
+        onImageLaoded.Invoke(null);
         return;
 #endif
 
-        if (!isGoogleSignInInitialized)
-        {
-            GoogleSignIn.Configuration = new GoogleSignInConfiguration
+            if (!isGoogleSignInInitialized)
             {
-                RequestIdToken = true,
-                WebClientId = GoogleAPI,
-                RequestEmail = true
-            };
-            isGoogleSignInInitialized = true;
-        }
-
-        var signIn = GoogleSignIn.DefaultInstance.SignIn();
-
-        signIn.ContinueWith(task =>
-        {
-            if (task.IsCanceled || task.IsFaulted)
-            {
-                Debug.Log("Sign-in failed.");
-                onLoginFailed?.Invoke();
-                return;
+                GoogleSignIn.Configuration = new GoogleSignInConfiguration
+                {
+                    RequestIdToken = true,
+                    WebClientId = GoogleAPI,
+                    RequestEmail = true
+                };
+                isGoogleSignInInitialized = true;
             }
 
-            var credential = GoogleAuthProvider.GetCredential(task.Result.IdToken, null);
-            auth.SignInWithCredentialAsync(credential).ContinueWith(authTask =>
+            var signIn = GoogleSignIn.DefaultInstance.SignIn();
+
+            signIn.ContinueWith(task =>
             {
-                if (authTask.IsCanceled || authTask.IsFaulted)
+
+                if (task.IsCanceled || task.IsFaulted)
                 {
-                    Debug.Log("Firebase auth failed.");
-                    onLoginFailed?.Invoke();
+                    Debug.Log("Sign-in failed.");
+                    onLoginFailed.Invoke();
                     return;
                 }
 
-                var user = auth.CurrentUser;
-                onLogin?.Invoke(user);
-                StartCoroutine(_loadImage(_checkImageUrl(user.PhotoUrl.ToString()), onImageLaoded));
+                var credential = GoogleAuthProvider.GetCredential(task.Result.IdToken, null);
+                auth.SignInWithCredentialAsync(credential).ContinueWith(authTask =>
+                {
+                    if (authTask.IsCanceled || authTask.IsFaulted)
+                    {
+                        Debug.LogError(authTask.Exception.ToString());
+                        foreach (var e in authTask.Exception.Flatten().InnerExceptions)
+                            Debug.LogError("Auth Error: " + e.Message);
+                        onLoginFailed.Invoke();
+                        return;
+                    }
+
+                    var user = auth.CurrentUser;
+                    onLogin.Invoke(user);
+                    StartCoroutine(_loadImage(_checkImageUrl(user.PhotoUrl.ToString()), onImageLaoded));
+                });
             });
-        });
+
     }
 
     private string _checkImageUrl(string url)
