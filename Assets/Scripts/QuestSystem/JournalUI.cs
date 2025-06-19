@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -21,6 +22,7 @@ public class JournalUI : MonoBehaviour
     [SerializeField] private Button _leaderboardButton;
     [SerializeField] private TMP_Dropdown _sortDropdown;
     [SerializeField] private GameObject _sortParent;
+    [SerializeField] private TabSelector _tabSelector;
 
     private Quest _currentQuest;
     private QuestType _lastOpenedQuestTab = QuestType.SponsoredQuest;
@@ -57,9 +59,22 @@ public class JournalUI : MonoBehaviour
     }
     public void ShowQuestsOfType(QuestType questType)
     {
+        switch (questType)
+        {
+            case QuestType.SponsoredQuest:
+                _tabSelector.SelectTab(2);
+                break;
+            case QuestType.GenericQuest:
+                _tabSelector.SelectTab(1);
+                break;
+            case QuestType.UserQuest:
+                _tabSelector.SelectTab(0);
+                break;
+        }
+        
 
         _lastOpenedQuestTab = questType;
-        _header.text = questType.ToString()+"s";
+        _header.text = Regex.Replace(questType.ToString(), "(?<!^)([A-Z])", " $1") + "s";
         _deleteQuestButton.gameObject.SetActive(false);
 
         _backButton.onClick.RemoveAllListeners();
