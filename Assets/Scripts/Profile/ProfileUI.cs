@@ -20,7 +20,7 @@ public class ProfileUI : Singleton<ProfileUI>
     public void SetProfilePictures(Sprite picture)
     {
         foreach (var p in _profilePictures)
-        {
+        {   if(picture != null)
             p.sprite = picture;
         }
     }
