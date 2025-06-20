@@ -12,7 +12,7 @@ using System;
 
 public class LoginWithGoogle : MonoBehaviour
 {
-    public string GoogleAPI = "730146566611-ri6tnhlg2ao2nitk90fdgq3meu4hit7r.apps.googleusercontent.com";
+    private string GoogleAPI = "730146566611-oeii35cfcv7l57c7bkmm93gh984r5g1v.apps.googleusercontent.com";
     private GoogleSignInConfiguration configuration;
 
     Firebase.Auth.FirebaseAuth auth;

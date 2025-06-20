@@ -16,14 +16,14 @@ public class LoginManager : Singleton<LoginManager>
 
 	public string UserID { get {
             
-            return _user != null ? _user.UserId : "EditorUserID";
+            return _user != null ? _user.UserId : "EditorUserID4";
         }
     }
 	private Sprite _profilePhoto { set { ProfileUI.instance.SetProfilePictures(value); } }
 	private Firebase.Auth.FirebaseUser _user;
 
 	public string UserName { get {	
-            return _user != null ? _user.DisplayName : "Editor User";
+            return _user != null ? _user.DisplayName : "Holy";
         }
     }
 
