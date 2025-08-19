@@ -19,7 +19,8 @@ Existing travel applications often lack personalized quests or incentives, which
 - **Responsive UI** integrating map tools and quest tracking features  
 - **Cross-device Testing** under various conditions and use scenarios  
 
-![WhatsApp Image 2025-05-30 at 00 32 35 (1)](https://github.com/user-attachments/assets/57d429bb-ed94-47d9-bc1d-670c78acdedc)
+![WhatsApp Image 2025-05-30 at 00 32 35 (1)](https://github.com/user-attachments/assets/1ac565dd-4f39-4927-a449-d98a3c8d6faa)
+
 
 ## 👥 Team Contributions
 
